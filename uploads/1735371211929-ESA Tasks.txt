@@ -1,0 +1,354 @@
+
+
+894001744163835
+
+696532478556732 - GrN Not completed
+
+894001744163833->rejected and cancelled example
+
+
+696532478556778 -new qa
+696532478556760-new qa
+696532478556722-cancelled  and rejected example
+INBINV000000347  - attachment delete example dev
+INBINV000000233  -696532478556770  - invoice fully,multiple attach example qa
+INBINV000000223 - attachment delete example qa
+
+696532478556760
+---------------------------------------------------------------------------------------------------
+1. T05542 -Enable Inbound Initial Screen checkbox for Invoice Not Fully completed Scenarios
+(
+ListReviewInboundShipmentInvoice-ReviewedInbound_BV  - charge unwind remove,maintain project only facet  and maintain rowfilter before facet
+ReviewInboundShipmentInvoice-ReviewInboundShipment_BV 
+InboundShipmentList-InboundShipment_BV2-)
+
+
+14.freightRate to freighRate and shipto  to Ship To/Consignee mapping path change qa and prd
+
+
+
+
+1.T05803 - Deleted attachment sent to SAP
+2.T05818 -add SAP Invoice Number in inbound List Pages and Filter
+3.T05879 -Inbound QA Test Document Preparation	             
+2.T05886 -Unable to Submit  Inbound Invoice for some BL Numbers
+2.T05819 -Display Shipment Number Inbound in Inbound Pages
+3.T05820 -balance value should be calculated before entering the invoice value
+5.T05848 -Enable save as draft option for Supplier in modify page - RSI
+
+3.T05932 -Road Shipment Supplier Draft option - QA Testing and PRD Movement
+3.T05933 -Random Mail checking PRD Inbound Shipment Invoice
+4.5000447808 -  grn not transferted to sch--------------
+5.T05928 - Road Shipment Invoice - Posting Status Discussion
+
+
+
+
+1.T05966-Inbound Shipment Db Sckenkar Supplier Team Invoice Discussion
+2.T05961- Schenkar Supplier- Inbound Invoice Issue for BL Numbers
+3.T05975- Inbound Shipment Invoice  SCH to SAP Invoice Sync Monitoring
+
+1.T05984 -SAP inbound invoice Status not reflected  in SCH for- INBINV000000053,INBINV000000016,INBINV000000014
+2.T05985 -.INBINV000000052- SAP Inbound Invoice Park Failed ref-CNDLC0000052554, INBINV000000052 -TAOOPA070001 
+Sync Failed Status not updated when Invoice Park Time Out-"actionOnFailureStop": false, add  shipment Invoice rule
+3.T05819 -Display Shipment Number Inbound Shipment List Page
+
+
+1.T05820 -Inbound Shipment invoice - Multiple Invoice Enhancement PRD Movement
+4.T05986 -add shipment and Sap Invoice number in list Pages and Filter- QA movement and Testing
+5.T05984 -SAP inbound invoice Status not reflected  in SCH for- INBINV000000053,INBINV000000016,INBINV000000014
+
+
+
+
+
+
+
+
+2.T05820 -Inbound Shipment invoice - Multiple Invoice Enhancement PRD Movement
+
+
+ 1.T06036- Inbound Invoice upload issue - SCH (invoice value is less than Shipment value, Not reflected the entered BL number, GRN is not reflecting)
+ 2.T06035-RSINV0029 - Invoice submission issue RSI
+ 
+
+1.Inbound intial screen pagination issue and list page pagination on filter
+2.give different colour for balance value column, if value is gt 0 green else red
+3.check all bv in vendors collection lookup using active
+4.Remove DB Schenker Role Enhancements Changes
+5.remove reprocess icon and replace with button in downpay and inbound
+6.T05406 -Rename ESA to ES in pages - IOP, Export Container and Vessel...
+7.ad invoice fields in invoice details embedded tabl
+8.RSINV0012 - main retrigger manually
+9.T05666-SCH to SAP Invoice Park Excel Attachment Issue
+10.T05789 -Road Shipment Invoice Invalid Date issue in  table Excel Upload
+11.withdraw option enhancement
+12.inbound create and modify screen performance
+13.Pagination issue in InboundShipmentList,ReviewInboundShipmentInvoice,ListReviewInboundShipmentInvoice
+14.Inbound Shipment invoice supplier user guide preparation for multiple invoice
+
+
+1.T05970 -Inbound Shipment Invoice Single Cost Single Invoice User Guide Preparation
+2.T05803 - Deleted attachment sent to SAP-pending to qa movement
+
+INBINV000000014,16,53 - sap status not reflected
+
+SCHINB_INBINV000000014
+SCHINB_INBINV000000016
+SCHINB_INBINV000000053
+52- SAP Failed
+4 & 8 -0 invoice value  - comple
+
+
+
+6)invoice dup check for mul invoice
+7)saad and Osman mail check
+
+
+withdraw pending,pending resubmit,invoice submitted only need to enable
+road finance cc mail add 400363 niyas, 400717 vinod
+
+ T06035-RSINV0029 - Invoice submission issue RSI
+
+
+
+1.T06087-Unable to submit Inbound Invoice for this BL -MEDUEG487998
+2.T06036- Inbound Invoice upload issue - SCH (invoice value is less than Shipment value, Not reflected the entered BL number, GRN is not reflecting	
+3.T06096 -Add mail ID in Road shipment notification
+
+07/11
+1)T06110 -Inbound Invoice upload issue - SCH (invoice value is less than Shipment value, Not reflected the entered BL number, GRN is not reflecting)
+2)T06086-Inbound Shipment Invoice - BL details not reflecting SWA23120845 ,MTODGS399MAR2026 
+3) T06084 -Inbound Shipment Invoice (PRD BL Issue) Discussion With ESA Team
+4)T06141 -Remove Shipment Documents in PRD
+
+08/11
+1)T06140 -Inbound Shipment- Multiple Invoice Supplier Training-1hr
+2)T06110 -Inbound Invoice upload issue - SCH (invoice value is less than Shipment value, Not reflected the entered BL number, GRN is not reflecting)
+3)T06149 - fetch  V3 and V4 tax code only in dropdown, Add the V3 tax code in the TaxMaster on the ESA DEV, QA, and PRD systems
+4)allow provision to submit invoice for supplier if  Status is Canceled also -1hr
+
+
+
+T06142- create one menu for road shipment posting details and optimize the list screen
+T06157-Unable to Submit Invoice for this BL Numbers-SWA23120845,MTODGS399MAR2026,VOL/019/ABU/15,VOL/3009/ABU/16
+
+
+     "item.text": {
+                    "($)in": [
+                        "20275 - AMIR RAZA TRANSPORT LLC",
+                        "10155 - AL RASHID TRANSPORTING & CLEARING ESTABLISHMENT",
+                        "12385 - Emirates Logistics LLC",
+                        "12888 - SATNAM SINGH TRANSPORTS L.L.C",
+                        "20289 - WEST OCEANIC SHIPPING AGENCIES LLC",
+                        "91480 - Al Ataf Transport & Cont.Comp",
+                        "10165 - Star Service",
+                        "10112 - Abu Dhabi National Food Stuff Co.",
+                        "10182 - Al Ghazal Transportation",
+                        "10012 - Total Solutions",
+                        "10175 - Herbis Pvt Ltd(Customer)"
+                    ]
+                }
+
+        {
+            "($)match": {
+                "paymentDetails.items.fiDoc": {
+                    "($)eq": "1224025162"
+                },
+                "paymentDetails.items.fiscalInvoiceYear": {
+                    "($)eq": 2024
+                }
+            }
+        },
+
+
+12/11
+T06142- create one menu for road shipment posting details and optimize the list screen
+inbound consolidated list
+T06201 - Road Shipment Initial Screen, not Fetching October Month Deliveries for This supplier 12888
+T06203-Prepare consolidated List Inbound PRD Issue BL's
+
+
+13/11
+ T06218 -Disable Invoice Date Validation for DB Schenkar Role
+ T06202 -Road Shipment Invoice Posting Status Enhancement
+ T06203-Prepare consolidated List Inbound PRD Issue BL's
+ T06157  -Unable to Submit Invoice for this BL Numbers-SWA23120845,MTODGS399MAR2026,VOL/019/ABU/15,VOL/3009/ABU/16
+
+
+14/11
+ T06236 -Add filter and Excel download functionality to the road shipment posting list -need to cretate task
+ T06202 -Road Shipment Invoice Posting Status Enhancement
+
+ 	
+
+15/11
+T06157  -Unable to Submit Invoice for this BL Numbers-SWA23120845,MTODGS399MAR2026,VOL/019/ABU/15,VOL/3009/ABU/16
+T06202 -Road Shipment Invoice Posting Status Enhancement
+T06257 - Exclude road shipment invoices with 'Invoice Requested' status from the Supplier Road Shipment Invoice List
+
+
+18/11
+T06256 -SDP00111-Advance Payment Notification issue
+T06279 -Pagination issue on Inbound Shipment List pages when applying filter- 
+Road Shipment Invoice Right choice supplier issue-RSINV0033
+
+19/11
+T06311 -Remove Shipment Documents and Fix Multiple Shipment BL issue
+
+
+20/11
+T06333 -Show error message for Multiple Shipment Inbound Invoice BL
+T06340 -Inbound Invoice Upload issue BL-HTJAUH2404073
+ T06388 -Inbound Duplication mail issue-INBINV000000365
+T06351 -Inbound Shipment Document Removal Enhancement
+
+21/11
+T06333 -Show error message for Multiple Shipment Inbound Invoice BL
+T06351 -Inbound Shipment Document Removal Enhancement
+
+
+22/11
+T06351 -Inbound Shipment Document Removal Enhancement
+
+897654321876591
+Shipment:0001000261
+Shipment:0001002951
+Cost:0000100263
+894001744163845
+shipment:0001000292
+Cost:0000100293
+
+some bl has 0 qty 
+ISRValue_BV
+ITBGO0000018167-s001010578,0001010573  => repeated po items
+workbench change wfbaseurl
+
+25/11
+T06351 -Inbound Shipment Document Removal Enhancement
+multiple GRN for Same PO and Item check
+Inbound PRD  Monitoring
+
+
+
+27/11/2024
+T06497 -Unable to Submit Invoice for TWS Supplier BL Numbers
+T06508 -Road Shipment Invoice Header Details not showing
+
+
+28
+	
+T06518 -Migrate Road Shipment Posting Details from SAP to SCH
+T06517 -Discuss inbound invoices related PRD issues with ESA team and inbound suppliers.
+
+
+
+29/11
+T06518 -Migrate Road Shipment Posting Details from SAP to SCH
+T06536-DBS Supplier Inbound Shipment Invoices Upload issue
+
+
+
+T06498 -Create new Menu for Duplicate Shipment Check for Same BL
+T06499 -Duplicate Shipment Document Removal for Same BL 
+add invoice number in road shipment list pages and filter excel download
+add shipment number for shipment number not update Inbound Invoices
+
+viewRSRdetails1,
+viewRSRdetails,
+viewRSR_List,
+viewRSRBuyer_List,
+roadShipmentInvoice
+ 
+BV: SubmitInvoiceDetails_BV,
+rdShmentPostingFilter_BV
+RSListBV_Vendor_List
+
+
+
+Manually migrate the road shipment posting datas for approved Invoices in SCH
+delivery detail prd rule issue for specific shipment number (0000004250) - error queue id 6725404f236c7e3fdb33c009
+T06283 -withdraw option enhancement
+ListReviewInboundShipmentInvoice-inboundWithdrawBV,inbndModifyStatusBV
+Invoice Submitted,Pending_Resubmit,Pending Resubmit,Pending Approval,
+Invalid date issue in road Shipment Invoice 
+ESAdownpayment-rule- change dynamic mailDPinitRequestinbound_Notify1,inbound_Notify2,inbound_Notify3,inbound_Notify4,road shipement
+
+
+=IFERROR(TEXTJOIN(", ", TRUE, FILTER(MSEG!B:B, MSEG!A:A = B95)), "")
+=TEXTJOIN(", ",TRUE,FILTER(MSEG!B:B,MSEG!A:A=B95))
+
+
+
+ITBGO0000017617
+INBOM0000084615
+VOL/3009/ABU/16 
+
+
+ 
+CNDLC0000052272- shipment Number:0001009982, dup:0001009944
+BRU00011915 -shipment number:0001010745
+
+For PO Inbound shipment invoice we need to remove Shipment documents in SCH manually as it is deleted in SAP, for shipment documents there is no deletion indicator in SAP so it is not captured in SAP to SCH Delta loads. Kindly approve to remove in SCH DB. 
+ 
+We will check in SAP Log tables whether it is possible to identify deleted shipment documents as they don't reflect in actual Shipment tables.
+
+
+
+
+CNDLC0000052272- 0001009982,0001009944
+
+BRU00011915 -0001010745
+TJN0446383-1010262,0001010260
+HLCUALY240616139 -0001010556,0001010441
+ITBGO0000018167-s001010578,0001010573  => repeated po items
+ITUDN0000003129 -1010395
+MIL20755433 - 1010842
+
+Invoice qty is 0 for some bls
+
+start: 04/12/2024  due:07/12/2024
+T06627-HTJAUH2401191 Trans world supplier Inbound Invoice upload issue for house BL
+T06626-DBS Supplier Inbound Shipment Invoices Upload issue 200 BL numbers  
+
+10/12
+	
+Prepare Consolidated List TWS Supplier PRD Inbound Invoice Issue BL's
+
+	
+11/12
+T06683 -Display an error message if the Inbound BL contains an Asset PO.
+
+        	
+12/12	
+ T06702 -SCH Inbound Shipping Invoice Issues Discussion
+ T06700 -Exclude QA Rejected GRNs from Inbound Invoice Calculations
+ T06701 -House BL Invoice Submission Enhancement- Inbound Shipment Invoice
+ T06499 -Duplicate Shipment Document Removal for Same BL
+ T06498 -Create new Menu for Duplicate Shipment Check for Same BL
+
+
+
+Dont Fetch GRN QA Rejection items
+Duplicate shipment check for same BL screen development
+show error message for 
+
+InbdShmentCstBV- shipmentNumer2 added
+InboundShipment- shipment number2 added and stored, new error message,add assetcheck field,shipment count error and shipment count field
+InboundShipment_BV2 -fetch shipmentnumber2 for all roles
+InboundShipmentList- added shipment number2  and passed params
+InboundShipmentDetails1- shipment number params
+ISR_PoDetailsBV- shipment number or cond,QArejection and cancel
+InbdCostValidateBV-qa rejection,cancel
+modifyInbdDetails-new error message,add assetcheck field, check shipmentnumber2 need to add or not
+
+ShipmentRemoval,fetchInbdShipmentBV,InbdShipmentCountBV,InboundAssetPOVerifyBV
+need to create menus
+
+696532478556740-multi ship
+394565699278093-Asset po
+394565699278092- House bl bl changed to (394565699278092_test) for one delivery house bl example
+              QA Reject
+
+
+	

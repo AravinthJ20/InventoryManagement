@@ -1,0 +1,586 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/popupTable.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script src="/js/layout.js"></script>
+
+    <script src="../js/embeddedPopup.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<style>
+    .error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.invalid {
+    border-color: red;
+}
+
+.popup2 {
+    position: fixed;
+
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.popup-box {
+    position: relative;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.popup-box h2 {
+    margin: 0 0 10px;
+}
+
+.popup-box p {
+    font-size: 14px;
+    margin: 0 0 20px;
+}
+
+.popup-box button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.popup-box button:hover {
+    background: #0056b3;
+}
+
+</style>
+
+
+    
+<!-- Code injected by Five-server -->
+  <script async data-id="five-server" data-file="c:\Users\Aravind J\OneDrive - SCH Infotech Private Limited\Desktop\UI\PageLayouts\html\PageLayout.html" type="application/javascript" src="/fiveserver.js"></script>
+  </head>
+
+<body>
+  
+
+ <head>
+<div class="topbar">
+    <button class="open-btn" onclick="toggleSidebar2()">☰</button>
+    <h2>Inventory Mangament</h2>
+    <div class="topbar-menu">
+        <a href="/socket"><i class="fa fa-comments-o"></i>Chat Room</a>
+        <a href="#">About Us</a>
+        <a href="#">Contacts</a>
+        <a href="#"><i class="fa fa-bell"></i></a>
+        <a onclick="logout()"><i class="fa fa-sign-out"></i>Logout</a>
+        <a href="/user/userProfile?user={{user}}"> <img class="profile" src="../images/home.jpg" alt="Picture"></a>
+
+    </div>
+</div>
+</head>
+
+
+    <main class="main-content shifted">
+       
+      
+       
+        <div class="sub-container">
+        <div class="mini-container formContainter">
+                <div class="section-header">
+                    <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+    
+                        <h3 class="container-hederText">List of Items</h3>
+                            
+                        </span>
+
+                </div>
+                <span id="2">
+
+                <form method="POST"  id="section" class="form" action="/CartAdd">
+                    <div>
+                        <label for="firstName">First Name:</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div>
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                        </div>
+             <div>
+              <label for="name">Organisation Name: <span class="help-icon">&#x1F6C8;</span> <!-- Icon next to the field -->
+                <div class="tooltip">Please enter a valid email address (e.g., name@example.com).</div> <!-- Tooltip --></label>
+                    <input type="text" id="name" name="name" required>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="annualTurnover">Annual Turnover (Range):</label>
+                        <input type="range" id="annualTurnover" name="annualTurnover" min="100000" max="10000000" value="5000000" step="100000">
+                      </div>
+                    <div>
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required><br><br>
+                </div>
+
+                    <div>
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" onchange="ageCheck()">
+                        </div>
+                
+                 
+                    <div  data-check-role='["admin3"]'>
+                    <label for="email">Email Address:</label>
+                    <input type="text" id="email" name="email">
+
+                  
+                
+                    </div>
+                    
+                    
+                    <div>
+                   
+                        <label for="supportDocs">Supporting Docs</label>
+                        <span class="upload-icon" id="filed1"><i class="fa fa-upload"></i></span> <!-- Upload icon -->
+                      <input type="hidden" id="filed1-article" name="supportDocs" required>
+                     
+        </div>
+
+        <div>
+                   
+            <label for="otherDocs">Other Docs</label>
+            <span class="upload-icon" id="filed2"><i class="fa fa-upload"></i></span> <!-- Upload icon -->
+            <input type="hidden" id="filed2-article" name="otherDocs" required>
+         
+</div>
+        
+                   
+<div>
+    <label for="Country">Country:</label>
+    <select id="country" name="country" required onchange="getStates(this)">
+        <option value="" disabled selected></option> <!-- No value selected initially -->
+
+        <option value="India">India</option> <!-- Placeholder option -->
+        <option value="AE">AE</option>
+        </select>
+        
+    </div>
+    <div>
+        <label for="state">State:</label>
+        <select id="state" name="state" required>
+            <option value="" disabled selected></option> <!-- No value selected initially -->
+    
+            <option value="TN">Tamil Nadu</option> <!-- Placeholder option -->
+            <option value="Kerala">Kerala</option>
+            </select>
+            
+        </div>
+    <div class="form-group">
+        <label for="website">Website URL (URL):</label>
+        <input type="url" id="website" name="website" value="https://www.abc-supplies.com" required>
+      </div>
+      <div class="form-group">
+        <label for="dateOfEstablishment">Date of Establishment (Date):</label>
+        <input type="date" id="dateOfEstablishment" name="dateOfEstablishment" value="2010-05-01" required>
+      </div>
+      <div class="form-group">
+        <label for="companyLogo">Company Logo:</label>
+        <input type="file" id="companyLogo" name="companyLogo">
+      </div> 
+      <div class="form-group">
+        <label for="logBg">Logo BG</label>
+        <input type="color" id="logBg" name="logBg" value="#ff6347">
+      </div> 
+   
+            </form>
+                </span>
+            </div>
+
+            </div>
+               
+        <div class="sub-container">
+            <div class="mini-container formContainter">
+                    <div class="section-header">
+                        <span class="containerInfo">
+                            <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+        
+                            <h3 class="container-hederText">List of Items</h3>
+                                
+                            </span>
+    
+                    </div>
+                    <span id="3">
+    
+                    <form method="POST"  id="section" class="form" action="/CartAdd">
+                        <div class="form-group" >
+                            <label for="address">Address (Text Area):</label>
+                            <textarea style="width:175%";  id="address" name="address" rows="4" required>123 Supply Street, Warehouse 4, City, Country</textarea>
+                          </div><br>
+                          <div class="form-group">vendorType
+                            <label for="individual">
+                                <input type="radio" id="individual" name="vendorType" value="individual" required>
+                                Individual
+                            
+                            
+                                <input type="radio" id="company" name="vendorType" value="company">
+                                Company
+                            </label>
+                          </div>
+                          <div>
+                            <label>Timestamp</label>
+                            <input type="datetime-local" id="eventTime" name="eventTime" required readonly><br><br>
+
+                            </div>
+                            <div class="form-group">
+                                <label><input type="checkbox" name="contractAgreement" checked> I agree to the terms and conditions</label>
+                              </div>
+                     
+                </form>
+                    </span>
+                </div>
+                
+                </div>
+            <div class="sub-container">
+                <div class="mini-container list-container">
+                    <div class="list-header">
+                        <span class="secttinInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                    </span>
+                        <h3 class="container-hederText">Address Details</h3>
+                        <div>
+                            <span class="filter-icon">&#x1f50d;</span> <!-- Filter icon, you can use your preferred icon here -->
+                            <button id="addRowBtn" onclick="addRow()">+</button>
+                            <button class="table-header-btn" onclick="downloadTemplate()">Download Template</button>
+                            <input type="file" id="excelUpload" accept=".xls,.xlsx" onchange="uploadExcel(event)" style="display: none;">
+                            <label for="excelUpload" class="table-header-btn">Upload Excel</label>
+                        </div>
+                      
+                    </div>
+    
+       <span id="3">         
+     <div  id="addre"   class="table-container" >
+        <table id="addrowtest">
+            <thead> 
+                    <tr>
+    
+                <th data-check-role='["admin"]'>Address</th>
+            <th>Country</th>
+            <th>State</th>
+            <th>District</th>
+<th>City</th>
+<th>Postal Code</th>
+<th>test</th>
+<th>test2</th>
+            </tr>
+            </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" name="address" > </td>
+                <td><input type="text" name="country"></td>
+    
+                <td><input type="text" name="state"></td>
+                <td><input type="text" name="district"></td>
+                <td><input type="text" name="city"></td>
+                <td><input type="text" name="postalCode" required></td>
+
+                <td><span name="test2" data-type="number">
+                    3
+                </span></td>
+                <td><button class="deleteRowBtn" onclick=" deleteRow(this);">-</button></td>
+            </tr>
+        </tbody>
+    
+        </table></div></span>
+      
+                </div>
+            </div>
+          
+            <div class="action">
+
+                <button class="form-action-btn" id="submitBtn" onclick="submitFormData()">Submit</button>
+         <button class="form-action-btn" id="clearCart" >Save as Draft</button>
+            </div>
+    </div>
+   
+</main>
+<!-- Popup for Selecting Categories -->
+
+<footer>
+   
+
+
+  
+
+   
+
+</body>
+
+</html>
+<script>
+function validatePage() {
+    const requiredInputs = document.querySelectorAll('input[required], textarea[required], select[required]');
+    let isValid = true;
+    let errorMessages = [];
+
+    // Clear previous error messages
+    document.querySelectorAll('.error-message').forEach((error) => error.remove());
+
+    requiredInputs.forEach((input) => {
+        let isFieldValid = true;
+
+        // Check for hidden fields
+        if (input.type === 'hidden' && !input.value) {
+            isFieldValid = false;
+        }
+
+        // Check for other input types
+        if (!input.checkValidity()) {
+            isFieldValid = false;
+        }
+
+        // If the field is invalid, show an error message
+        if (!isFieldValid) {
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = input.validationMessage || 'This field is required.';
+            input.after(errorMessage);
+
+            // Highlight invalid field
+            input.classList.add('invalid');
+            isValid = false;
+
+            // Add to error messages
+            const fieldName = input.name || input.placeholder || 'Field';
+            errorMessages.push(`${fieldName}: ${input.validationMessage || 'This field is required.'}`);
+        } else {
+            // Remove invalid highlighting
+            input.classList.remove('invalid');
+        }
+    });
+
+    // Show popup with error messages if there are any
+    if (!isValid && errorMessages.length > 0) {
+        showPopup('Validation Errors', errorMessages.join('\n'));
+    }
+
+    return isValid;
+}
+function ageCheck() {
+    let isValid = true;
+    let errorMessages = [];
+
+    // Example conditions:
+    const ageInput = document.querySelector('input[name="age"]');
+    if (ageInput && parseInt(ageInput.value, 10) < 18) {
+        errorMessages.push('Age must be 18 or older.');
+        console.log('age condtion..')
+        isValid = false;
+    }
+
+    
+    
+
+
+    // If any conditions fail, show a popup and return false
+    if (!isValid) {
+        showPopup('Condition Check Errors', errorMessages.join('\n'));
+    }
+
+    return isValid;
+}
+
+function checkConditions() {
+    let isValid = true;
+    let errorMessages = [];
+
+    // Example conditions:
+    const ageInput = document.querySelector('input[name="age"]');
+    if (ageInput && parseInt(ageInput.value, 10) < 18) {
+        errorMessages.push('Age must be 18 or older.');
+        isValid = false;
+    }
+
+    const emailInput = document.querySelector('input[name="email"]');
+    if (emailInput && !emailInput.value.endsWith('@example.com')) {
+        errorMessages.push('Email must end with @example.com.');
+        isValid = false;
+    }
+
+    const checkbox = document.querySelector('input[name="terms"]');
+    if (checkbox && !checkbox.checked) {
+        errorMessages.push('You must accept the terms and conditions.');
+        isValid = false;
+    }
+
+    // If any conditions fail, show a popup and return false
+    if (!isValid) {
+        showPopup('Condition Check Errors', errorMessages.join('\n'));
+    }
+
+    return isValid;
+}
+
+function showPopup(title, message) {
+    const popup = document.createElement('div');
+    popup.className = 'popup2';
+
+    const popupContent = `
+        <div class="popup-overlay"></div>
+        <div class="popup-box">
+            <h2>${title}</h2>
+            <p>${message.replace(/\n/g, '<br>')}</p>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    `;
+    popup.innerHTML = popupContent;
+    document.body.appendChild(popup);
+}
+
+function closePopup() {
+    const popup = document.querySelector('.popup2');
+    if (popup) popup.remove();
+}
+
+function collectPayload() {
+      // Validate the page first
+      if (!validatePage()) {
+        console.error('Validation failed. Aborting payload collection.');
+        return null; // Stop processing if validation fails
+    }
+    // Call the checkConditions function
+    if (!checkConditions()) {
+            console.error('Condition checks failed. Submission aborted.');
+            return; // Stop if conditions are not met
+        }
+
+    const payload = {};
+
+    // Collect data from all required fields
+    const requiredInputs = document.querySelectorAll('input, textarea, select');
+    requiredInputs.forEach((input) => {
+        if (input.name) {
+            payload[input.name] = input.value;
+        }
+    });
+    const forms = document.querySelectorAll('form');
+
+    forms.forEach((form, index) => {
+      
+
+        const formData = new FormData(form);
+        const formPayload = {};
+        formData.forEach((value, key) => {
+            if (formPayload[key]) {
+                // If key already exists, convert it to an array and append the new value
+                if (!Array.isArray(formPayload[key])) {
+                    formPayload[key] = [formPayload[key]];
+                }
+                formPayload[key].push(value);
+            } else {
+                formPayload[key] = value;
+            }
+        });
+        payload[`form_${index + 1}`] = formPayload;
+    });
+
+   
+
+    // Collect data from all tables
+    const tables = document.querySelectorAll('table');
+
+
+tables.forEach((table, index) => {
+    const tableData = [];
+    const rows = table.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const rowData = {};
+
+        // Iterate over each cell in the row
+        row.querySelectorAll('td').forEach(cell => {
+            const input = cell.querySelector('input');
+            const span = cell.querySelector('span');
+
+            if (input) {
+                // If the cell contains an input field, get its value
+                rowData[input.name] = input.value;
+            } else if (span) {
+                // If the cell contains a span, get its text content and check the data-type attribute
+                const spanValue = span.textContent.trim();
+                const type = span.getAttribute('data-type');
+
+                if (type === 'number') {
+                    // Convert to a number
+                    rowData[span.getAttribute('name')] = isNaN(spanValue) ? spanValue : Number(spanValue);
+                } else if (type === 'date') {
+                    // Convert to a date object (assuming it's in a valid format)
+                    rowData[span.getAttribute('name')] = new Date(spanValue);
+                } else {
+                    // If type is string or undefined, just use the text content
+                    rowData[span.getAttribute('name')] = spanValue;
+                }
+            } else {
+                // If there's neither an input nor a span, you can collect static content from the cell itself
+                rowData[cell.getAttribute('data-name')] = cell.textContent.trim();
+            }
+        });
+
+        tableData.push(rowData);
+    });
+
+    payload[`table_${index + 1}`] = tableData;
+});
+
+    return payload;
+}
+
+function submitFormData() {
+    try {
+        const payload = collectPayload(); // Collect validated form data
+        console.log('Collected Payload:', payload);
+
+        // Send to backend
+        fetch('/PostData', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                alert('Submission successful!');
+                console.log('Response from server:', data);
+            })
+            .catch((error) => {
+                console.error('Error submitting form:', error);
+            });
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+</script>

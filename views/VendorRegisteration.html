@@ -1,0 +1,1569 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/popupTable.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
+    <script src="/js/layout.js"></script>
+
+    <script src="../js/embeddedPopup.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<style>
+       .custom-swal-width {
+      width: 200px !important; /* Adjust the width as needed */
+      height:100px !important;
+    }
+    .error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.invalid {
+    border-color: red;
+}
+
+.popup2 {
+    position: fixed;
+
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.popup-box {
+    position: relative;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.popup-box h2 {
+    margin: 0 0 10px;
+}
+
+.popup-box p {
+    font-size: 14px;
+    margin: 0 0 20px;
+}
+
+.popup-box button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.popup-box button:hover {
+    background: #0056b3;
+}
+
+</style>
+    <style>
+        
+        .table-container input{
+padding:5px;
+        }
+     .actions-container{
+        margin-bottom: .5em;
+     }
+
+        .more-actions {
+            display: none;
+            position: absolute;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: max-content;
+            margin-left: 100px;
+            min-width: 100px;
+            max-height: 200px; /* Limit the height of the popup */
+            overflow-y: auto; /* Allow scrolling if content overflows */
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .more-actions button {
+            display: block;
+            width: 90%;
+            padding: 0.5rem;
+color: white;
+            margin-top: 10px;
+            background: rgb(117, 109, 109);
+            border: none;
+            font-size: 1em;
+            border-bottom: 1px solid #f81616;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+    
+
+        .more-actions button:last-child {
+            border-bottom: none; /* Remove border from the last button */
+        }
+
+        .three-dot-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+::-webkit-scrollbar{
+    height: 0px;
+    width:3px;
+}
+
+
+::-webkit-scrollbar-thumb{
+    background: rgb(133, 132, 132);
+}
+        /* Mobile view styles */
+        @media (max-width: 768px) {
+            /* Hide all action buttons in mobile view */
+            .actions-container .action-btn {
+                display: none;
+            }
+
+            /* Show the three-dot button */
+            .three-dot-btn {
+                display: inline-block;
+            }
+        }
+    </style>
+
+    
+<!-- Code injected by Five-server -->
+  <script async data-id="five-server" data-file="c:\Users\Aravind J\OneDrive - SCH Infotech Private Limited\Desktop\UI\PageLayouts\html\PageLayout.html" type="application/javascript" src="/fiveserver.js"></script>
+  </head>
+
+<body>
+    <div class="sidebar active" id="sidebar">
+        <h2>Menu</h2>
+        <ul>
+                     <li><a href="index2.html"><i class="fa fa-home"></i>Home</a></li>
+    
+             <li><a href="/views/LandingPage.html"><i class="fa fa-bar-chart fa-fw"></i><span class="menuname">Dashboard</span></i></a></li>
+             <li>
+                <a href="javascript:void(0)"><i class="fa fa-truck"></i><span class="menuname">Suppliers</span ><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="/views/VendorRegisteration.htm"><i class="fa fa-truck"></i><span class="menuname">Supplier Registeration</span></a></li>
+                    <li><a href="/views/VendorList.htm"><i class="fa fa-truck"></i><span class="menuname">Supplier List</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-cubes"></i><span class="menuname">Material</span ><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="/views/InsertMaterial.htm"><i class="fa fa-cubes"></i><span class="menuname">Create Material</span></a></li>
+                    <li><a href="/views/MaterialList.htm"><i class="fa fa-cubes"></i><span class="menuname">Material List</span></a></li>
+                </ul>
+            </li>
+             <li>
+                <a href="javascript:void(0)"><i class="fa fa-shopping-bag"></i><span class="menuname">Sales Orders</span ><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="create-sales-order.html"><i class="fa fa-shopping-bag"></i><span class="menuname">Create Sales Order</span></a></li>
+                    <li><a href="sales-order-list.html"><i class="fa fa-shopping-bag"></i><span class="menuname">Sales Order List</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-shopping-cart"></i><span class="menuname">Purchase Orders </span><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="create-purchase-order.html"><i class="fa fa-shopping-cart"></i><span class="menuname">Create Purchase Order</span></i></a></li>
+                    <li><a href="purchase-order-list.html"><i class="fa fa-shopping-cart"></i><span class="menuname">Purchase Order List</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-user"></i><span class="menuname">Users</span><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="user-list.html"><i class="fa fa-user"></i><span>User List</span></a></li>
+                    <li><a href="create-user.html"><i class="fa fa-user"></i><span>Create User</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-tag"></i><span class="menuname">Buyers</span><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="/getUserList"><i class="fa fa-tag"></i><span>Buyers List</span></a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+ <head>
+<div class="topbar">
+    <button class="open-btn" onclick="toggleSidebar2()">☰</button>
+    <h2>Inventory Mangament</h2>
+    <div class="topbar-menu">
+        <a href="/socket"><i class="fa fa-comments-o"></i>Chat Room</a>
+        <a href="#">About Us</a>
+        <a href="#">Contacts</a>
+        <a href="#"><i class="fa fa-bell"></i></a>
+        <a onclick="logout()"><i class="fa fa-sign-out"></i>Logout</a>
+        <a href="/user/userProfile?user={{user}}"> <img class="profile" src="../images/home.jpg" alt="Picture"></a>
+
+    </div>
+</div>
+</head>
+
+
+    <main class="main-content shifted">
+       
+      
+       
+        <div class="sub-container">
+        <div class="mini-container formContainter">
+                <div class="section-header">
+                    <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+    
+                        <h3 class="container-hederText">Supplier Details</h3>
+                            
+                        </span>
+
+                </div>
+                <span id="2">
+
+                <form method="POST"  id="section" class="form" action="/CartAdd">
+                    <div>
+                        <label for="firstName">First Name:</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div>
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                        </div>
+             <div>
+              <label for="name">Organisation Name: <span class="help-icon">&#x1F6C8;</span> <!-- Icon next to the field -->
+                <div class="tooltip">Please enter a valid email address (e.g., name@example.com).</div> <!-- Tooltip --></label>
+                    <input type="text" id="name" name="name" required>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="annualTurnover">Annual Turnover (Range):</label>
+                        <input type="range" id="annualTurnover" name="annualTurnover" min="100000" max="10000000" value="5000000" step="100000">
+                      </div>
+                    <div>
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required><br><br>
+                </div>
+
+                    <div>
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" onchange="ageCheck()">
+                        </div>
+                
+                 
+                    <div  data-check-role='["admin3"]'>
+                    <label for="email">Email Address:</label>
+                    <input type="text" id="email" name="email">
+
+                  
+                
+                    </div>
+                    
+                    
+                    <div>
+                   
+                        <label for="supportDocs">Supporting Docs</label>
+                        <span class="upload-icon" id="filed1"><i class="fa fa-upload"></i></span> <!-- Upload icon -->
+                      <input type="hidden" id="filed1-article" name="supportDocs" required>
+                     
+        </div>
+
+        <div>
+                   
+            <label for="otherDocs">Other Docs</label>
+            <span class="upload-icon" id="filed2"><i class="fa fa-upload"></i></span> <!-- Upload icon -->
+            <input type="hidden" id="filed2-article" name="otherDocs" required>
+         
+</div>
+        
+                   
+<div>
+    <label for="Country">Country:</label>
+    <select id="country" name="country" required onchange="getStates(this)">
+        <option value="" disabled selected></option> <!-- No value selected initially -->
+
+        <option value="India">India</option> <!-- Placeholder option -->
+        <option value="AE">AE</option>
+        </select>
+        
+    </div>
+    <div>
+        <label for="state">State:</label>
+        <select id="state" name="state" required>
+            <option value="" disabled selected></option> <!-- No value selected initially -->
+    
+            <option value="TN">Tamil Nadu</option> <!-- Placeholder option -->
+            <option value="Kerala">Kerala</option>
+            </select>
+            
+        </div>
+    <div class="form-group">
+        <label for="website">Website URL (URL):</label>
+        <input type="url" id="website" name="website" value="https://www.abc-supplies.com" required>
+      </div>
+      <div class="form-group">
+        <label for="dateOfEstablishment">Date of Establishment (Date):</label>
+        <input type="date" id="dateOfEstablishment" name="dateOfEstablishment" value="2010-05-01" required>
+      </div>
+      <div class="form-group">
+        <label for="companyLogo">Company Logo:</label>
+        <input type="file" id="companyLogo" name="companyLogo">
+      </div> 
+      <div class="form-group">
+        <label for="logBg">Logo BG</label>
+        <input type="color" id="logBg" name="logBg" value="#ff6347">
+      </div> 
+   
+            </form>
+                </span>
+            </div>
+
+            </div>
+               
+        <div class="sub-container">
+            <div class="mini-container formContainter">
+                    <div class="section-header">
+                        <span class="containerInfo">
+                            <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+        
+                            <h3 class="container-hederText">Terms and Conditions</h3>
+                                
+                            </span>
+    
+                    </div>
+                    <span id="3">
+    
+                    <form method="POST"  id="section" class="form" action="/CartAdd">
+                        <div class="form-group" >
+                            <label for="comments">Comments (Text Area):</label>
+                            <textarea style="width:175%";  id="comments" name="comments" rows="4" required>123 Supply Street, Warehouse 4, City, Country</textarea>
+                          </div><br>
+                          <div class="form-group">
+                            <label for="individual">Vendor Type:
+                                <input type="radio" id="individual" name="vendorType" value="individual" required>
+                                Individual
+                            
+                            
+                                <input type="radio" id="company" name="vendorType" value="company">
+                                Company
+                            </label><br><br>
+
+                                <label><input type="checkbox" name="contractAgreement" checked> I agree to the terms and conditions</label>
+                          </div>
+                          
+                          <div>
+                            <label>Create on</label>
+                            <input type="datetime-local" id="eventTime" name="eventTime" required readonly><br><br>
+
+                            </div>
+                           
+                     
+                </form>
+                    </span>
+                </div>
+                
+                </div>
+            <div class="sub-container">
+                <div class="mini-container list-container">
+                    <div class="list-header">
+                        <span class="secttinInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                    </span>
+                        <h3 class="container-hederText">Address Details</h3>
+                        <div>
+                            <span class="filter-icon">&#x1f50d;</span> <!-- Filter icon, you can use your preferred icon here -->
+                            <button id="addRowBtn" onclick="addRow()">+</button>
+                            <button class="table-header-btn" onclick="downloadTemplate()">Download Template</button>
+                            <input type="file" id="excelUpload" accept=".xls,.xlsx" onchange="uploadExcel(event)" style="display: none;">
+                            <label for="excelUpload" class="table-header-btn">Upload Excel</label>
+                        </div>
+                      
+                    </div>
+    
+       <span id="3">         
+     <div  id="addre"   class="table-container" >
+        <table id="addrowtest">
+            <thead> 
+                    <tr>
+    
+                <th data-check-role='["admin"]'>Address</th>
+            <th>Country</th>
+            <th>State</th>
+            <th>District</th>
+<th>City</th>
+<th>Postal Code</th>
+<th>test</th>
+<th>test2</th>
+            </tr>
+            </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" name="address" > </td>
+                <td><input type="text" name="country"></td>
+    
+                <td><input type="text" name="state"></td>
+                <td><input type="text" name="district"></td>
+                <td><input type="text" name="city"></td>
+                <td><input type="text" name="postalCode" required></td>
+
+                <td><span name="test2" data-type="number">
+                    3
+                </span></td>
+                <td><button class="deleteRowBtn" onclick=" deleteRow(this);">-</button></td>
+            </tr>
+        </tbody>
+    
+        </table></div></span>
+      
+                </div>
+            </div>
+            <div class="sub-container">
+                <div class="mini-container list-container">
+                    <div class="list-header">
+                        <span class="secttinInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                    </span>
+                        <h3 class="container-hederText">Category Details</h3>
+                        <div>
+                            <button class="btn" id="addCategoryBtn">Add Category</button>
+
+                        </div>
+                      
+                    </div>
+    
+       <span id="3">         
+     <div  id="addre"   class="table-container" >
+        <table id="parentTable">
+            <thead>
+                <tr>
+                  <th><input type="checkbox" id="selectAllCheckbox"></th> <!-- Header checkbox -->
+                  <th>Profile</th>
+                  <th>Category</th>
+                  <th>SubCategory</th>
+                  <th>SubCategory Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Existing Rows will be dynamically added here -->
+              </tbody>
+    
+        </table></div></span>
+      
+                </div>
+            </div>
+            <div class="action">
+
+                <button class="form-action-btn" id="submitBtn" onclick="submitFormData()">Submit</button>
+         <button class="form-action-btn" id="clearCart" >Save as Draft</button>
+            </div>
+    </div>
+    <div id="uploadPopup" class="popup" >
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeUploadPopup()">&times;</span>
+            <h3>Select Files to Upload</h3>
+            
+            <!-- File input for multiple file upload -->
+            <input type="file" id="fileUpload" name="attachments" multiple onchange="handleFileSelection(event)">
+            
+            <div id="filePreview"></div>
+    
+            <button type="button" onclick="submitAttachments()">Submit</button>
+            <button type="button" onclick="closeUploadPopup()">Cancel</button>
+        </div>
+    </div>
+</main>
+<!-- Popup for Selecting Categories -->
+<div class="popuptable" id="popuptable" type="popup">
+    <div class="popup-content">
+      <h3>Select Categories</h3>
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="selectAllPopupCheckbox"></th> <!-- Header checkbox for popup -->
+            <th>Category</th>
+            <th>SubCategory</th>
+            <th>SubCategory Description</th>
+          </tr>
+        </thead>
+        <tbody id="popupTable">
+          <!-- Categories with Checkboxes will be dynamically added here -->
+        </tbody>
+      </table>
+      <button class="btn" id="submitSelectionBtn">Submit</button>
+      <button class="close-popup" id="closePopupBtn">Close</button>
+    </div>
+  </div>
+<footer>
+    <script>
+        
+        const moreActions = document.getElementById("moreActions");
+        const actionsContainer = document.getElementById("actionsContainer");
+
+        // Function to move extra action buttons to the popup
+        function moveButtonsToPopup() {
+            // Clear the popup before moving the buttons
+            moreActions.innerHTML = '';
+
+            // Get all the action buttons
+            const actionButtons = actionsContainer.querySelectorAll('.action-btn');
+
+            // On mobile view, move all buttons to the popup
+            if (window.innerWidth <= 768) {
+                actionButtons.forEach(button => {
+                    const buttonClone = button.cloneNode(true); // Clone each button
+                    moreActions.appendChild(buttonClone);
+                    button.style.display = 'none'; // Hide button in header
+                });
+            } else {
+                // On larger view, move buttons beyond the 5th to the popup
+                actionButtons.forEach((button, index) => {
+                    if (index >= 3) {
+                        const buttonClone = button.cloneNode(true); // Clone each button
+                        moreActions.appendChild(buttonClone);
+                        button.style.display = 'none'; // Hide extra buttons in header
+                    } else {
+                        button.style.display = 'inline-block'; // Show first 5 buttons in header
+                    }
+                });
+            }
+        }
+
+        // Toggle popup visibility
+        function togglePopup() {
+            moreActions.style.display = moreActions.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Close popup on outside click
+        document.addEventListener('click', function (event) {
+            const threeDotButton = document.querySelector('.three-dot-btn');
+            // Check if the click is outside the popup and the three-dot button
+            if (!moreActions.contains(event.target) && event.target !== threeDotButton) {
+                moreActions.style.display = 'none';
+            }
+        });
+
+        // Handle responsive design
+        window.addEventListener('resize', function () {
+            moveButtonsToPopup(); // Update button positions based on screen size
+        });
+
+        // Initial check for the screen size on page load
+        moveButtonsToPopup(); // Move buttons based on the initial screen size
+    </script>
+</footer>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    markRequiredFields();
+});
+
+// // Example: Calling it again after adding new elements dynamically
+// setTimeout(() => {
+//     markRequiredFields();  // Ensures new elements get marked properly
+// }, 500);
+// document.addEventListener('DOMContentLoaded', markRequiredFields);
+
+    function markRequiredFields() {
+    // const form = document.getElementById(formId);
+    console.log('required')
+  
+    const requiredFields = document.querySelectorAll('input[required], textarea[required], select[required]');
+  
+    requiredFields.forEach(field => {
+      const label = document.querySelector(`label[for="${field.name}"]`);
+      const th = field.closest('table')?.querySelector(`th:nth-child(${field.closest('td').cellIndex + 1})`);
+      if (th && !th.querySelector('.required')) {  
+            const asterisk = document.createElement('span');
+            asterisk.textContent = ' *';
+            asterisk.style.color = 'red';
+            asterisk.classList.add('required');
+            th.appendChild(asterisk);
+        }
+      if (label) {
+        const asterisk = document.createElement('span');
+        asterisk.textContent = ' *';
+        asterisk.style.color = 'red';
+
+        asterisk.classList.add('required'); // Adds the CSS class for styling
+        label.appendChild(asterisk);
+      }
+    });
+        
+       
+  }
+
+
+// Call the function after DOM content loads
+
+  function downloadExcel(){
+console.log('downloadExcel called')
+let input=  document.querySelector('.dialog-container')
+console.log('input',input)
+input.display='flex';
+console.log(input.display)
+}
+   function toggleTable(input) {
+            console.log('toogle called',input,input.innerText);
+            console.log('parent',input.parentElement.parentElement.nextElementSibling)
+            let value=input.innerText
+            let collapse=input.parentElement.parentElement.nextElementSibling
+            input.innerText=value=='+'?'-':'+';
+            const table = document.querySelector('.collpase-container');
+            // table.style.display = (table.style.display === 'none') ? '' : 'none';
+            collapse.style.display = (collapse.style.display === 'none') ? '' : 'none';
+
+            console.log(table.style.display)
+
+        }
+    enableSubmenus()
+    function fetchApprovalLevels() {
+            // Example data, replace this with a real API call
+            return [
+                { id: 'START', user: 'L1 [L1 ID]', status: 'Inbound Shipment', timestamp: '10/16/24, 11:09 AM', class: 'start' },
+                { id: 'SK', user: 'L2 [L2 ID]', status: 'Submitted', timestamp: '10/16/24, 11:09 AM', class: 'submitted' },
+                { id: 'SD', user: 'L3 [L3 ID]', status: 'Approved', timestamp: '10/16/24, 11:09 AM', class: 'approved' },
+                { id: 'SD', user: 'L4 [L4 ID]', status: 'Approved', timestamp: '10/16/24, 11:09 AM', class: 'approved' },
+                { id: 'END', user: 'SYSTEM [SYSTEM]', status: 'Completion', timestamp: '10/16/24, 11:09 AM', class: 'end' }
+            ];
+        }
+    async function renderWorkflowSteps(steps,id) {
+            const workflowLog = document.getElementById('workflowLog');
+workflowLog.innerHTML = ''; // Clear existing content
+ steps.forEach(step => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'workflow-step';
+                
+                const stepHeader = document.createElement('div');
+                stepHeader.className = 'step-header';
+                stepHeader.innerHTML = `
+                    <div class="step-icon ${step.class}">${step.id}</div>
+                    <div class="step-info">
+                        <h4>${step.user}</h4>
+                        <p>Status: ${step.status}</p>
+                        <span>${step.timestamp}</span>
+                    </div>
+                `;
+
+                const stepDetails = document.createElement('div');
+                stepDetails.className = 'step-details';
+                stepDetails.innerHTML = 'Additional step details can be provided here.';
+                
+                stepDiv.appendChild(stepHeader);
+                stepDiv.appendChild(stepDetails);
+           
+                workflowLog.appendChild(stepDiv);
+            }); 
+
+
+
+
+        }
+        // Initialize workflow log
+        function getlog(id) {
+            const approvalLevels = fetchApprovalLevels(); // Fetch levels
+           
+           console.log('workflow for',id)
+
+            let test = document.getElementById('wfsidebar')
+            test.style.display = (test.style.display === 'none') ? 'grid' : 'none';
+            renderWorkflowSteps(approvalLevels,id); // Render levels
+        };
+        function closeWf(){
+            let test = document.getElementById('wfsidebar')
+            test.style.display =  'none';
+        }
+    
+    
+ </script>
+
+
+  
+
+   
+
+</body>
+
+</html>
+<script>
+    function validatePage2() {
+    const requiredInputs = document.querySelectorAll('input[required], textarea[required], select[required]');
+    let isValid = true;
+    let errorMessages = [];
+
+    // Clear previous error messages
+    document.querySelectorAll('.error-message').forEach((error) => error.remove());
+
+    requiredInputs.forEach((input) => {
+        let isFieldValid = true;
+
+        // Check for hidden fields
+        if (input.type === 'hidden' && !input.value) {
+            isFieldValid = false;
+        }
+
+        // Check for other input types
+        if (!input.checkValidity()) {
+            isFieldValid = false;
+        }
+
+        // If the field is invalid, show an error message
+        if (!isFieldValid) {
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = input.validationMessage || 'This field is required.';
+            input.after(errorMessage);
+
+            // Highlight invalid field
+            input.classList.add('invalid');
+            isValid = false;
+
+            // Add to error messages
+            const fieldName = input.name || input.placeholder || 'Field';
+            errorMessages.push(`${fieldName}: ${input.validationMessage || 'This field is required.'}`);
+        } else {
+            // Remove invalid highlighting
+            input.classList.remove('invalid');
+        }
+    });
+
+    // Show popup with error messages if there are any
+    if (!isValid && errorMessages.length > 0) {
+        showPopup('Validation Errors', errorMessages.join('\n'));
+    }
+
+    return isValid;
+}
+function validatePage() {
+    const requiredInputs = document.querySelectorAll('input[required], textarea[required], select[required]');
+    let isValid = true;
+    let errorMessages = [];
+console.log('requiredFields',requiredInputs)
+    // Clear previous error messages
+    document.querySelectorAll('.error-message').forEach((error) => error.remove());
+    const errorMessage = document.createElement('div');
+
+    requiredInputs.forEach((input) => {
+        let isFieldValid = input.checkValidity(); // Default checkValidity validation
+
+// Custom validation for hidden fields or dynamic fields
+if (input.type === 'hidden' && !input.value) {
+    errorMessage.className = 'error-message';
+            errorMessage.textContent = input.validationMessage || 'This field is required.';
+            input.after(errorMessage);
+
+            // Highlight invalid field
+            input.classList.add('invalid');
+            isValid = false;
+
+            // Add to error messages
+            const fieldName = input.name || input.placeholder || 'Field';
+            errorMessages.push(`${fieldName}: ${input.validationMessage || 'This field is required.'}`);
+        
+}
+
+// Check for other specific custom validation cases, like empty inputs in a certain state
+if (input.type === 'select' && input.selectedIndex === 0) {
+    isFieldValid = false; // Example: check for the default "Please Select" option
+}
+        if (!input.checkValidity()) {
+            // Show error message below input
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = input.validationMessage || 'This field is required.';
+            input.after(errorMessage);
+
+            // Highlight invalid field
+            input.classList.add('invalid');
+            isValid = false;
+
+            // Add to error messages
+            const fieldName = input.name || input.placeholder || 'Field';
+            errorMessages.push(`${fieldName}: ${input.validationMessage || 'This field is required.'}`);
+        
+        } else {
+            // Remove invalid highlighting
+            input.classList.remove('invalid');
+        }
+    });
+
+    // Show popup with error messages if there are any
+    if (!isValid && errorMessages.length > 0) {
+        showPopup('Validation Errors', errorMessages.join('\n'));
+    }
+
+    return isValid;
+}
+
+function ageCheck() {
+    let isValid = true;
+    let errorMessages = [];
+
+    // Example conditions:
+    const ageInput = document.querySelector('input[name="age"]');
+    if (ageInput && parseInt(ageInput.value, 10) < 18) {
+        errorMessages.push('Age must be 18 or older.');
+        console.log('age condtion..')
+        isValid = false;
+    }
+
+    
+    
+
+
+    // If any conditions fail, show a popup and return false
+    if (!isValid) {
+        showPopup('Condition Check Errors', errorMessages.join('\n'));
+    }
+
+    return isValid;
+}
+
+function checkConditions() {
+    let isValid = true;
+    let errorMessages = [];
+
+    // Example conditions:
+    const ageInput = document.querySelector('input[name="age"]');
+    if (ageInput && parseInt(ageInput.value, 10) < 18) {
+        errorMessages.push('Age must be 18 or older.');
+        isValid = false;
+    }
+
+    const emailInput = document.querySelector('input[name="email"]');
+    if (emailInput && !emailInput.value.endsWith('@example.com')) {
+        errorMessages.push('Email must end with @example.com.');
+        isValid = false;
+    }
+
+    const checkbox = document.querySelector('input[name="terms"]');
+    if (checkbox && !checkbox.checked) {
+        errorMessages.push('You must accept the terms and conditions.');
+        isValid = false;
+    }
+
+    // If any conditions fail, show a popup and return false
+    if (!isValid) {
+        showPopup('Condition Check Errors', errorMessages.join('\n'));
+    }
+
+    return isValid;
+}
+
+function showPopup(title, message) {
+    const popup = document.createElement('div');
+    popup.className = 'popup2';
+
+    const popupContent = `
+        <div class="popup-overlay"></div>
+        <div class="popup-box">
+            <h2>${title}</h2>
+            <p>${message.replace(/\n/g, '<br>')}</p>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    `;
+    popup.innerHTML = popupContent;
+    document.body.appendChild(popup);
+}
+
+function closePopup() {
+    const popup = document.querySelector('.popup2');
+    if (popup) popup.remove();
+}
+
+function collectPayload() {
+      // Validate the page first
+      if (!validatePage2()) {
+        console.error('Validation failed. Aborting payload collection.');
+        return null; // Stop processing if validation fails
+    }
+    // Call the checkConditions function
+    if (!checkConditions()) {
+            console.error('Condition checks failed. Submission aborted.');
+            return; // Stop if conditions are not met
+        }
+
+    const payload = {};
+
+    // Collect data from all required fields
+    const requiredInputs = document.querySelectorAll('input, textarea, select');
+    requiredInputs.forEach((input) => {
+        if (input.name) {
+            payload[input.name] = input.value;
+        }
+    });
+    const forms = document.querySelectorAll('form');
+
+    forms.forEach((form, index) => {
+      
+
+        const formData = new FormData(form);
+        const formPayload = {};
+        formData.forEach((value, key) => {
+            if (formPayload[key]) {
+                // If key already exists, convert it to an array and append the new value
+                if (!Array.isArray(formPayload[key])) {
+                    formPayload[key] = [formPayload[key]];
+                }
+                formPayload[key].push(value);
+            } else {
+                formPayload[key] = value;
+            }
+        });
+        payload[`form_${index + 1}`] = formPayload;
+    });
+
+   
+
+    // Collect data from all tables
+    const tables = document.querySelectorAll('table');
+
+    // tables.forEach((table, index) => {
+    //     const tableData = [];
+    //     const rows = table.querySelectorAll('tbody tr');
+    //     rows.forEach(row => {
+    //         const rowData = {};
+    //         row.querySelectorAll('input').forEach(input => {
+    //             rowData[input.name] = input.value;
+    //         });
+    //         tableData.push(rowData);
+    //     });
+    //     payload[`table_${index + 1}`] = tableData;
+    // });
+
+
+    // test2
+//     tables.forEach((table, index) => {
+//     const tableData = [];
+//     const rows = table.querySelectorAll('tbody tr');
+    
+//     rows.forEach(row => {
+//         const rowData = {};
+        
+//         // Iterate over each cell in the row
+//         row.querySelectorAll('td').forEach(cell => {
+//             const input = cell.querySelector('input');
+//             const span = cell.querySelector('span');
+            
+//             if (input) {
+//                 // If the cell contains an input field, get its value
+//                 rowData[input.name] = input.value;
+//             } else if (span) {
+//                 // If the cell contains a span (or any other static text), get its text content
+//                 rowData[span.getAttribute('name')] = span.textContent.trim();
+//             } else {
+//                 // If there's neither an input nor a span, you can collect static content from the cell itself
+//                 rowData[cell.getAttribute('data-name')] = cell.textContent.trim();
+//             }
+//         });
+
+//         tableData.push(rowData);
+//     });
+
+//     payload[`table_${index + 1}`] = tableData;
+// });
+tables.forEach((table, index) => {
+    const tableData = [];
+    const rows = table.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const rowData = {};
+
+        // Iterate over each cell in the row
+        row.querySelectorAll('td').forEach(cell => {
+            const input = cell.querySelector('input');
+            const span = cell.querySelector('span');
+
+            if (input) {
+                // If the cell contains an input field, get its value
+                rowData[input.name] = input.value;
+            } else if (span) {
+                // If the cell contains a span, get its text content and check the data-type attribute
+                const spanValue = span.textContent.trim();
+                const type = span.getAttribute('data-type');
+
+                if (type === 'number') {
+                    // Convert to a number
+                    rowData[span.getAttribute('name')] = isNaN(spanValue) ? spanValue : Number(spanValue);
+                } else if (type === 'date') {
+                    // Convert to a date object (assuming it's in a valid format)
+                    rowData[span.getAttribute('name')] = new Date(spanValue);
+                } else {
+                    // If type is string or undefined, just use the text content
+                    rowData[span.getAttribute('name')] = spanValue;
+                }
+            } else {
+                // If there's neither an input nor a span, you can collect static content from the cell itself
+                rowData[cell.getAttribute('data-name')] = cell.textContent.trim();
+            }
+        });
+
+        tableData.push(rowData);
+    });
+
+    payload[`table_${index + 1}`] = tableData;
+});
+
+    return payload;
+}
+
+function submitFormData() {
+    try {
+        const payload = collectPayload(); // Collect validated form data
+        console.log('Collected Payload:', payload);
+payload.
+        // Send to backend
+        fetch('/PostData', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                let SupplierID=data.primaryKey
+                // alert(`Submission successful!${data.primaryKey}`);
+       Swal.fire({
+        icon: 'success',
+        title: 'Form submitted successfully!',
+        text: 'Order ID: ' + SupplierID,
+        confirmButtonText: 'OK',
+        customClass: {
+          popup: 'custom-swal-width'
+        }
+    }).then((result) => {
+        // Redirect to the GET endpoint with the orderid as a query parameter
+        if (result.isConfirmed) {
+            window.location.href = `/views/VendorList.htm`;
+        }
+})
+                console.log('Response from server:', data);
+            })
+            .catch((error) => {
+                console.error('Error submitting form:', error);
+            });
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+</script>
+<!-- <script>
+          
+    function submitFormData() {
+        let tableData=[]
+         var tableRows = document.querySelectorAll("#addrowtest tbody tr");
+         const customers = document.getElementById("addrowtest").getElementsByTagName('tbody')[0];
+
+    tableRows.forEach(function(row) {
+        var rowData = new FormData();
+        var inputs = row.querySelectorAll("input");
+        inputs.forEach(function(input) {
+            rowData.append(input.name, input.value);
+        });
+        tableData.push(Object.fromEntries(rowData));
+    });
+    console.log(JSON.stringify(tableData))
+         var section = new FormData(document.getElementById("section"));
+var payload={
+    "section":Object.fromEntries(section),
+    "tableData":tableData
+}
+
+      
+    
+
+        // Submit formData to Node.js API using fetch or XMLHttpRequest
+       fetch('/PostData', {
+    method: 'POST',
+     headers: {
+            'Content-Type': 'application/json'
+
+        },
+    body: JSON.stringify({data:payload})
+})
+.then(response => {
+    if (response.ok) {
+        return response.json(); // Parse response body as JSON
+    } else {
+        throw new Error('Form submission failed!');
+    }
+})
+.catch(error => {
+    console.error('Error submitting form:', error);
+});
+
+    }
+  
+    
+</script> -->
+<script>
+// Columns definition for the template
+const TEMPLATE_COLUMNS = ["Address", "Country", "State", "District", "City", "Postal Code"];
+
+// Function to download a template in XLSX format
+function downloadTemplate() {
+    // Create a worksheet with header only
+    const worksheetData = [TEMPLATE_COLUMNS];
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+    // Create a workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Template");
+
+    // Generate the file and trigger download
+    XLSX.writeFile(workbook, "template.xlsx");
+}
+
+// Function to handle Excel file upload
+function uploadExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+
+        // Assuming the first sheet is relevant
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+        // Validate template columns
+        const [headerRow, ...dataRows] = rows;
+        if (!validateTemplate(headerRow)) {
+            alert("Invalid template format. Please ensure the column headers match the required template.");
+            return;
+        }
+
+        populateTable(dataRows);
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+// Function to validate uploaded Excel template
+function validateTemplate(headerRow) {
+    return JSON.stringify(headerRow) === JSON.stringify(TEMPLATE_COLUMNS);
+}
+
+// Function to populate the table with Excel data
+function populateTable(data) {
+    const tbody = document.querySelector("#addrowtest tbody");
+    tbody.innerHTML = ""; // Clear existing rows
+
+    data.forEach((row) => {
+        const tr = document.createElement("tr");
+        const cells = TEMPLATE_COLUMNS.map((col, index) => `<td><input type="text" name="${col.toLowerCase()}" value="${row[index] || ''}"></td>`).join("");
+        tr.innerHTML = cells + `<td><button class="deleteRowBtn" onclick="deleteRow(this);">-</button></td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+// Function to delete a row
+function deleteRow(button) {
+    const row = button.closest("tr");
+    row.remove();
+}
+
+</script>
+<script>
+    // Initialize dynamic structures for attachments, counts, and articleIds
+let attachments = {}; // Store attachments for each field
+let attachmentCounts = {}; // Store count for each field
+let articleIds = {}; // Store articleId for each field
+
+// Open the popup modal when any upload icon is clicked
+document.querySelectorAll('.upload-icon').forEach(icon => {
+    icon.addEventListener('click', function() {
+        const fieldId = icon.id; // Get the field ID (field1, field2, etc.)
+        
+        // If there are existing attachments (count > 0), fetch previous attachments
+        if (attachmentCounts[fieldId] > 0 && articleIds[fieldId]) {
+            fetchAttachments(articleIds[fieldId], fieldId);
+        } else {
+            openUploadPopup(fieldId); // Otherwise, let the user upload new files
+        }
+    });
+});
+
+// Open the popup modal
+function openUploadPopup(fieldId) {
+    // Store the current field ID in a global variable for later use
+    currentFieldId = fieldId;
+    document.getElementById("uploadPopup").style.display = "flex";
+}
+
+// Close the popup modal
+function closeUploadPopup() {
+    document.getElementById("uploadPopup").style.display = "none";
+    resetFilePreview(); // Reset file preview on close
+}
+
+// Handle file selection
+function handleFileSelection(event) {
+    const files = event.target.files;
+    const filePreview = document.getElementById("filePreview");
+
+    // Add selected files to the appropriate field's attachments array and display them
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!attachments[currentFieldId]) {
+            attachments[currentFieldId] = [];
+        }
+        attachments[currentFieldId].push(file);
+
+        // Create file preview element
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
+        fileItem.textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+ // Create download link for the file
+ const downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(file); // Generate object URL for the file
+        downloadLink.textContent = "Download";
+        downloadLink.onclick = (e) => {
+            e.preventDefault();
+            // Trigger download by creating an anchor element and simulating a click
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(file); // Object URL to download the file
+            a.download = file.name; // Set the file name for the download
+            a.click(); // Trigger the download
+        };
+
+        // Append download link to the file preview element
+        fileItem.appendChild(downloadLink);
+
+        // Create remove button for each file
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Remove";
+        removeButton.onclick = () => removeFile(file, fileItem);
+
+        fileItem.appendChild(removeButton);
+        filePreview.appendChild(fileItem);
+    }
+
+    // Reset the input so the user can select a file again
+    event.target.value = ''; // This resets the file input
+}
+
+// Remove file from the array and update the preview
+function removeFile(file, fileItem) {
+    // Remove from attachments array for the current field
+    const fieldId = currentFieldId;
+    const index = attachments[fieldId].indexOf(file);
+    if (index > -1) {
+        attachments[fieldId].splice(index, 1);
+    }
+
+    // Remove file preview
+    fileItem.remove();
+}
+
+// Reset file preview
+function resetFilePreview() {
+    const filePreview = document.getElementById("filePreview");
+    filePreview.innerHTML = ""; // Clear all file previews
+}
+
+// Submit files
+function submitAttachments() {
+    if (attachments[currentFieldId] && attachments[currentFieldId].length === 0) {
+        alert("No files selected!");
+        return;
+    }
+
+    const formData = new FormData();
+    attachments[currentFieldId].forEach((file) => {
+        formData.append("attachments", file);
+    });
+
+    // Submit the form data via Fetch API
+    fetch("/uploadAttachments", {
+        method: "POST",
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                // Store the articleId after the first successful upload
+                articleIds[currentFieldId] = data.articleId;
+                attachmentCounts[currentFieldId] = data.files.length; // Update attachment count
+                const relatedInput = document.querySelector(`input[id="${currentFieldId}-article"]`);
+                relatedInput.value = data.articleId; // Update the hidden input value
+                alert("Files uploaded successfully!");
+                closeUploadPopup(); // Close the popup after successful upload
+                resetFilePreview(); // Reset the preview after successful upload
+            } else {
+                alert("Error uploading files.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error uploading files:", error);
+            alert("Error uploading files.");
+        });
+}
+
+// Fetch attachments based on articleId and fieldId
+function fetchAttachments(articleId, fieldId) {
+    fetch(`/getAttachments?articleId=${articleId}`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                displayFetchedAttachments(data.attachments, fieldId);
+            } else {
+                alert("No previous attachments found.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching attachments:", error);
+            alert("Error fetching attachments.");
+        });
+}
+
+// Display fetched attachments
+function displayFetchedAttachments(files, fieldId) {
+    const filePreview = document.getElementById("filePreview");
+    files.forEach((file) => {
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
+        fileItem.textContent = `${file.originalName} (${(file.fileSize / 1024).toFixed(2)} KB)`;
+// Create download link for the fetched file
+const downloadLink = document.createElement("a");
+
+// Ensure fileUrl is valid (coming from server response)
+if (file.filePath) {
+    downloadLink.href = file.filePath; // The URL where the file can be downloaded
+    downloadLink.textContent = "Download";
+    downloadLink.target = "_blank"; // Open the file in a new tab
+    downloadLink.download = file.originalName; 
+    fileItem.appendChild(downloadLink);
+} else {
+    console.error("File URL is missing for", file.originalName);
+    fileItem.textContent += " (Download link not available)";
+}
+
+        filePreview.appendChild(fileItem);
+    });
+    openUploadPopup(fieldId);
+}
+
+</script>
+<script>
+    window.onload = function() {
+var now = new Date();
+var year = now.getFullYear();
+var month = ("0" + (now.getMonth() + 1)).slice(-2); // Months are 0-indexed
+var day = ("0" + now.getDate()).slice(-2);
+var hours = ("0" + now.getHours()).slice(-2);
+var minutes = ("0" + now.getMinutes()).slice(-2);
+
+var datetimeLocal = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+// Set the value of the datetime-local input
+document.getElementById("eventTime").value = datetimeLocal;
+};
+    </script>
+    <script>
+        // Sample categories (can be dynamic data from a database)
+        const categories = [
+          { category: "Electronics", subCategory: "Mobile", description: "Smartphones" },
+          { category: "Electronics", subCategory: "Laptop", description: "Computers" },
+          { category: "Home Appliances", subCategory: "Washing Machine", description: "Laundry" },
+          { category: "Furniture", subCategory: "Chair", description: "Wooden Chair" }
+        ];
+    
+        // Open the popup
+        const addCategoryBtn = document.getElementById("addCategoryBtn");
+        const popup = document.getElementById("popuptable");
+        const closePopupBtn = document.getElementById("closePopupBtn");
+    
+        addCategoryBtn.addEventListener("click", () => {
+          popup.style.display = "flex";
+          loadPopupTable();
+        });
+    
+        closePopupBtn.addEventListener("click", () => {
+          popup.style.display = "none";
+        });
+    
+        // Load the categories into the popup table
+        function loadPopupTable() {
+          const popupTable = document.getElementById("popupTable");
+          popupTable.innerHTML = ""; // Clear any existing rows
+          categories.forEach((category, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = ` 
+              <td><input type="checkbox" class="category-checkbox" data-index="${index}"></td>
+              <td>${category.category}</td>
+              <td>${category.subCategory}</td>
+              <td>${category.description}</td>
+              
+               
+              
+            `;
+            popupTable.appendChild(row);
+          });
+        }
+    
+        // Handle the selection of categories
+        const submitSelectionBtn = document.getElementById("submitSelectionBtn");
+    
+        submitSelectionBtn.addEventListener("click", () => {
+          const selectedCategories = [];
+          document.querySelectorAll(".category-checkbox:checked").forEach(checkbox => {
+            const index = checkbox.getAttribute("data-index");
+            selectedCategories.push(categories[index]);
+          });
+    
+          // Add selected categories to the parent table
+          selectedCategories.forEach(category => {
+            const parentTableBody = document.getElementById("parentTable").querySelector("tbody");
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+              <td><input type="checkbox" class="row-checkbox"></td> <!-- Row checkbox -->
+              <td><img src="https://via.placeholder.com/50" alt="Profile" /></td>
+              <td><span name="category">
+                    ${category.category}
+                </span></td>
+              <td><span name="subCategory">
+                    ${category.subCategory}
+                </span></td>
+              <td><span name="description">
+                    ${category.description}
+                </span></td>
+              <td><button class="btn delete-btn">Delete</button></td>
+            `;
+            parentTableBody.appendChild(newRow);
+          });
+    
+          // Close the popup after submitting
+          popup.style.display = "none";
+        });
+    
+        // Handle the delete action
+        document.addEventListener("click", (event) => {
+          if (event.target.classList.contains("delete-btn")) {
+            const row = event.target.closest("tr");
+            row.remove();
+          }
+        });
+    
+        // Select/Deselect all checkboxes in the parent table when the header checkbox is clicked
+        const selectAllCheckbox = document.getElementById("selectAllCheckbox");
+    
+        selectAllCheckbox.addEventListener("change", () => {
+          const allCheckboxes = document.querySelectorAll(".row-checkbox");
+          allCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+          });
+        });
+    
+        // Select/Deselect all checkboxes in the popup table when the header checkbox is clicked
+        const selectAllPopupCheckbox = document.getElementById("selectAllPopupCheckbox");
+    
+        selectAllPopupCheckbox.addEventListener("change", () => {
+          const allPopupCheckboxes = document.querySelectorAll(".category-checkbox");
+          allPopupCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectAllPopupCheckbox.checked;
+          });
+        });
+      </script>
+
+      <script>
+
+        function getStates(data){
+            console.log('get state called',data.value)
+       
+            fetch('/callAggregationBusinessView', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                businessView: 'getStates',
+                code:data.value
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+          // Using CSS.escape() for the parent ID
+const parentId = '2';
+const stateSelect= document.querySelector(`#${CSS.escape(parentId)} #state`);
+
+                console.log('state field',stateSelect)
+                console.log('get states response:', data);
+                const states = data[0].results;
+                stateSelect.innerHTML=''
+
+                states.forEach(state => {
+    const option = document.createElement('option');
+    option.value = state._id; // Country code
+    option.textContent = state.test; // Country name
+    stateSelect.appendChild(option);
+});
+     
+            })
+            .catch((error) => {
+                console.error('Error states:', error);
+            });
+        }
+        
+        
+        
+        function callQuery(){
+            fetch('/callAggregationBusinessView', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                businessView: 'getCountries'
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Response from server:', data);
+                const countrySelect = document.getElementById('country');
+
+// Assuming 'data' is an array with an object that has a 'results' array
+const countries = data[0].results;
+
+countries.forEach(country => {
+    const option = document.createElement('option');
+    option.value = country._id; // Country code
+    option.textContent = country.test; // Country name
+    countrySelect.appendChild(option);
+});
+            })
+            .catch((error) => {
+                console.error('Error submitting form:', error);
+            });
+        }
+        
+        callQuery()
+      </script>

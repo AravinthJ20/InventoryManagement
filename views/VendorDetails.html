@@ -1,0 +1,581 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script src="/js/layout.js"></script>
+    <script src="../js/embeddedPopup.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+   
+    
+<!-- Code injected by Five-server -->
+  </head>
+
+<body>
+    <div class="sidebar active" id="sidebar">
+        <h2>Menu</h2>
+        <ul>
+                     <li><a href="index2.html"><i class="fa fa-home"></i>Home</a></li>
+    
+             <li><a href="/views/LandingPage.html"><i class="fa fa-bar-chart fa-fw"></i><span class="menuname">Dashboard</span></i></a></li>
+             <li>
+                <a href="javascript:void(0)"><i class="fa fa-truck"></i><span class="menuname">Suppliers</span ><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="/views/VendorRegisteration.htm"><i class="fa fa-truck"></i><span class="menuname">Supplier Registeration</span></a></li>
+                    <li><a href="/views/VendorList.htm"><i class="fa fa-truck"></i><span class="menuname">Supplier List</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-cubes"></i><span class="menuname">Material</span ><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="/views/InsertMaterial.htm"><i class="fa fa-cubes"></i><span class="menuname">Create Material</span></a></li>
+                    <li><a href="/views/MaterialList.htm"><i class="fa fa-cubes"></i><span class="menuname">Material List</span></a></li>
+                </ul>
+            </li>
+             <li>
+                <a href="javascript:void(0)"><i class="fa fa-shopping-bag"></i><span class="menuname">Sales Orders</span ><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="create-sales-order.html"><i class="fa fa-shopping-bag"></i><span class="menuname">Create Sales Order</span></a></li>
+                    <li><a href="sales-order-list.html"><i class="fa fa-shopping-bag"></i><span class="menuname">Sales Order List</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-shopping-cart"></i><span class="menuname">Purchase Orders </span><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="create-purchase-order.html"><i class="fa fa-shopping-cart"></i><span class="menuname">Create Purchase Order</span></i></a></li>
+                    <li><a href="purchase-order-list.html"><i class="fa fa-shopping-cart"></i><span class="menuname">Purchase Order List</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-user"></i><span class="menuname">Users</span><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="user-list.html"><i class="fa fa-user"></i><span>User List</span></a></li>
+                    <li><a href="create-user.html"><i class="fa fa-user"></i><span>Create User</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-tag"></i><span class="menuname">Buyers</span><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="/getUserList"><i class="fa fa-tag"></i><span>Buyers List</span></a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+ <head>
+<div class="topbar">
+    <button class="open-btn" onclick="toggleSidebar2()">☰</button>
+    <h2>Inventory Mangament</h2>
+    <div class="topbar-menu">
+        <a href="/socket"><i class="fa fa-comments-o"></i>Chat Room</a>
+        <a href="#">About Us</a>
+        <a href="#">Contacts</a>
+        <a href="#"><i class="fa fa-bell"></i></a>
+        <a onclick="logout()"><i class="fa fa-sign-out"></i>Logout</a>
+        <a href="/user/userProfile?user={{user}}"> <img class="profile" src="../images/home.jpg" alt="Picture"></a>
+
+    </div>
+</div>
+</head>
+
+
+    <main class="main-content shifted">
+       
+      
+       
+        <div class="sub-container">
+        <div class="mini-container formContainter">
+                <div class="section-header">
+                    <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+    
+                        <h3 class="container-hederText">List of Items</h3>
+                            
+                        </span>
+
+                </div>
+                <span id="2">
+
+                <form method="POST"  id="section" class="form" action="/CartAdd">
+                    <div>
+                        <label for="firstName">First Name:</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div>
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                        </div>
+             <div>
+              <label for="name">Organisation Name: <span class="help-icon">&#x1F6C8;</span> <!-- Icon next to the field -->
+                <div class="tooltip">Please enter a valid email address (e.g., name@example.com).</div> <!-- Tooltip --></label>
+                    <input type="text" id="name" name="name" required>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="annualTurnover">Annual Turnover (Range):</label>
+                        <input type="range" id="annualTurnover" name="annualTurnover" min="100000" max="10000000" value="5000000" step="100000">
+                      </div>
+                    <div>
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required><br><br>
+                </div>
+
+                    <div>
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age">
+                        </div>
+                
+                 
+                    <div  data-check-role='["admin3"]'>
+                    <label for="email">Email Address:</label>
+                    <span class="h-span" id="email" name="email"></span>
+
+
+                  
+                
+                    </div>
+                    
+                    
+                    <div>
+                   
+                        <label for="supportDocs">Supporting Docs</label>
+                        <span class="upload-icon" id="filed1"><i class="fa fa-upload"></i></span> <!-- Upload icon -->
+                      <input type="hidden" id="filed1-article" name="supportDocs" required>
+                     
+        </div>
+
+        <div>
+                   
+            <label for="otherDocs">Other Docs</label>
+            <span class="upload-icon" id="filed2"><i class="fa fa-upload"></i></span> <!-- Upload icon -->
+            <input type="hidden" id="filed2-article" name="otherDocs" required>
+         
+</div>
+        
+                   
+<div>
+    <label for="Country">Country:</label>
+    <select id="country" name="country" required>
+        <option value="" disabled selected></option> <!-- No value selected initially -->
+
+        <option value="India">India</option> <!-- Placeholder option -->
+        <option value="AE">AE</option>
+        </select>
+        
+    </div>
+   
+    <div class="form-group">
+        <label for="website">Website URL (URL):</label>
+        <input type="url" id="website" name="website" value="https://www.abc-supplies.com" required>
+      </div>
+      <div class="form-group">
+        <label for="dateOfEstablishment">Date of Establishment (Date):</label>
+        <input type="date" id="dateOfEstablishment" name="dateOfEstablishment" value="2010-05-01" required>
+      </div>
+      <div class="form-group">
+        <label for="companyLogo">Company Logo:</label>
+        <input type="file" id="companyLogo" name="companyLogo">
+      </div> 
+      <div class="form-group">
+        <label for="logBg">Logo BG</label>
+        <input type="color" id="logBg" name="logBg" value="#ff6347">
+      </div> 
+   
+            </form>
+                </span>
+            </div>
+
+            </div>
+               
+        <div class="sub-container">
+            <div class="mini-container formContainter">
+                    <div class="section-header">
+                        <span class="containerInfo">
+                            <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+        
+                            <h3 class="container-hederText">List of Items</h3>
+                                
+                            </span>
+    
+                    </div>
+                    <span id="3">
+    
+                    <form method="POST"  id="section" class="form" action="/CartAdd">
+                        <div class="form-group" >
+                            <label for="address">Address (Text Area):</label>
+                            <textarea style="width:175%";  id="address" name="address" rows="4" required>123 Supply Street, Warehouse 4, City, Country</textarea>
+                          </div><br>
+                          <div class="form-group">vendorType
+                            <label for="individual">
+                                <input type="radio" id="individual" name="vendorType" value="individual" required>
+                                Individual
+                            
+                            
+                                <input type="radio" id="company" name="vendorType" value="company">
+                                Company
+                            </label>
+                          </div>
+                          <div>
+                            <label>Timestamp</label>
+                            <input type="datetime-local" id="eventTime" name="eventTime" required readonly><br><br>
+
+                            </div>
+                            <div class="form-group">
+                                <label><input type="checkbox" name="contractAgreement" checked> I agree to the terms and conditions</label>
+                              </div>
+                     
+                </form>
+                    </span>
+                </div>
+                
+                </div>
+            <div class="sub-container">
+                <div class="mini-container list-container">
+                    <div class="list-header">
+                        <span class="secttinInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                    </span>
+                        <h3 class="container-hederText">Address Details</h3>
+                        <div>
+                            <span class="filter-icon">&#x1f50d;</span> <!-- Filter icon, you can use your preferred icon here -->
+                            <button id="addRowBtn" onclick="addRow()">+</button>
+                            <button class="table-header-btn" onclick="downloadTemplate()">Download Template</button>
+                            <input type="file" id="excelUpload" accept=".xls,.xlsx" onchange="uploadExcel(event)" style="display: none;">
+                            <label for="excelUpload" class="table-header-btn">Upload Excel</label>
+                        </div>
+                      
+                    </div>
+    
+       <span id="3">         
+     <div  id="addre"   class="table-container" >
+        <table id="addrowtest" datasource="addressDetails">
+            <thead> 
+                    <tr>
+    
+                <th data-check-role='["admin"]'>Address</th>
+            <th>Country</th>
+            <th>State</th>
+            <th>District</th>
+<th>City</th>
+<th>Postal Code</th>
+<th>test</th>
+<th>test2</th>
+            </tr>
+            </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" name="address" > </td>
+                <td><input type="text" name="country"></td>
+    
+                <td><input type="text" name="state"></td>
+                <td><input type="text" name="district"></td>
+                <td><input type="text" name="city"></td>
+                <td><input type="text" name="postalCode" required></td>
+
+                <td><span name="test2" data-type="number">
+                    3
+                </span></td>
+                <td><button class="deleteRowBtn" onclick=" deleteRow(this);">-</button></td>
+            </tr>
+        </tbody>
+    
+        </table></div></span>
+      
+                </div>
+            </div>
+            <div class="sub-container">
+                <div class="mini-container list-container">
+                    <div class="list-header">
+                        <span class="secttinInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                    </span>
+                        <h3 class="container-hederText">Address Details</h3>
+                        <div>
+                            <button class="btn" id="addCategoryBtn">Add Category</button>
+
+                        </div>
+                      
+                    </div>
+    
+       <span id="3">         
+     <div  id="addre"   class="table-container" >
+        <table id="parentTable" datasource="addressDetails">
+            <thead>
+                <tr>
+                  <th><input type="checkbox" id="selectAllCheckbox"></th> <!-- Header checkbox -->
+                  <th>Profile</th>
+                  <th>Category</th>
+                  <th>SubCategory</th>
+                  <th>SubCategory Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Existing Rows will be dynamically added here -->
+              </tbody>
+    
+        </table></div></span>
+      
+                </div>
+            </div>
+            <div class="action">
+
+                <button class="form-action-btn" id="submitBtn" onclick="submitFormData()">Modify</button>
+            </div>
+    </div>
+    <div id="uploadPopup" class="popup" >
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeUploadPopup()">&times;</span>
+            <h3>Select Files to Upload</h3>
+            
+            <!-- File input for multiple file upload -->
+            <input type="file" id="fileUpload" name="attachments" multiple onchange="handleFileSelection(event)">
+            
+            <div id="filePreview"></div>
+    
+        </div>
+    </div>
+</main>
+<!-- Popup for Selecting Categories -->
+
+<footer>
+  
+</footer>
+
+
+
+
+
+  
+
+   
+
+</body>
+
+</html>
+
+
+<script>
+    // Initialize dynamic structures for attachments, counts, and articleIds
+let attachments = {}; // Store attachments for each field
+let attachmentCounts = {}; // Store count for each field
+let articleIds = {}; // Store articleId for each field
+
+// Open the popup modal when any upload icon is clicked
+document.querySelectorAll('.upload-icon').forEach(icon => {
+    icon.addEventListener('click', function() {
+        const fieldId = icon.id; // Get the field ID (field1, field2, etc.)
+        
+        // If there are existing attachments (count > 0), fetch previous attachments
+        if (attachmentCounts[fieldId] > 0 && articleIds[fieldId]) {
+            fetchAttachments(articleIds[fieldId], fieldId);
+        } else {
+            openUploadPopup(fieldId); // Otherwise, let the user upload new files
+        }
+    });
+});
+
+// Open the popup modal
+function openUploadPopup(fieldId) {
+    // Store the current field ID in a global variable for later use
+    currentFieldId = fieldId;
+    document.getElementById("uploadPopup").style.display = "flex";
+}
+
+// Close the popup modal
+function closeUploadPopup() {
+    document.getElementById("uploadPopup").style.display = "none";
+    resetFilePreview(); // Reset file preview on close
+}
+
+// Handle file selection
+function handleFileSelection(event) {
+    const files = event.target.files;
+    const filePreview = document.getElementById("filePreview");
+
+    // Add selected files to the appropriate field's attachments array and display them
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!attachments[currentFieldId]) {
+            attachments[currentFieldId] = [];
+        }
+        attachments[currentFieldId].push(file);
+
+        // Create file preview element
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
+        fileItem.textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+ // Create download link for the file
+ const downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(file); // Generate object URL for the file
+        downloadLink.textContent = "Download";
+        downloadLink.onclick = (e) => {
+            e.preventDefault();
+            // Trigger download by creating an anchor element and simulating a click
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(file); // Object URL to download the file
+            a.download = file.name; // Set the file name for the download
+            a.click(); // Trigger the download
+        };
+
+        // Append download link to the file preview element
+        fileItem.appendChild(downloadLink);
+
+        // Create remove button for each file
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Remove";
+        removeButton.onclick = () => removeFile(file, fileItem);
+
+        fileItem.appendChild(removeButton);
+        filePreview.appendChild(fileItem);
+    }
+
+    // Reset the input so the user can select a file again
+    event.target.value = ''; // This resets the file input
+}
+
+
+// Reset file preview
+function resetFilePreview() {
+    const filePreview = document.getElementById("filePreview");
+    filePreview.innerHTML = ""; // Clear all file previews
+}
+
+
+// Fetch attachments based on articleId and fieldId
+function fetchAttachments(articleId, fieldId) {
+    fetch(`/getAttachments?articleId=${articleId}`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                displayFetchedAttachments(data.attachments, fieldId);
+            } else {
+                alert("No previous attachments found.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching attachments:", error);
+            alert("Error fetching attachments.");
+        });
+}
+
+// Display fetched attachments
+function displayFetchedAttachments(files, fieldId) {
+    const filePreview = document.getElementById("filePreview");
+    files.forEach((file) => {
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
+        fileItem.textContent = `${file.originalName} (${(file.fileSize / 1024).toFixed(2)} KB)`;
+// Create download link for the fetched file
+const downloadLink = document.createElement("a");
+
+// Ensure fileUrl is valid (coming from server response)
+if (file.filePath) {
+    downloadLink.href = file.filePath; // The URL where the file can be downloaded
+    downloadLink.textContent = "Download";
+    downloadLink.target = "_blank"; // Open the file in a new tab
+    downloadLink.download = file.originalName; 
+    fileItem.appendChild(downloadLink);
+} else {
+    console.error("File URL is missing for", file.originalName);
+    fileItem.textContent += " (Download link not available)";
+}
+
+        filePreview.appendChild(fileItem);
+    });
+    openUploadPopup(fieldId);
+}
+
+</script>
+<script>
+        
+    document.addEventListener('DOMContentLoaded', () => {
+async function fetchWorkflowLog(id) {
+    try {
+
+        let lastName=document.getElementsByName('lastName')
+        console.log(lastName)
+        // Fetch the log using the given ID
+        const response = await fetch(`/getProductDetails?mediID=${id}`);
+        if (!response.ok) {
+            throw new Error(`Error fetching workflow log: ${response.statusText}`);
+        }
+        let data = await response.json();
+    data=data.data[0]
+        // Update the DOM with the received data
+        console.log('response', data);
+
+        function populateForm(payload) {
+        for (const [key, value] of Object.entries(payload)) {
+            const element = document.querySelector(`[name="${key}"]`);
+            console.log(element)
+            if (element) {
+                if (element.type === 'checkbox') {
+                    element.checked = value;
+                } else if (element.type === 'radio') {
+                    const radio = document.querySelector(`[name="${key}"][value="${value}"]`);
+                    if (radio) radio.checked = true;
+                } else if (element.tagName === 'SELECT') {
+                    element.value = value;
+                } else if (element.tagName === 'TEXTAREA' || element.tagName === 'INPUT') {
+                    element.value = value;
+                }else{
+                    element.innerText = value;
+
+                }
+            }
+        }
+    }
+
+        if (data) {
+            lastName.value=data.lastName;
+            populateForm(data)
+            console.log('da',data.lastName)
+} else {
+console.log('no data.');
+}
+
+    // data.log.forEach(log => {
+    //         const logCard = document.createElement('div');
+    //         logCard.className = 'log-card';
+    //         logCard.innerHTML = `
+    //             <div class="log-field"><span class="log-label">User Profile:</span> ${log.approver}</div>
+    //             <div class="log-field"><span class="log-label">Status:</span> ${log.status}</div>
+    //         `;
+    //         logsContainer.appendChild(logCard);
+         
+    //     });
+    //        container.style.display='block'
+    
+        } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Function to get the `id` parameter from the URL
+function getIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('mediID');
+}
+
+// Fetch the `id` from the URL or any other source
+const id = getIdFromUrl(); // Adjust this as per your use case
+if (id) {
+    console.log(`Fetched ID: ${id}`);
+    fetchWorkflowLog(id); // Call the API with the ID
+} else {
+    console.warn('No ID found in the URL');
+}
+
+// Additional setup or event listeners can go here
+});
+
+  </script>

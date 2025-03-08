@@ -1,0 +1,830 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script src="/js/layout.js"></script>
+    <script src="../js/embeddedPopup.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<style>
+    .error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.invalid {
+    border-color: red;
+}
+
+.popup2 {
+    position: fixed;
+
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.popup-box {
+    position: relative;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.popup-box h2 {
+    margin: 0 0 10px;
+}
+
+.popup-box p {
+    font-size: 14px;
+    margin: 0 0 20px;
+}
+
+.popup-box button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.popup-box button:hover {
+    background: #0056b3;
+}
+
+</style>
+    <style>
+        
+        .table-container input{
+padding:5px;
+        }
+     .actions-container{
+        margin-bottom: .5em;
+     }
+
+        .more-actions {
+            display: none;
+            position: absolute;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: max-content;
+            margin-left: 100px;
+            min-width: 100px;
+            max-height: 200px; /* Limit the height of the popup */
+            overflow-y: auto; /* Allow scrolling if content overflows */
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .more-actions button {
+            display: block;
+            width: 90%;
+            padding: 0.5rem;
+color: white;
+            margin-top: 10px;
+            background: rgb(117, 109, 109);
+            border: none;
+            font-size: 1em;
+            border-bottom: 1px solid #f81616;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+    
+
+        .more-actions button:last-child {
+            border-bottom: none; /* Remove border from the last button */
+        }
+
+        .three-dot-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+::-webkit-scrollbar{
+    height: 0px;
+    width:3px;
+}
+
+
+::-webkit-scrollbar-thumb{
+    background: rgb(133, 132, 132);
+}
+        /* Mobile view styles */
+        @media (max-width: 768px) {
+            /* Hide all action buttons in mobile view */
+            .actions-container .action-btn {
+                display: none;
+            }
+
+            /* Show the three-dot button */
+            .three-dot-btn {
+                display: inline-block;
+            }
+        }
+    </style>
+
+    
+<!-- Code injected by Five-server -->
+  <script async data-id="five-server" data-file="c:\Users\Aravind J\OneDrive - SCH Infotech Private Limited\Desktop\UI\PageLayouts\html\PageLayout.html" type="application/javascript" src="/fiveserver.js"></script>
+  </head>
+
+<body>
+
+
+ <head>
+
+</head>
+
+
+    <main class="main-content shifted">
+       
+      
+       
+        <div class="sub-container">
+        <div class="mini-container formContainter">
+                <div class="section-header">
+                    <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+    
+                        <h3 class="container-hederText">List of Items</h3>
+                            
+                        </span>
+
+                </div>
+                <span id="2">
+
+                <form method="POST"  id="section" class="form" action="/CartAdd">
+                
+                
+                 
+                    <div>
+                    <label for="email">Email Address:</label>
+                    <input type="text" id="phone" name="phone">
+
+                             
+                    
+                    </div>
+
+                    <div>
+                   
+                        <label for="supportDocs">Supporting Docs</label>
+                        <span class="upload-icon" id="filed1" value="3">&#x1f4e5;</span> <!-- Upload icon -->
+                      <input type="hidden" id="filed1-article" name="supportDocs">
+                     
+        </div>
+        
+        <div>
+                   
+            <label for="otherDocs">Other Docs</label>
+            <span class="upload-icon" id="filed2" value="3">&#x1f4e5;</span> <!-- Upload icon -->
+          <input type="hidden" id="filed2-article" name="otherDocs">
+         
+</div>         
+                
+                 
+            </form>
+                </span>
+            </div>
+            </div>
+          
+
+            <div class="action">
+
+                <button class="form-action-btn" id="submitBtn" onclick="submitFormData()">Submit</button>
+         <button class="form-action-btn" id="clearCart" >Save as Draft</button>
+            </div>
+    </div>
+    <div id="uploadPopup" class="popup" >
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeUploadPopup()">&times;</span>
+            <h3>Select Files to Upload</h3>
+            
+            <!-- File input for multiple file upload -->
+            <input type="file" id="fileUpload" name="attachments" multiple onchange="handleFileSelection(event)">
+            
+            <div id="filePreview"></div>
+    
+            <button type="button" onclick="submitAttachments()">Submit</button>
+            <button type="button" onclick="closeUploadPopup()">Cancel</button>
+        </div>
+    </div>
+</main>
+
+
+
+  
+
+   
+
+</body>
+
+</html>
+
+<script>
+    // Initialize dynamic structures for attachments, counts, and articleIds
+let attachments = {}; // Store attachments for each field
+let attachmentCounts = {}; // Store count for each field
+let articleIds = {}; // Store articleId for each field
+
+// Open the popup modal when any upload icon is clicked
+document.querySelectorAll('.upload-icon').forEach(icon => {
+    icon.addEventListener('click', function() {
+        const fieldId = icon.id; // Get the field ID (field1, field2, etc.)
+        
+        // If there are existing attachments (count > 0), fetch previous attachments
+        if (attachmentCounts[fieldId] > 0 && articleIds[fieldId]) {
+            fetchAttachments(articleIds[fieldId], fieldId);
+        } else {
+            openUploadPopup(fieldId); // Otherwise, let the user upload new files
+        }
+    });
+});
+
+// Open the popup modal
+function openUploadPopup(fieldId) {
+    // Store the current field ID in a global variable for later use
+    currentFieldId = fieldId;
+    document.getElementById("uploadPopup").style.display = "flex";
+}
+
+// Close the popup modal
+function closeUploadPopup() {
+    document.getElementById("uploadPopup").style.display = "none";
+    resetFilePreview(); // Reset file preview on close
+}
+
+// Handle file selection
+function handleFileSelection(event) {
+    const files = event.target.files;
+    const filePreview = document.getElementById("filePreview");
+
+    // Add selected files to the appropriate field's attachments array and display them
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!attachments[currentFieldId]) {
+            attachments[currentFieldId] = [];
+        }
+        attachments[currentFieldId].push(file);
+
+        // Create file preview element
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
+        fileItem.textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+ // Create download link for the file
+ const downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(file); // Generate object URL for the file
+        downloadLink.textContent = "Download";
+        downloadLink.onclick = (e) => {
+            e.preventDefault();
+            // Trigger download by creating an anchor element and simulating a click
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(file); // Object URL to download the file
+            a.download = file.name; // Set the file name for the download
+            a.click(); // Trigger the download
+        };
+
+        // Append download link to the file preview element
+        fileItem.appendChild(downloadLink);
+
+        // Create remove button for each file
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Remove";
+        removeButton.onclick = () => removeFile(file, fileItem);
+
+        fileItem.appendChild(removeButton);
+        filePreview.appendChild(fileItem);
+    }
+
+    // Reset the input so the user can select a file again
+    event.target.value = ''; // This resets the file input
+}
+
+// Remove file from the array and update the preview
+function removeFile(file, fileItem) {
+    // Remove from attachments array for the current field
+    const fieldId = currentFieldId;
+    const index = attachments[fieldId].indexOf(file);
+    if (index > -1) {
+        attachments[fieldId].splice(index, 1);
+    }
+
+    // Remove file preview
+    fileItem.remove();
+}
+
+// Reset file preview
+function resetFilePreview() {
+    const filePreview = document.getElementById("filePreview");
+    filePreview.innerHTML = ""; // Clear all file previews
+}
+
+// Submit files
+function submitAttachments() {
+    if (attachments[currentFieldId] && attachments[currentFieldId].length === 0) {
+        alert("No files selected!");
+        return;
+    }
+
+    const formData = new FormData();
+    attachments[currentFieldId].forEach((file) => {
+        formData.append("attachments", file);
+    });
+
+    // Submit the form data via Fetch API
+    fetch("/uploadAttachments", {
+        method: "POST",
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                // Store the articleId after the first successful upload
+                articleIds[currentFieldId] = data.articleId;
+                attachmentCounts[currentFieldId] = data.files.length; // Update attachment count
+                const relatedInput = document.querySelector(`input[id="${currentFieldId}-article"]`);
+                relatedInput.value = data.articleId; // Update the hidden input value
+                alert("Files uploaded successfully!");
+                closeUploadPopup(); // Close the popup after successful upload
+                resetFilePreview(); // Reset the preview after successful upload
+            } else {
+                alert("Error uploading files.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error uploading files:", error);
+            alert("Error uploading files.");
+        });
+}
+
+// Fetch attachments based on articleId and fieldId
+function fetchAttachments(articleId, fieldId) {
+    fetch(`/getAttachments?articleId=${articleId}`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                displayFetchedAttachments(data.attachments, fieldId);
+            } else {
+                alert("No previous attachments found.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching attachments:", error);
+            alert("Error fetching attachments.");
+        });
+}
+
+// Display fetched attachments
+function displayFetchedAttachments(files, fieldId) {
+    const filePreview = document.getElementById("filePreview");
+    files.forEach((file) => {
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
+        fileItem.textContent = `${file.originalName} (${(file.fileSize / 1024).toFixed(2)} KB)`;
+// Create download link for the fetched file
+const downloadLink = document.createElement("a");
+
+// Ensure fileUrl is valid (coming from server response)
+if (file.filePath) {
+    downloadLink.href = file.filePath; // The URL where the file can be downloaded
+    downloadLink.textContent = "Download";
+    downloadLink.target = "_blank"; // Open the file in a new tab
+    downloadLink.download = file.originalName; 
+    fileItem.appendChild(downloadLink);
+} else {
+    console.error("File URL is missing for", file.originalName);
+    fileItem.textContent += " (Download link not available)";
+}
+
+        filePreview.appendChild(fileItem);
+    });
+    openUploadPopup(fieldId);
+}
+
+</script>
+
+<!-- hardcoded varaibles for multiple attchment fields-->
+<!-- <script>
+    // Maintain separate attachment arrays, counts, and article IDs for each field
+    let attachments = {
+        field1: [],
+        field2: []
+    };
+    let attachmentCounts = {
+        field1: 0,
+        field2: 0
+    };
+    let articleIds = {
+        field1: null,
+        field2: null
+    };
+
+    // Open the popup modal when any upload icon is clicked
+    document.querySelectorAll('.upload-icon').forEach((icon) => {
+        icon.addEventListener('click', function () {
+            const fieldId = this.id; // Get the field ID from the clicked icon
+            console.log(fieldId)
+            openUploadPopup(fieldId); // Open the upload popup for the respective field
+        });
+    });
+
+    // Open the popup modal for a specific fieldId
+    function openUploadPopup(fieldId) {
+        // Store the fieldId in the popup to handle the specific field's files
+        document.getElementById("fileUpload").dataset.fieldId = fieldId;
+        document.getElementById("uploadPopup").style.display = "flex";
+
+        // If there are existing attachments for the field, fetch them
+        if (attachmentCounts[fieldId] > 0 && articleIds[fieldId]) {
+            fetchAttachments(fieldId);
+        }
+    }
+
+    // Close the popup modal
+    function closeUploadPopup() {
+        document.getElementById("uploadPopup").style.display = "none";
+        resetFilePreview(); // Reset file preview on close
+    }
+
+    // Handle file selection for the specific fieldId
+    function handleFileSelection(event) {
+        const fieldId = event.target.dataset.fieldId; // Get the field ID from the input element
+        const files = event.target.files;
+        const filePreview = document.getElementById("filePreview");
+
+        // Add selected files to the respective field's attachment array and display them
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            attachments[fieldId].push(file);
+
+            // Create file preview element
+            const fileItem = document.createElement("div");
+            fileItem.className = "file-item";
+            fileItem.textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+
+            // Create remove button for each file
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.onclick = () => removeFile(file, fileItem, fieldId);
+
+            fileItem.appendChild(removeButton);
+            filePreview.appendChild(fileItem);
+        }
+
+        // Reset the input so the user can select a file again
+        event.target.value = ''; // This resets the file input
+    }
+
+    // Remove file from the array and update the preview
+    function removeFile(file, fileItem, fieldId) {
+        // Remove from attachments array for the respective field
+        const index = attachments[fieldId].indexOf(file);
+        if (index > -1) {
+            attachments[fieldId].splice(index, 1);
+        }
+
+        // Remove file preview
+        fileItem.remove();
+    }
+
+    // Reset file preview
+    function resetFilePreview() {
+        const filePreview = document.getElementById("filePreview");
+        filePreview.innerHTML = ""; // Clear all file previews
+    }
+
+    // Submit files for the specific fieldId
+    function submitAttachments() {
+        const fieldId = document.getElementById("fileUpload").dataset.fieldId; // Get the fieldId
+        if (attachments[fieldId].length === 0) {
+            alert("No files selected!");
+            return;
+        }
+
+        const formData = new FormData();
+        attachments[fieldId].forEach((file) => {
+            formData.append("attachments", file);
+        });
+
+        // Submit the form data via Fetch API
+        fetch("/uploadAttachments", {
+            method: "POST",
+            body: formData,
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    // Store the articleId after the first successful upload
+                    articleIds[fieldId] = data.articleId;
+                    attachmentCounts[fieldId] = data.files.length; // Update attachment count
+                    alert("Files uploaded successfully!");
+                    closeUploadPopup(); // Close the popup after successful upload
+                    resetFilePreview(); // Reset the preview after successful upload
+                } else {
+                    alert("Error uploading files.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error uploading files:", error);
+                alert("Error uploading files.");
+            });
+    }
+
+    // Fetch attachments based on articleId for the specific fieldId
+    function fetchAttachments(fieldId) {
+        fetch(`/getAttachments?articleId=${articleIds[fieldId]}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    displayFetchedAttachments(data.attachments);
+                } else {
+                    alert("No previous attachments found.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching attachments:", error);
+                alert("Error fetching attachments.");
+            });
+    }
+
+    // Display fetched attachments
+    function displayFetchedAttachments(files) {
+        const filePreview = document.getElementById("filePreview");
+        files.forEach((file) => {
+            const fileItem = document.createElement("div");
+            fileItem.className = "file-item";
+            fileItem.textContent = `${file.originalName} (${(file.fileSize / 1024).toFixed(2)} KB)`;
+
+            filePreview.appendChild(fileItem);
+        });
+    }
+</script> -->
+
+<!-- single attachment fields -->
+<!-- <script>
+    let attachments = []; // Array to store selected files
+let attachmentCount = 0; // Counter to track the number of attachments
+let articleId = null; // To store articleId after the first upload
+
+// Open the popup modal when the upload icon is clicked
+document.querySelector('.upload-icon').addEventListener('click', function() {
+    // If there are existing attachments (count > 0), fetch previous attachments
+    if (attachmentCount > 0 && articleId) {
+        fetchAttachments(articleId);
+    } else {
+        openUploadPopup(); // Otherwise, let the user upload new files
+    }
+});
+
+// Open the popup modal
+function openUploadPopup() {
+    document.getElementById("uploadPopup").style.display = "flex";
+}
+
+// Close the popup modal
+function closeUploadPopup() {
+    document.getElementById("uploadPopup").style.display = "none";
+    resetFilePreview(); // Reset file preview on close
+}
+
+// Handle file selection
+function handleFileSelection(event) {
+    const files = event.target.files;
+    const filePreview = document.getElementById("filePreview");
+
+    // Add selected files to attachments array and display them
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        attachments.push(file);
+
+        // Create file preview element
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
+        fileItem.textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+
+        // Create remove button for each file
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Remove";
+        removeButton.onclick = () => removeFile(file, fileItem);
+
+        fileItem.appendChild(removeButton);
+        filePreview.appendChild(fileItem);
+    }
+
+    // Reset the input so the user can select a file again
+    event.target.value = ''; // This resets the file input
+}
+
+// Remove file from the array and update the preview
+function removeFile(file, fileItem) {
+    // Remove from attachments array
+    const index = attachments.indexOf(file);
+    if (index > -1) {
+        attachments.splice(index, 1);
+    }
+
+    // Remove file preview
+    fileItem.remove();
+}
+
+// Reset file preview
+function resetFilePreview() {
+    const filePreview = document.getElementById("filePreview");
+    filePreview.innerHTML = ""; // Clear all file previews
+}
+
+// Submit files
+function submitAttachments() {
+    if (attachments.length === 0) {
+        alert("No files selected!");
+        return;
+    }
+
+    const formData = new FormData();
+    attachments.forEach((file) => {
+        formData.append("attachments", file);
+    });
+
+    // Submit the form data via Fetch API
+    fetch("/uploadAttachments", {
+        method: "POST",
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                // Store the articleId after the first successful upload
+                articleId = data.articleId;
+                attachmentCount = data.files.length; // Update attachment count
+                alert("Files uploaded successfully!");
+                closeUploadPopup(); // Close the popup after successful upload
+                console.log(data);
+                resetFilePreview(); // Reset the preview after successful upload
+            } else {
+                alert("Error uploading files.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error uploading files:", error);
+            alert("Error uploading files.");
+        });
+}
+
+// Fetch attachments based on articleId
+function fetchAttachments(articleId) {
+    fetch(`/getAttachments?articleId=${articleId}`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                displayFetchedAttachments(data.attachments);
+            } else {
+                alert("No previous attachments found.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching attachments:", error);
+            alert("Error fetching attachments.");
+        });
+}
+
+// Display fetched attachments
+function displayFetchedAttachments(files) {
+    const filePreview = document.getElementById("filePreview");
+    files.forEach((file) => {
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
+        fileItem.textContent = `${file.originalName} (${(file.fileSize / 1024).toFixed(2)} KB)`;
+
+        filePreview.appendChild(fileItem);
+    });
+    openUploadPopup();
+}
+
+</script> -->
+
+<!-- 
+<script>
+    let attachments = []; // Array to store selected files
+
+// Open the popup modal when the upload icon is clicked
+document.querySelector('.upload-icon').addEventListener('click', openUploadPopup);
+
+// Open the popup modal
+function openUploadPopup() {
+    document.getElementById("uploadPopup").style.display = "flex";
+}
+
+// Close the popup modal
+function closeUploadPopup() {
+    document.getElementById("uploadPopup").style.display = "none";
+    resetFilePreview(); // Reset file preview on close
+}
+
+// Handle file selection
+function handleFileSelection(event) {
+    const files = event.target.files;
+    const filePreview = document.getElementById("filePreview");
+
+    // Add selected files to attachments array and display them
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        attachments.push(file);
+
+        // Create file preview element
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
+        fileItem.textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+
+        // Create remove button for each file
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Remove";
+        removeButton.onclick = () => removeFile(file, fileItem);
+
+        fileItem.appendChild(removeButton);
+        filePreview.appendChild(fileItem);
+    }
+
+    // Reset the input so the user can select a file again
+    event.target.value = ''; // This resets the file input
+}
+
+// Remove file from the array and update the preview
+function removeFile(file, fileItem) {
+    // Remove from attachments array
+    const index = attachments.indexOf(file);
+    if (index > -1) {
+        attachments.splice(index, 1);
+    }
+
+    // Remove file preview
+    fileItem.remove();
+}
+
+// Reset file preview
+function resetFilePreview() {
+    const filePreview = document.getElementById("filePreview");
+    filePreview.innerHTML = ""; // Clear all file previews
+}
+
+// Submit files
+function submitAttachments() {
+    if (attachments.length === 0) {
+        alert("No files selected!");
+        return;
+    }
+
+    const formData = new FormData();
+    attachments.forEach((file) => {
+        formData.append("attachments", file);
+    });
+
+    // Submit the form data via Fetch API
+    fetch("/uploadAttachments", {
+        method: "POST",
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            alert("File uploaded successfully!");
+            closeUploadPopup(); // Close the popup after successful upload
+            console.log(data);
+            resetFilePreview(); // Reset the preview after successful upload
+        })
+        .catch((error) => {
+            console.error("Error uploading files:", error);
+            alert("Error uploading files.");
+        });
+}
+
+</script> -->
+
+
+

@@ -1,0 +1,14 @@
+<div id="uploadPopup" class="popup" >
+    <div class="popup-content">
+        <span class="close-btn" onclick="closeUploadPopup()">&times;</span>
+        <h3>Select Files to Upload</h3>
+        
+        <!-- File input for multiple file upload -->
+        <input type="file" id="fileUpload" name="attachments" multiple onchange="handleFileSelection(event)">
+        
+        <div id="filePreview"></div>
+
+        <button type="button" onclick="submitAttachments()">Submit</button>
+        <button type="button" onclick="closeUploadPopup()">Cancel</button>
+    </div>
+</div>

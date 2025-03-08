@@ -1,0 +1,148 @@
+{
+    "businessView": "fetchInbdShipmentBV",
+    "ruleId": "",
+    "defaultSortSetting": {
+        "sortField": "createdAt",
+        "sortDirection": -1
+    },
+    "collection": "shipmentNumber",
+    "searchTermFields": [
+        "externalDeliveryID",
+        "shipmentNumber"
+    ],
+    "aggregation": [
+        {
+            "($)match": {
+                "shipmentType": "Z010"
+            }
+        },
+        {
+            "($)lookup": {
+                "from": "deliveryNotes",
+                "let": {
+                    "shipmentNumber": "($)shipmentNumber",
+                    "shipmentType": "Z010"
+                },
+                "pipeline": [
+                    {
+                        "($)match": {
+                            "($)expr": {
+                                "($)and": [
+                                    {
+                                        "($)eq": [
+                                            "($)shipmentNumber",
+                                            "($)($)shipmentNumber"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "($)project": {
+                            "_id": 0,
+                            "shipmentNumber": 1,
+                            "externalDeliveryID": 1
+                        }
+                    }
+                ],
+                "as": "deliveryNotes"
+            }
+        },
+        {
+            "($)unwind": {
+                "path": "($)deliveryNotes",
+                "preserveNullAndEmptyArrays": true
+            }
+        },
+        {
+            "($)group": {
+                "_id": {
+                    "externalDeliveryID": "($)deliveryNotes.externalDeliveryID"
+                },
+                "shipmentNumber": {
+                    "($)addToSet": "($)deliveryNotes.shipmentNumber"
+                },
+                "createdOn": {
+                    "($)addToSet": "($)createdOn"
+                }
+            }
+        },
+        {
+            "($)match": {
+                "shipmentNumber.1": {
+                    "($)exists": true
+                }
+            }
+        },
+        {
+            "($)unwind": {
+                "path": "($)shipmentNumber",
+                "preserveNullAndEmptyArrays": true
+            }
+        },
+        {
+            "($)unwind": {
+                "path": "($)createdOn",
+                "preserveNullAndEmptyArrays": true
+            }
+        },
+     
+      
+        {
+            "($)match": "{{searchTerm}}"
+        },
+        {
+            "($)match": "{{componentSetting.rowFilter}}"
+        },
+        {
+            "($)facet": {
+                "paginatedResults": [
+                    {
+                        "($)sort": {
+                            "_id.externalDeliveryID": -1,
+                       "shipmentNumber": -1
+                        }
+                    },
+                    {
+                        "($)skip": "{{componentSetting.page}}"
+                    },
+                    {
+                        "($)limit": "{{componentSetting.limit}}"
+                    },
+                    {
+                        "($)project": {
+                            "_id": 0,
+                            "shipmentNumber": "($)shipmentNumber",
+                            "externalDeliveryID": "($)_id.externalDeliveryID",
+                            "shipmentNumber2": {
+                        "($)toString": {
+                            "($)toInt":"($)shipmentNumber"
+                        }
+                    },
+                    
+                            "createdOn": {
+                                "($)dateToString": {
+                                    "format": "%d/%m/%Y",
+                                    "date": {
+                                        "($)dateFromString": {
+                                            "dateString": "($)createdOn"
+                                        }
+                                    }
+                                }
+                            }
+                     
+                        }
+                    }
+                ],
+                "totalCount": [
+                    {
+                        "($)count": "count"
+                    }
+                ]
+            }
+        }
+    ],
+    "createdBy": "SCHITADMIN",
+    "createdAt": "2024-11-20T06:24:58.389Z"
+}

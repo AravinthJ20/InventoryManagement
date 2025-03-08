@@ -1,0 +1,1087 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    
+    <script src="../js/layout.js"></script>
+    <script src="../js/embeddedPopup.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<style>
+    .loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+    z-index: 1000; /* Ensure it appears above other content */
+}
+
+.spinner {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite; /* Spin animation */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+    .pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination {
+    display: flex;
+    gap: 5px;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.rows-per-page {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rows-per-page select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+</style>
+    <style>
+     .actions-container{
+        margin-bottom: .5em;
+     }
+
+        .more-actions {
+            display: none;
+            position: absolute;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: max-content;
+            margin-left: 100px;
+            min-width: 100px;
+            max-height: 200px; /* Limit the height of the popup */
+            overflow-y: auto; /* Allow scrolling if content overflows */
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .more-actions button {
+            display: block;
+            width: 90%;
+            padding: 0.5rem;
+color: white;
+            margin-top: 10px;
+            background: rgb(117, 109, 109);
+            border: none;
+            font-size: 1em;
+            border-bottom: 1px solid #f81616;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+    
+
+        .more-actions button:last-child {
+            border-bottom: none; /* Remove border from the last button */
+        }
+
+        .three-dot-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+::-webkit-scrollbar{
+    height: 0px;
+    width:3px;
+}
+
+
+::-webkit-scrollbar-thumb{
+    background: rgb(133, 132, 132);
+}
+        /* Mobile view styles */
+        @media (max-width: 768px) {
+            /* Hide all action buttons in mobile view */
+            .actions-container .action-btn {
+                display: none;
+            }
+
+            /* Show the three-dot button */
+            .three-dot-btn {
+                display: inline-block;
+            }
+        }
+    </style>
+       <style>
+        
+        /*filter popup styles */
+        .filter-popup{
+       position: fixed;
+       right:-10px;          display: none;
+                flex-direction: row;
+                
+                width: 300px;
+                height: 100%;
+                background-color: #f1f1f1;
+                box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+              
+    z-index:100000;
+        }
+    
+    
+        .filter-content-left{
+    margin-top: 2rem;
+    padding: 20px;
+            width: 50%;
+        }
+         .filter-content-right{
+            margin-top: 2rem;
+            overflow-y: auto;
+               overflow-x: hidden
+         }
+        .filter-content-left,  .filter-content-right{
+    
+            width: 50%;
+            border-left: #333 solid 2px;
+        }
+        .close-filter{
+            position: absolute;
+            margin: auto;
+            font-size: 20px;
+        }
+        tfoot{
+        position: sticky;
+        bottom: 0;
+        color: #f3f3f3;
+        }
+       tfoot tr td{
+        background-color: #f2f2f2;
+           color: #555;
+       }
+     
+      .fa{
+        cursor: pointer;
+      }
+        </style>
+<!-- Code injected by Five-server -->
+  <script async data-id="five-server" data-file="c:\Users\Aravind J\OneDrive - SCH Infotech Private Limited\Desktop\UI\PageLayouts\html\PageLayout.html" type="application/javascript" src="/fiveserver.js"></script>
+  </head>
+
+<body>
+    <div class="sidebar active" id="sidebar">
+        <h2>Menu</h2>
+        <ul>
+                     <li><a href="index2.html"><i class="fa fa-home"></i>Home</a></li>
+    
+             <li><a href="/views/LandingPage.html"><i class="fa fa-bar-chart fa-fw"></i><span class="menuname">Dashboard</span></i></a></li>
+             <li>
+                <a href="javascript:void(0)"><i class="fa fa-truck"></i><span class="menuname">Suppliers</span ><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="/views/VendorRegisteration.htm"><i class="fa fa-truck"></i><span class="menuname">Supplier Registeration</span></a></li>
+                    <li><a href="/views/VendorList.htm"><i class="fa fa-truck"></i><span class="menuname">Supplier List</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-cubes"></i><span class="menuname">Material</span ><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="/views/InsertMaterial.htm"><i class="fa fa-cubes"></i><span class="menuname">Create Material</span></a></li>
+                    <li><a href="/views/MaterialList.htm"><i class="fa fa-cubes"></i><span class="menuname">Material List</span></a></li>
+                </ul>
+            </li>
+             <li>
+                <a href="javascript:void(0)"><i class="fa fa-shopping-bag"></i><span class="menuname">Sales Orders</span ><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="create-sales-order.html"><i class="fa fa-shopping-bag"></i><span class="menuname">Create Sales Order</span></a></li>
+                    <li><a href="sales-order-list.html"><i class="fa fa-shopping-bag"></i><span class="menuname">Sales Order List</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-shopping-cart"></i><span class="menuname">Purchase Orders </span><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="create-purchase-order.html"><i class="fa fa-shopping-cart"></i><span class="menuname">Create Purchase Order</span></i></a></li>
+                    <li><a href="purchase-order-list.html"><i class="fa fa-shopping-cart"></i><span class="menuname">Purchase Order List</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-user"></i><span class="menuname">Users</span><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="user-list.html"><i class="fa fa-user"></i><span>User List</span></a></li>
+                    <li><a href="create-user.html"><i class="fa fa-user"></i><span>Create User</span></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i class="fa fa-tag"></i><span class="menuname">Buyers</span><span class="arrow">></span></a>
+                <ul class="submenu">
+                    <li><a href="/getUserList"><i class="fa fa-tag"></i><span>Buyers List</span></a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+ <head>
+<div class="topbar">
+    <button class="open-btn" onclick="toggleSidebar2()">☰</button>
+    <h2>Inventory Mangament</h2>
+    <div class="topbar-menu">
+        <a href="/socket"><i class="fa fa-comments-o"></i>Chat Room</a>
+        <a href="#">About Us</a>
+        <a href="#">Contacts</a>
+        <a href="#"><i class="fa fa-bell"></i></a>
+        <a onclick="logout()"><i class="fa fa-sign-out"></i>Logout</a>
+        <a href="/user/userProfile?user={{user}}"> <img class="profile" src="../images/home.jpg" alt="Picture"></a>
+
+    </div>
+</div>
+</head>
+
+
+    <main class="main-content shifted">
+        <div class="sub-container">
+            <div class="mini-container formContainter" containerType="section">
+                    <div class="section-header">
+                        <span class="containerInfo">
+                            <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+        
+                            <h3 class="container-hederText">Supplier Details</h3>
+                                
+                            </span>
+    
+                    </div>
+                    <span id="2">
+    
+                    <form method="POST"  id="section" class="form" action="/CartAdd">
+                    
+                       
+           
+                       
+
+        <div class="form-group" datasource="getSample" dbcolumn="supplierName">
+            <label for="supplierName">Supplier Name:</label>
+            <input type="text" id="supplierName" name="supplierName" required>
+        </div>
+          
+       
+        <div class="form-group" datasource="getSample" dbcolumn="status">
+            <label for="status" >Status:</label>
+            <input type="text" id="status" name="status" required>
+        </div>
+          
+                </form>
+                    </span>
+                </div>
+    
+                </div>
+        <div class="sub-container">
+            <div class="mini-container list-container" containerType="table">
+
+                <div class="list-header">
+                    <span class="containerInfo">
+                    <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+
+                    <h3 class="container-hederText">List of Items</h3>
+                        
+                    </span>
+                    <div class="actions-container" id="actionsContainer">
+
+                        <input type="text" id="searchInput" onkeyup="searchTable1(this.id)"
+                            placeholder="Search for anything.." hidden>
+                        <button class="action-btn icon-btn" onclick="headerCall()">&#x1f50d;</button>
+<button class="action-btn" onclick="location.href=href='/updateStock'">Update stock</button>
+                        <!-- Filter icon, you can use your preferred icon here -->
+                        <button id="action-btn header-btn" class="action-btn download-btn" onclick="downloadExcel()">&#x2B73;</button>
+
+                        <button class="action-btn header-btn-2" onclick="window.location.href='/cardView'">Card View</button>
+                        <button class="action-btn">Action 9</button>
+                        <button class="action-btn">Action 10</button>
+                        <button class="action-btn fa" onclick="openFilter()">&#xf0b0;</button>
+                        <button class="fa" onclick="openFilter('customers')">&#xf0b0;</button>
+
+                        <button class="three-dot-btn" onclick="togglePopup()">⋮</button>
+                        <div class="more-actions" id="moreActions"></div>
+
+                    </div>
+
+                    </div>
+              
+
+                <span class="collpase-container" id="collpase-container">
+                  
+                    <div class="table-container" datasource="getMaterials">
+                        <table id="customers">
+                            <thead>
+                            <tr>
+
+                             
+                                <th dbcolum="materialId">Materia Id</th>
+                                <th dbcolum="materialName">Material Name</th>
+                                <th dbcolum="materialName">Material Description</th>
+
+                                <th dbcolum="supplier">Supplier</th>
+                            
+                             
+
+                            </tr>
+                            </thead>
+                                <tbody id="materials">
+                   
+
+</tbody>
+<tfoot><tr class="test">
+            <td colspan="3">Total</td>
+        
+            <td id="totalUnitPrice"></td>
+
+              <td colspan="5"></td>
+              
+        </tr></tfoot>
+  
+
+                        </table>
+                    </div>
+                    <div class="pagination-controls">
+                        <div class="rows-per-page">
+                            <label for="rowsPerPage">Rows per page:</label>
+                            <select id="rowsPerPage" onchange="changeRowsPerPage(this.value,this)">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                            </select>
+                        </div>
+                        <div class="pagination" id="pagination"></div>
+                    </div>
+                  
+                </span>
+
+            </div>
+         
+        </div>
+        <div class="sub-container">
+            <div class="mini-container list-container" containerType="table">
+
+                <div class="list-header">
+                    <span class="containerInfo">
+                    <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+
+                    <h3 class="container-hederText">List of Items</h3>
+                        
+                    </span>
+                    <div class="actions-container" id="actionsContainer">
+
+                        <input type="text" id="searchInput" onkeyup="searchTable1(this.id)"
+                            placeholder="Search for anything.." hidden>
+                        <button class="action-btn icon-btn" onclick="headerCall()">&#x1f50d;</button>
+<button class="action-btn" onclick="location.href=href='/updateStock'">Update stock</button>
+                        <!-- Filter icon, you can use your preferred icon here -->
+                        <button id="action-btn header-btn" class="action-btn download-btn" onclick="downloadExcel()">&#x2B73;</button>
+
+                        <button class="action-btn header-btn-2" onclick="window.location.href='/cardView'">Card View</button>
+                        <button class="action-btn">Action 9</button>
+                        <button class="action-btn">Action 10</button>
+                        <button class="action-btn fa" onclick="openFilter()">&#xf0b0;</button>
+                        <button class="fa" onclick="openFilter('suppliers')">&#xf0b0;</button>
+
+                        <button class="three-dot-btn" onclick="togglePopup()">⋮</button>
+                        <div class="more-actions" id="moreActions"></div>
+
+                    </div>
+
+                    </div>
+              
+
+                <span class="collpase-container" id="collpase-container">
+                  
+                    <div class="table-container" datasource="getSuppliers">
+                        <table id="suppliers">
+                            <thead>
+                            <tr>
+
+                             
+                                <th dbcolum="vendorId">Supplier Id</th>
+                              
+                            
+                             
+
+                            </tr>
+                            </thead>
+                                <tbody id="materials">
+                   
+
+</tbody>
+<tfoot><tr class="test">
+        
+
+            
+              
+        </tr></tfoot>
+  
+
+                        </table>
+                    </div>
+                    <div class="pagination-controls">
+                        <div class="rows-per-page">
+                            <label for="rowsPerPage">Rows per page:</label>
+                            <select id="rowsPerPage" onchange="changeRowsPerPage(this.value,this)">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                            </select>
+                        </div>
+                        <div class="pagination" id="pagination"></div>
+                    </div>
+                  
+                </span>
+
+            </div>
+         
+        </div>
+   
+       
+     
+
+           
+    </div>
+    <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+</main>
+
+<footer>
+  
+</footer>
+
+
+
+
+
+
+<div class="filter-popup" id="filter-popup">
+
+    <button class="close-filter" onclick="closeFilter()">X</button>
+<div class="filter-content-left" id="filter-content-left"><p>left part</p></div>
+<div class="filter-content-right" id="filter-content-right"><p>right part</p></div>
+
+</div>
+</body>
+
+<script>
+    let sortfield = 'vendorId';
+    let sortOrder = -1;
+    let currentPage = 1;
+    let rowsPerPage = 10; // Default rows per page
+    let activeTableDatasource = null; // Track the active table's datasource
+
+    // Function to extract data sources and dbcolumns from the section container
+    function extractSectionData() {
+        const formGroups = document.querySelectorAll('.form-group');
+        const sectionData = [];
+
+        formGroups.forEach(group => {
+            const datasource = group.getAttribute('datasource');
+            const dbcolumn = group.getAttribute('dbcolumn');
+            if (datasource && dbcolumn) {
+                sectionData.push({ datasource, dbcolumn, inputElement: group.querySelector('input') });
+            }
+        });
+
+        return sectionData;
+    }
+
+    // Function to extract data sources and dbcolumns from the table container
+    function extractTableData() {
+        const tableContainers = document.querySelectorAll('.table-container');
+        const tableData = [];
+
+        tableContainers.forEach(tableContainer => {
+            const tableDataSource = tableContainer.getAttribute('datasource');
+            const tableHeaders = tableContainer.querySelectorAll('th');
+            const tableDbColumns = [];
+
+            tableHeaders.forEach(header => {
+                const dbcolum = header.getAttribute('dbcolum');
+                if (dbcolum) {
+                    tableDbColumns.push({ dbcolum, datasource: tableDataSource });
+                }
+            });
+
+            tableData.push({ datasource: tableDataSource, dbcolumns: tableDbColumns });
+        });
+
+        return tableData;
+    }
+
+    // Combine all data sources
+    function combineDataSources(sectionData, tableData) {
+        const sectionDataSources = sectionData.map(item => item.datasource);
+        const tableDataSources = tableData.map(item => item.datasource);
+        return [...new Set([...sectionDataSources, ...tableDataSources])];
+    }
+
+    const sectionData = extractSectionData();
+    const tableData = extractTableData();
+    let businessViews = combineDataSources(sectionData, tableData);
+
+    // Function to load data for all tables or a specific table
+    function loadData(page, limit, datasource = null,rowfilter) {
+        const skip = (page - 1) * limit;
+
+        // Show the loading spinner
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        loadingSpinner.style.display = 'flex';
+
+        // Prepare the request data with skip and limit for the specified datasource(s)
+        const pagination = {};
+
+        if (datasource) {
+            // Fetch data for a specific table
+            businessViews=[]
+            businessViews.push(datasource)
+            pagination[datasource] = { skip, limit,rowfilter };
+        } else {
+            // Fetch data for all tables (initial load)
+            tableData.forEach(table => {
+                pagination[table.datasource] = { skip: 0, limit: rowsPerPage,rowfilter:rowfilter }; // Initial load for all tables
+            });
+        }
+
+        // Prepare the request data
+        const data = {
+            "businessViews": businessViews,
+            "params": {
+                "pagination": pagination
+            }
+        };
+
+        // Send the request to the server
+        fetch('/fetchPageData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(responseData => {
+            console.log('Response Data:', responseData);
+
+            // Populate the section fields dynamically (only on initial load)
+            if (!datasource && page === 1) {
+                sectionData.forEach(sectionItem => {
+                    const matchingDataSource = responseData.find(item => item.datasource === sectionItem.datasource);
+                    if (matchingDataSource) {
+                        const matchingRow = matchingDataSource.data.find(row => row[sectionItem.dbcolumn] !== undefined);
+                        if (matchingRow) {
+                            sectionItem.inputElement.value = matchingRow[sectionItem.dbcolumn];
+                        }
+                    }
+                });
+            }
+
+            // Populate the table dynamically
+            tableData.forEach(table => {
+                const tableDataSourceResponse = responseData.find(item => item.datasource === table.datasource);
+                if (tableDataSourceResponse) {
+                    const tableBody = document.querySelector(`.table-container[datasource="${table.datasource}"] tbody`);
+                   if(tableDataSourceResponse.data!=null){
+                    tableBody.innerHTML = tableDataSourceResponse.data.map(row => `
+                        <tr>
+                            ${table.dbcolumns.map(col => `<td>${row[col.dbcolum] || ''}</td>`).join('')}
+                        </tr>
+                    `).join('');
+
+                    // Update pagination controls for this table
+                    updatePaginationControls(table.datasource, page, tableDataSourceResponse.count, limit);
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error:', error))
+        .finally(() => {
+            // Hide the loading spinner after the data is loaded or if an error occurs
+            loadingSpinner.style.display = 'none';
+        });
+    }
+
+    // Function to update pagination controls
+    function updatePaginationControls(datasource, currentPage, totalCount, limit) {
+        const totalPages = Math.ceil(totalCount / limit);
+
+        // Find the pagination container for the specific datasource
+        const paginationContainer = document
+        .querySelector(`.table-container[datasource="${datasource}"]`)
+        .closest('.collpase-container') // Move up to the parent container
+        .querySelector('.pagination'); // Select the pagination container
+        if (!paginationContainer) {
+            console.error(`Pagination container not found for datasource: ${datasource}`);
+            return;
+        }
+
+        let paginationHtml = '';
+
+        if (currentPage > 1) {
+            paginationHtml += `<button onclick="changePage('${datasource}', ${currentPage - 1})">Previous</button>`;
+        }
+
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHtml += `<button onclick="changePage('${datasource}', ${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+        }
+
+        if (currentPage < totalPages) {
+            paginationHtml += `<button onclick="changePage('${datasource}', ${currentPage + 1})">Next</button>`;
+        }
+
+        paginationContainer.innerHTML = paginationHtml;
+    }
+
+    // Function to handle page changes
+    window.changePage = function (datasource, page) {
+    console.log('change page called',datasource,page)
+        activeTableDatasource = datasource; // Set the active table
+        loadData(page, rowsPerPage, datasource); // Fetch data for the specific table
+    };
+
+    // Function to handle rows per page changes
+    window.changeRowsPerPage = function (limit,selectElement) {
+        rowsPerPage = parseInt(limit, 10);
+        currentPage = 1; // Reset to the first page
+        let tableContainer = selectElement.closest(".pagination-controls").previousElementSibling;
+        
+        // Get the datasource attribute
+        let dataSource = tableContainer.getAttribute("datasource");
+
+        if (dataSource) {
+            // Fetch data for the active table only
+             console.log('change row if block',)
+            loadData(currentPage, rowsPerPage, dataSource);
+        } else {
+            // Fetch data for all tables (initial load)
+            console.log('change row else block')
+
+            loadData(currentPage, rowsPerPage);
+        }
+    };
+
+    // Initial load for all tables
+    loadData(currentPage, rowsPerPage);
+</script>
+
+</html>
+
+<script>
+    let PageControls=[
+  {
+    "section": [
+      {},
+      {}
+    ]
+  },
+  {
+    "table": [
+      {
+        "tableID": "customers",
+        "filter": true,
+      "filterDatasource":"materialFilter",
+        "filterColumns": [
+          {
+            "columnName": "Materia Id",
+            "techname": "materialId",
+            "filterType": "checkbox",
+            "datasource": "",
+            "dbcolum": "materialId"
+          },
+          {
+            "columnName": "Material Name",
+            "techname": "materialName",
+            "filterType": "search",
+            "datasource": "",
+            "dbcolum": ""
+          }
+        ],
+        "excelDownLoad":false
+      }
+    ,
+    {
+        "tableID": "suppliers",
+        "filter": true,
+      "filterDatasource":"supplierFilter",
+        "filterColumns": [
+          {
+            "columnName": "Supplier Id",
+            "techname": "vendorId",
+            "filterType": "checkbox",
+            "datasource": "",
+            "dbcolum": "vendorId"
+          }
+         
+        ],
+        "excelDownLoad":false
+      }
+    
+    ]
+  }
+]
+
+
+function loadFilter(){
+    console.log('load filter')
+    fetch('/loadFilter', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(PageControls)
+        })  .then(response => response.json())
+        .then(responseData => {
+            console.log('Response Data:', responseData);
+            PageControls[1]=responseData
+        
+        })
+        .catch(error => console.error('Error:', error))
+      
+}
+loadFilter()
+
+        const filterColumns = [
+    { columnName: 'Materia Id', techname:"materialId",filterType: 'checkbox', "datasource":"","dbcolumn":"" },
+
+   { columnName: 'Material Name', techname:"materialName",filterType: 'search',"datasource":"", "dbcolumn":""}
+
+];
+let selectedFilters={}
+function openFilter(tableID) {
+    const filterPopup = document.getElementById('filter-popup');
+    const filterContentLeft = document.getElementById('filter-content-left');
+    const filterContentRight = document.getElementById('filter-content-right');
+
+    // Clear previous content
+    filterContentLeft.innerHTML = '';
+    filterContentRight.innerHTML = '<p>Select a column on the left to see filter options.</p>';
+
+    // Find the table configuration in PageControls
+    const tableConfig = PageControls.find(control => control.table && control.table.some(table => table.tableID === tableID));
+    if (!tableConfig) {
+        console.error(`Table configuration for tableID "${tableID}" not found in PageControls.`);
+        return;
+    }
+
+    const filterColumns = tableConfig.table.find(table => table.tableID === tableID).filterColumns;
+
+    // Get table headers
+    const table = document.getElementById(tableID);
+    const headers = table.querySelectorAll('th');
+
+    // Create filter options only for columns in filterColumns
+    headers.forEach((header, index) => {
+        const columnName = header.innerText.trim();
+        const filterColumn = filterColumns.find(filterCol => filterCol.columnName === columnName);
+
+        if (filterColumn) {
+            const filterOption = document.createElement('div');
+            filterOption.innerText = columnName;
+            filterOption.style.cursor = 'pointer';
+            filterOption.onclick = () => populateFilterValues(tableID, index, filterColumn.filterType, filterColumn);
+
+            filterContentLeft.appendChild(filterOption);
+        }
+    });
+
+    filterPopup.style.display = 'flex'; // Show the filter popup
+}
+function populateFilterValues(tableID, columnIndex, filterType, filterColumn) {
+    const filterContentRight = document.getElementById('filter-content-right');
+    filterContentRight.innerHTML = ''; // Clear previous values
+    const techname = filterColumn.techname;
+
+    if (filterType === 'checkbox') {
+        // Search bar for checkbox filter
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.placeholder = 'Search...';
+        searchInput.id = 'filter-search';
+        searchInput.oninput = filterCheckboxes; // Call filter function on input
+
+        filterContentRight.appendChild(searchInput);
+
+        // Get the filter data from the response
+        const tableConfig = PageControls.find(control => control.table && control.table.some(table => table.tableID === tableID));
+        if (!tableConfig) {
+            console.error(`Table configuration for tableID "${tableID}" not found in PageControls.`);
+            return;
+        }
+
+        const filterColumns = tableConfig.table.find(table => table.tableID === tableID).filterColumns;
+        const checkboxData = filterColumns.find(col => col.techname === techname)?.data;
+
+        if (!checkboxData || !Array.isArray(checkboxData[0])) {
+            console.error(`No checkbox data found for techname: ${techname}`);
+            return;
+        }
+
+        // Checkbox filter for categorical data
+        const checkboxContainer = document.createElement('div');
+        checkboxContainer.id = 'checkbox-container'; // Container to hold all checkboxes
+
+        checkboxData[0].forEach(value => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = value;
+            checkbox.id = `filter-${value}`;
+            checkbox.onchange = () => applyFilters(tableID, filterColumn, columnIndex);
+
+            const label = document.createElement('label');
+            label.htmlFor = `filter-${value}`;
+            label.innerText = value;
+
+            const div = document.createElement('div');
+            div.classList.add('checkbox-item');
+            div.appendChild(checkbox);
+            div.appendChild(label);
+
+            checkboxContainer.appendChild(div);
+        });
+
+        filterContentRight.appendChild(checkboxContainer);
+    } else if (filterType === 'number') {
+        // Number range filter
+        const minInput = document.createElement('input');
+        minInput.type = 'number';
+        minInput.placeholder = 'Min';
+        minInput.id = `filter-${techname}-min`;
+
+        const maxInput = document.createElement('input');
+        maxInput.type = 'number';
+        maxInput.placeholder = 'Max';
+        maxInput.id = `filter-${techname}-max`;
+
+        const applyButton = document.createElement('button');
+        applyButton.innerText = 'Apply';
+        applyButton.onclick = () => applyFilters(tableID, filterColumn);
+
+        filterContentRight.appendChild(minInput);
+        filterContentRight.appendChild(maxInput);
+        filterContentRight.appendChild(applyButton);
+    } else if (filterType === 'dateRange') {
+        // Date range filter
+        const startDate = document.createElement('input');
+        startDate.type = 'date';
+        startDate.id = `filter-${techname}-start-date`;
+
+        const endDate = document.createElement('input');
+        endDate.type = 'date';
+        endDate.id = `filter-${techname}-end-date`;
+
+        const applyButton = document.createElement('button');
+        applyButton.innerText = 'Apply';
+        applyButton.onclick = () => applyFilters(tableID, filterColumn, columnIndex);
+
+        filterContentRight.appendChild(startDate);
+        filterContentRight.appendChild(endDate);
+        filterContentRight.appendChild(applyButton);
+    }
+
+    document.getElementById('filter-popup').style.display = 'flex';
+}
+function applyFilters3(tableID, filterColumn, columnIndex) {
+    const filterType = filterColumn.filterType;
+    const techname = filterColumn.techname;
+
+    if (filterType === 'checkbox') {
+        const table = document.getElementById(tableID);
+        const checkboxes = document.querySelectorAll('#filter-content-right input[type="checkbox"]');
+        const selectedValues = Array.from(checkboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+
+        const filterValues = [];
+
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                filterValues.push(checkbox.value);
+            }
+        });
+
+        const filterKey = `filter-${columnIndex}`;
+        localStorage.setItem(filterKey, JSON.stringify({ columnIndex, filterType, filterValues }));
+
+        const checkedValues = Array.from(document.querySelectorAll(`#checkbox-container input:checked`)).map(checkbox => checkbox.value);
+        if (checkedValues.length) {
+            selectedFilters[techname] = { $in: checkedValues };
+        } else {
+            delete selectedFilters[techname];
+        }
+    } else if (filterType === 'number') {
+        const min = document.getElementById(`filter-${techname}-min`).value;
+        const max = document.getElementById(`filter-${techname}-max`).value;
+        if (min || max) {
+            selectedFilters[techname] = {};
+            if (min) selectedFilters[techname].$gte = min;
+            if (max) selectedFilters[techname].$lte = max;
+        } else {
+            delete selectedFilters[techname];
+        }
+    } else if (filterType === 'dateRange') {
+        const startDate = document.getElementById(`filter-${techname}-start-date`).value;
+        const endDate = document.getElementById(`filter-${techname}-end-date`).value;
+
+        if (startDate || endDate) {
+            selectedFilters[techname] = {};
+            if (startDate) selectedFilters[techname].$gte = startDate;
+            if (endDate) selectedFilters[techname].$lte = endDate;
+        } else {
+            delete selectedFilters[techname];
+        }
+    }
+
+    // Now you can use the selectedFilters object to build your query
+    console.log('Selected Filters:', selectedFilters);
+    loadData(null, null, selectedFilters);
+}
+
+function applyFilters(tableID, filterColumn, columnIndex) {
+    const filterType = filterColumn.filterType;
+    const techname = filterColumn.techname;
+    const tableContainer = document.getElementById(tableID).closest('.table-container');
+    if (!tableContainer) {
+        console.error(`Table container not found for tableID: ${tableID}`);
+        return;
+    }
+
+    const datasource = tableContainer.getAttribute('datasource');
+    if (!datasource) {
+        console.error(`Datasource not found for tableID: ${tableID}`);
+        return;
+    }
+    if (filterType === 'checkbox') {
+        const checkboxes = document.querySelectorAll('#filter-content-right input[type="checkbox"]');
+        const selectedValues = Array.from(checkboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+
+        if (selectedValues.length) {
+            selectedFilters[techname] = { $in: selectedValues };
+        } else {
+            delete selectedFilters[techname];
+        }
+    } else if (filterType === 'number') {
+        const min = document.getElementById(`filter-${techname}-min`).value;
+        const max = document.getElementById(`filter-${techname}-max`).value;
+        if (min || max) {
+            selectedFilters[techname] = {};
+            if (min) selectedFilters[techname].$gte = min;
+            if (max) selectedFilters[techname].$lte = max;
+        } else {
+            delete selectedFilters[techname];
+        }
+    } else if (filterType === 'dateRange') {
+        const startDate = document.getElementById(`filter-${techname}-start-date`).value;
+        const endDate = document.getElementById(`filter-${techname}-end-date`).value;
+
+        if (startDate || endDate) {
+            selectedFilters[techname] = {};
+            if (startDate) selectedFilters[techname].$gte = startDate;
+            if (endDate) selectedFilters[techname].$lte = endDate;
+        } else {
+            delete selectedFilters[techname];
+        }
+    }
+
+    // Now you can use the selectedFilters object to build your query
+    console.log('Selected Filters:', selectedFilters);
+    loadData(currentPage, rowsPerPage,datasource, selectedFilters);
+}
+
+function filterCheckboxes() {
+   const searchQuery = document.getElementById('filter-search').value.toLowerCase();
+   const checkboxes = document.querySelectorAll('#checkbox-container .checkbox-item');
+
+   checkboxes.forEach(item => {
+       const label = item.querySelector('label').innerText.toLowerCase();
+       if (label.includes(searchQuery)) {
+           item.style.display = ''; // Show if it matches search
+       } else {
+           item.style.display = 'none'; // Hide if it doesn't match
+       }
+   })};
+
+function closeFilter() {
+   document.getElementById('filter-popup').style.display = 'none';
+}
+</script>
+<script>
+
+    function toggleTable(input) {
+                console.log('toogle called',input,input.innerText);
+                console.log('parent',input.parentElement.parentElement.nextElementSibling)
+                let value=input.innerText
+                let collapse=input.parentElement.parentElement.nextElementSibling
+                input.innerText=value=='+'?'-':'+';
+                const table = document.querySelector('.collpase-container');
+                // table.style.display = (table.style.display === 'none') ? '' : 'none';
+                collapse.style.display = (collapse.style.display === 'none') ? '' : 'none';
+    
+                console.log(table.style.display)
+    
+            }
+        enableSubmenus()
+     
+     </script>
+<script>
+     document.addEventListener("DOMContentLoaded", function () {
+        const table = document.getElementById("customers");
+        const headers = Array.from(table.querySelectorAll("th")).map(th => th.textContent.trim());
+
+        table.querySelectorAll("tr").forEach(row => {
+            row.querySelectorAll("td").forEach((td, index) => {
+                td.setAttribute("data-label", headers[index]);
+            });
+        });
+    });
+    const tableBody = document.getElementById("materials");
+
+
+
+</script>
+
+ 
+
+<script>
+
+
+   
+   
+</script>
+  
