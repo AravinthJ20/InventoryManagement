@@ -5,6 +5,8 @@ const bcrypt=require('bcrypt')
 const {connectDB}=require('../config/db.js')
 dotenv.config({ path: "config.env" })
 const axios=require('axios')
+const BASE_URL=process.env.BASE_URL
+
 
 // Render the login page for the user
 const login = ((req, res) => {
@@ -60,7 +62,7 @@ let role=validate.role;
             req.session.role=validate.role
             res.cookie('userRole', validate.role, { httpOnly: false, secure: true });  // Store in cookie
 
-            const permissionResponse = await axios.get('http://localhost:3000/permission', {
+            const permissionResponse = await axios.get(`${BASE_URL}/permission`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Role': validate.role // Pass role in the header
