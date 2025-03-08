@@ -4,7 +4,9 @@ const MongoClient=mongodb.MongoClient;
 async function connectDB(database){
     try{
 
-    const client=await MongoClient.connect('mongodb://127.0.0.1:27017/')
+    // const client=await MongoClient.connect('mongodb://127.0.0.1:27017/')
+    const client=await MongoClient.connect('mongodb+srv://aravinthj388:Js9QJ4sbbMKLIHQD@cluster0.q4y15.mongodb.net/?retryWrites=true&w=majority')
+
     const dbList=await client.db().admin().listDatabases();
     // console.log('dbList',dbList)
 const dbName=database;
