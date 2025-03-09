@@ -7,7 +7,7 @@ const axios = require('axios')
 const router = express.Router()
 const {ObjectId}=require('mongodb')
 require('dotenv').config()
-const MONGO_URI=process.env.BASE_URL
+const BASE_URL=process.env.BASE_URL
 
 router.post('/workflowTrigger', async (req, res) => {
   try {
