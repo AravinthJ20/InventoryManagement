@@ -3,7 +3,7 @@ require('dotenv').config()
 const app=express()
 let test=238;
 
-
+const BASE_URL=process.env.BASE_URL
 const PORT=process.env.PORT
 const path=require('path')
 const {connectDB}=require('./config/db')
@@ -103,7 +103,7 @@ categories:data.table_2
       }
       let insertResult=await insertData(data,'Suppliers')
       console.log('i',insertResult)
-    await axios.post("http://localhost:3000/workflow-engine/workflowTrigger",{primaryKey:insertResult})
+    await axios.post(`${BASE_URL}/workflow-engine/workflowTrigger`,{primaryKey:insertResult})
     console.log('insertResult',insertResult)
     res.status(200).send({primaryKey:insertResult}) 
   }
@@ -252,7 +252,7 @@ let data=req.body
  console.log('componentSetting',componentSetting,req.body.params.pagination.getMaterials)
   try {
 
-      const response = await axios.post("http://localhost:3000/callAggregationBusinessView", { businessView:businessView,params:data.params,componentSetting:componentSetting });
+      const response = await axios.post(`${BASE_URL}/callAggregationBusinessView`, { businessView:businessView,params:data.params,componentSetting:componentSetting });
       // let count=Number( response.data[0].count[0].count) 
       let count = Number(response?.data?.[0]?.count?.[0]?.count || 0);
 
@@ -282,7 +282,7 @@ app.post('/loadFilter', async (req, res) => {
 
     try {
       // Make the API call with the query ID
-      const response = await axios.post("http://localhost:3000/callAggregationBusinessView", { businessView: queryID });
+      const response = await axios.post(`${BASE_URL}/callAggregationBusinessView`, { businessView: queryID });
       console.log('Response:', response.data);
 
       // Assuming the response data is an array of objects with field names
