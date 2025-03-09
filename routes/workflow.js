@@ -6,6 +6,8 @@ const { executeActions } = require('../ActionsExecuter')
 const axios = require('axios')
 const router = express.Router()
 const {ObjectId}=require('mongodb')
+require('dotenv').config()
+const MONGO_URI=process.env.BASE_URL
 
 router.post('/workflowTrigger', async (req, res) => {
   try {
@@ -50,7 +52,7 @@ router.post('/triggerWorkFlow', async (req, res) => {
     console.log(flag)
     console.log(req.body)
     if (flag == true) {
-      axios.post("http://localhost:3000/workflow-engine/initApi", req.body)
+      axios.post(`${BASE_URL}/workflow-engine/initApi`, req.body)
 
       const Approver = await db.collection('workitems').findOne({ productId: productId, status: "pending" });
       console.log("approver", Approver)
@@ -78,7 +80,7 @@ router.post('/triggerWorkFlow', async (req, res) => {
 
 
         )
-        axios.post(`http://localhost:3000/workflow-engine/SupplierWorkflowMail`, req.body)
+        axios.post(`${BASE_URL}/workflow-engine/SupplierWorkflowMail`, req.body)
 
 
       }
@@ -122,7 +124,7 @@ router.post('/triggerWorkFlow', async (req, res) => {
 router.post('/initApi', async (req, res) => {
   console.log('init called', req.body)
 
-  axios.post("http://localhost:3000/workflow-engine/initApi", req.body)
+  axios.post(`${BASE_URL}/workflow-engine/initApi`, req.body)
 
   const db = await connectDB("InventoryMangement");
   const productId = req.body.productId
