@@ -2,6 +2,7 @@ const mongodb=require("mongodb")
 const MongoClient=mongodb.MongoClient;
 require('dotenv').config()
 const MONGO_URI=process.env.MONGO_URI
+let test=2;
 
 async function connectDB(database){
     try{
