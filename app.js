@@ -26,6 +26,8 @@ app.use(express.json())
 app.use(express.urlencoded())
 app.use('/workflow-engine',workflow)
 app.use(express.static(path.join(__dirname,'public')))
+
+
 app.post('/api/sendEmail2',api.sendemail3)
 app.get('/workflowlog',(req,res)=>{
   res.sendFile(path.join(__dirname,'views','workflowlog.html'))
