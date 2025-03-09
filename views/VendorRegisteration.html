@@ -20,10 +20,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 <style>
-       .custom-swal-width {
-      width: 200px !important; /* Adjust the width as needed */
-      height:100px !important;
-    }
+   
     .error-message {
     color: red;
     font-size: 12px;
@@ -1042,7 +1039,6 @@ function submitFormData() {
     try {
         const payload = collectPayload(); // Collect validated form data
         console.log('Collected Payload:', payload);
-payload.
         // Send to backend
         fetch('/PostData', {
             method: 'POST',

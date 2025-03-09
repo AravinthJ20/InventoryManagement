@@ -16,7 +16,8 @@ router.post('/workflowTrigger', async (req, res) => {
     console.log('workflow called')
 
     const workflowRules = await client.collection('workflow_rules').find().toArray();
-    const rule1 = await client.collection('workflow_rules').findOne({ stepId: 1 })
+    const rule1 = await client.collection('workflow_rules').findOne({ stepId: 1,workflowId:"dbflow"})
+    console.log(rule1)
     let currentApprover = rule1.approvers[0];
 
     await client.collection('workitems').insertOne({

@@ -1,11 +1,13 @@
 const mongodb=require("mongodb")
 const MongoClient=mongodb.MongoClient;
+require('dotenv').config()
+const MONGO_URI=process.env.MONGO_URI
 
 async function connectDB(database){
     try{
 
     // const client=await MongoClient.connect('mongodb://127.0.0.1:27017/')
-    const client=await MongoClient.connect('mongodb+srv://aravinthj388:Js9QJ4sbbMKLIHQD@cluster0.q4y15.mongodb.net/?retryWrites=true&w=majority')
+    const client=await MongoClient.connect(MONGO_URI)
 
     const dbList=await client.db().admin().listDatabases();
     // console.log('dbList',dbList)
