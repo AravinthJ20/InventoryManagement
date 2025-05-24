@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Invoice</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/popupTable.css">
+    <!-- Add Select2 for enhanced multi-select -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        /* Add multi-select specific styles */
+        .select2-container--default .select2-selection--multiple {
+            border: 1px solid #ddd;
+            min-height: 38px;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #3498db;
+            color: white;
+            border: none;
+        }
+        .product-select-container {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    {{> sidebar}}
+    {{> topbar user=user}}
+
+    <main class="main-content shifted">
+        <div class="sub-container">
+            <div class="mini-container formContainter">
+                <!-- ... (previous header and customer sections remain the same) ... -->
+                
+                <div class="product-select-container">
+                    <label for="productSelect">Select Products:</label>
+                    <select id="productSelect" name="products" multiple="multiple" style="width: 100%">
+                        {{#each products}}
+                        <option value="{{this._id}}" 
+                                data-price="{{this.price}}" 
+                                data-code="{{this.code}}"
+                                data-description="{{this.description}}">
+                            {{this.name}} ({{this.code}}) - ${{this.price}}
+                        </option>
+                        {{/each}}
+                    </select>
+                    <button class="btn" onclick="addSelectedProducts()" style="margin-top: 10px;">Add Selected Products</button>
+                </div>
+
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>Rate</th>
+                            <th>Discount</th>
+                            <th>Tax</th>
+                            <th>Amount</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceItems">
+                        <!-- Items will be added here -->
+                    </tbody>
+                </table>
+
+                <!-- ... (rest of the template remains the same) ... -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        // Initialize Select2
+        $(document).ready(function() {
+            $('#productSelect').select2({
+                placeholder: "Search and select products",
+                allowClear: true
+            });
+        });
+
+        // Modified addSelectedProducts function
+        function addSelectedProducts() {
+            const selectedProducts = $('#productSelect').select2('data');
+            const itemsTable = document.getElementById('invoiceItems');
+            
+            selectedProducts.forEach(product => {
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>
+                        <input type="hidden" name="productId" value="${product.id}">
+                        ${product.element.dataset.code}
+                    </td>
+                    <td>${product.text.split(' - ')[0]}</td>
+                    <td><input type="number" name="quantity" min="1" value="1" required onchange="calculateLineTotal(this)"></td>
+                    <td><input type="number" name="rate" min="0" step="0.01" value="${product.element.dataset.price}" required onchange="calculateLineTotal(this)"></td>
+                    <td><input type="number" name="discount" min="0" max="100" value="0" onchange="calculateLineTotal(this)"></td>
+                    <td>
+                        <select name="taxRate" onchange="calculateLineTotal(this)">
+                            <option value="0">0%</option>
+                            <option value="5">5%</option>
+                            <option value="10" selected>10%</option>
+                            <option value="18">18%</option>
+                        </select>
+                    </td>
+                    <td><span name="amount">${product.element.dataset.price}</span></td>
+                    <td><button class="deleteRowBtn" onclick="deleteInvoiceItem(this)">×</button></td>
+                `;
+                itemsTable.appendChild(newRow);
+            });
+            
+            calculateTotals();
+            $('#productSelect').val(null).trigger('change'); // Clear selection
+        }
+
+        // ... (rest of the JavaScript remains the same) ...
+    </script>
+</body>
+</html>

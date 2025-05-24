@@ -1,0 +1,327 @@
+  {{!-- <div class="wfsidebar" id="wfsidebar">
+        <button class='wf-closebtn' onclick="closeWf()">X</button>
+            <div class="wfsidebar-header">
+                <h2>Workflow</h2>
+                 <button class="button approve" value="Approve">Approve</button>
+        <button class="button reject"  value="Reject">Reject</button>
+            </div>
+            <div class="workflowLog" id="workflowLog">
+                <!-- Workflow steps will be inserted here dynamically -->
+            </div>
+    </div> --}}
+    <!-- Add this to your popups/wfsidebar.hbs file -->
+<div class="sidebar-popup" id="workflowSidebar">
+    <div class="sidebar-header">
+        <h3>Workflow Log</h3>
+        <button class="close-sidebar" onclick="closeWorkflowSidebar()">&times;</button>
+    </div>
+    <div class="sidebar-content">
+        <div>
+            <p for="approver">Current approver: </p>
+            <input type="text" id="approver" name="approver" class="approver" readonly>
+            <p>Workflow ID: </p>
+            <input type="text" id="workflowId" class="workflowId" name="workflowId" readonly>
+            <p>Product ID: </p>
+            <input type="text" id="productId" readonly>
+            <input type="text" id="role" hidden>
+        </div>
+        <div>
+            <span id="actions">
+                <!-- Action buttons will be inserted here -->
+            </span>
+        </div>
+        <div id="response"></div>
+        <div class="logs-container">
+            <!-- Workflow logs will be inserted here -->
+        </div>
+    </div>
+</div>
+
+{{!-- <style>
+    /* Add these styles to your CSS */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
+
+/* Make sure the sidebar appears above other content */
+.main-content.shifted {
+    transition: margin-right 0.3s ease;
+}
+
+.main-content.shifted-with-sidebar {
+    margin-right: 400px;
+}
+.sidebar-popup {
+    position: fixed;
+    top: 30px;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar-popup.active {
+    right: 0;
+}
+
+.sidebar-header {
+    padding: 15px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-content {
+    padding: 20px;
+}
+
+.close-sidebar {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Add any additional styling from your original workflow log here */
+</style> --}}
+
+<style>
+    .sidebar-popup {
+    position: fixed;
+    top: 30px;
+    right: -420px;
+    width: 400px;
+    height: 100vh;
+    background: #f9f9f9;
+    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.15);
+    transition: right 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    border-radius: 8px 0 0 8px;
+}
+
+.sidebar-popup.active {
+    right: 0;
+}
+
+.sidebar-header {
+    padding: 20px;
+    background: #ffffff;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px 0 0 0;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.sidebar-content {
+    padding: 20px;
+}
+
+.sidebar-content p {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+    font-size: 14px;
+}
+
+.sidebar-content input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background: #fff;
+    font-size: 14px;
+}
+
+#actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+#actions .button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#actions .approve {
+    background-color: #007bff;
+}
+
+#actions .reject {
+    background-color: #dc3545;
+}
+
+.logs-container {
+    margin-top: 20px;
+}
+
+.log-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
+}
+
+.log-field {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #444;
+}
+
+.log-label {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #111;
+}
+
+#response {
+    margin-top: 10px;
+    font-size: 14px;
+    color: green;
+}
+
+.close-sidebar {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+</style>
+
+<script>
+function openWorkflowSidebar(id) {
+    const sidebar = document.getElementById('workflowSidebar');
+    sidebar.classList.add('active');
+    fetchWorkflowLog(id);
+}
+
+function closeWorkflowSidebar() {
+    document.getElementById('workflowSidebar').classList.remove('active');
+}
+
+async function fetchWorkflowLog(id) {
+    try {
+        let workflowElement = document.getElementById("workflowId");
+        let action = document.getElementById("actions");
+        let approver = document.getElementById("approver");
+        let productId = document.getElementById("productId");
+        
+        // Clear previous logs
+        document.querySelector('.logs-container').innerHTML = '';
+        action.innerHTML = '';
+
+        const response = await fetch(`/log/${id}`);
+        if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+        
+        const data = await response.json();
+        const pendingUser = data.pendingUser;
+        const user = data.role;
+
+        if (data.workflowId) {
+            workflowElement.value = data.workflowId;
+        } else {
+            workflowElement.value = 'Default Value';
+        }
+
+        if (data.pendingUser == null || pendingUser != user) {
+            approver.value = data.pendingUser || '';
+            productId.value = data.log[0]?.productId || '';
+        } else {
+            data.decisions.forEach(decision => {
+                let button = document.createElement('button');
+                button.value = decision;
+                button.style.display = 'block';
+                button.classList.add('button', decision.toLowerCase());
+                button.onclick = () => sendAction(decision);
+                button.textContent = decision;
+                action.appendChild(button);
+            });
+            
+            approver.value = data.pendingUser || '';
+            productId.value = data.log[0]?.productId || '';
+        }
+
+        // Display logs
+        const logsContainer = document.querySelector('.logs-container');
+        data.log.forEach(log => {
+            const logCard = document.createElement('div');
+            logCard.className = 'log-card';
+            logCard.innerHTML = `
+                <div class="log-field"><span class="log-label">User Profile:</span> ${log.approver}</div>
+                <div class="log-field"><span class="log-label">Status:</span> ${log.status}</div>
+            `;
+            logsContainer.appendChild(logCard);
+        });
+
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+function sendAction(action) {
+    var approver = document.getElementById("approver").value;
+    var productId = document.getElementById("productId").value;
+    
+    const payload = {
+        approver: approver,
+        workflowId: "dbflow",
+        action: action,
+        productId: productId
+    };
+
+    fetch('/workflow-engine/triggerWorkFlow', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        // Refresh the workflow log after action
+        fetchWorkflowLog(productId);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('response').innerText = 'An error occurred.';
+    });
+}
+
+
+</script>

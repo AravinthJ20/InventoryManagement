@@ -1,0 +1,282 @@
+{{!-- <div id="rowDetailsPopup" class="sidebar-popup">
+  <div class="popup-header">
+    <h3>Row Details</h3>
+    <button class="close-btn" onclick="closeRowDetails()">&times;</button>
+  </div>
+  <div class="popup-content" id="rowDetailsContent">
+    <!-- Details will be loaded here -->
+  </div>
+</div>
+<div class="sidebar-overlay" id="rowDetailsOverlay"></div>
+<style>
+    .sidebar-popup {
+  position: fixed;
+  top: 40px;
+  right: -400px;
+  width: 400px;
+  height: 100%;
+  background: white;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+  transition: right 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar-popup.active {
+  right: 0;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+  display: none;
+}
+
+.popup-header {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.popup-content {
+  padding: 15px;
+  overflow-y: auto;
+  height: calc(100% - 60px);
+}
+</style>
+
+<script>
+    function showRowDetails(rowId) {
+  // Fetch row data (you'll need to implement this based on your data structure)
+  const rowData = getRowDataById(rowId); 
+  
+  // Populate the popup content
+  const content = `
+    <div class="detail-section">
+      <h4>SCH Reference Number</h4>
+      <p>${rowData.externalReference || 'N/A'}</p>
+    </div>
+    <div class="detail-section">
+      <h4>Vendor/Transporter</h4>
+      <p>${rowData.vendorName || 'N/A'}</p>
+    </div>
+    <div class="detail-section">
+      <h4>Status</h4>
+      <p class="status-badge ${rowData.status}">${rowData.status || 'N/A'}</p>
+    </div>
+    <!-- Add more details as needed -->
+  `;
+  
+  document.getElementById('rowDetailsContent').innerHTML = content;
+  
+  // Show the popup and overlay
+  document.getElementById('rowDetailsPopup').classList.add('active');
+  document.getElementById('rowDetailsOverlay').style.display = 'block';
+}
+
+function closeRowDetails() {
+  document.getElementById('rowDetailsPopup').classList.remove('active');
+  document.getElementById('rowDetailsOverlay').style.display = 'none';
+}
+
+// Close popup when clicking overlay
+document.getElementById('rowDetailsOverlay').addEventListener('click', closeRowDetails);
+
+// Helper function to get row data - you'll need to implement this based on your data structure
+function getRowDataById(rowId) {
+  // This should return the data for the specified row
+  // You might need to fetch from your data source or get from existing table data
+  return {
+    externalReference: "INBINV00000127",
+    vendorName: "SCHENKER LOGISTICS LLC",
+    status: "Invoice Submitted",
+    // ... other fields
+  };
+}
+</script> --}}
+
+{{!-- 
+//.. new rule for details ..// --}}
+<div id="rowDetailsPopup" class="sidebar-popup">
+  <div class="popup-header">
+    <h3>Row Details</h3>
+    <button class="close-btn" onclick="closeRowDetails()">&times;</button>
+  </div>
+  <div class="popup-content" id="rowDetailsContent">
+    <!-- Details will be loaded here -->
+  </div>
+</div>
+<div class="sidebar-overlay" id="rowDetailsOverlay"></div>
+
+<style>
+.sidebar-popup {
+  position: fixed;
+  top: 40px;
+  right: -400px;
+  width: 400px;
+  height: 100%;
+  background: white;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+  transition: right 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar-popup.active {
+  right: 0;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+  display: none;
+}
+
+.popup-header {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.popup-content {
+  padding: 15px;
+  overflow-y: auto;
+  height: calc(100% - 60px);
+}
+
+.detail-item {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.detail-value {
+  padding-left: 10px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.status-badge.Registered {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge.Pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.Rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+</style>
+
+<script>
+// Function to show row details
+function showRowDetails(rowId) {
+  // Find the row in the table
+  const row = document.querySelector(`tr[data-row-id="row-${rowId}"]`);
+  if (!row) {
+    console.error('Row not found');
+    return;
+  }
+
+  // Get all cells in the row
+  const cells = row.querySelectorAll('td');
+  
+  // Get all headers from the table
+  const headers = document.querySelectorAll('#customers th');
+  
+  // Create HTML for the details
+  let detailsHTML = '';
+  
+  // Loop through each cell and match with its header
+  cells.forEach((cell, index) => {
+    if (index >= headers.length) return;
+    
+    const header = headers[index];
+    const label = header.textContent.trim();
+    const dataType = header.getAttribute('data-type');
+    
+    // Skip certain columns if needed
+    if (label === 'Edit' || label === 'Delete' || label === 'Block') return;
+    
+    let value = '';
+    
+    // Handle different data types
+    if (dataType === 'status') {
+      const statusText = cell.querySelector('.status-badge')?.textContent || '';
+      value = `<span class="status-badge ${statusText}">${statusText}</span>`;
+    } 
+    else if (dataType === 'link') {
+      value = cell.querySelector('a')?.textContent || '';
+    }
+    else if (dataType === 'attachment') {
+      const badge = cell.querySelector('.badge');
+      value = badge ? `${badge.textContent} attachments` : 'No attachments';
+    }
+    else if (dataType === 'date') {
+      value = cell.textContent || '';
+    }
+    else {
+      value = cell.textContent || '';
+    }
+    
+    // Add to details HTML
+    detailsHTML += `
+      <div class="detail-item">
+        <div class="detail-label">${label}</div>
+        <div class="detail-value">${value}</div>
+      </div>
+    `;
+  });
+  
+  // Add workflow log button
+  detailsHTML += `
+    <div class="detail-item">
+      <button onclick="getLog('${rowId}')" class="action-btn">
+        View Workflow Log
+      </button>
+    </div>
+  `;
+  
+  // Populate the popup content
+  document.getElementById('rowDetailsContent').innerHTML = detailsHTML;
+  
+  // Show the popup and overlay
+  document.getElementById('rowDetailsPopup').classList.add('active');
+  document.getElementById('rowDetailsOverlay').style.display = 'block';
+}
+
+function closeRowDetails() {
+  document.getElementById('rowDetailsPopup').classList.remove('active');
+  document.getElementById('rowDetailsOverlay').style.display = 'none';
+}
+
+// Close popup when clicking overlay
+document.getElementById('rowDetailsOverlay').addEventListener('click', closeRowDetails);
+</script>

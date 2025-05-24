@@ -13,8 +13,10 @@ body {
 .sidebar {
     width: 15%;
     /* Responsive width */
-    background-color:#fff;
-    color: rgb(14, 12, 12);
+    /* background-color:#fff;
+    color: rgb(14, 12, 12); */
+    background-color: #45596d;
+    color: white;
     padding: 1rem;
     overflow-y: auto;
     position: fixed;
@@ -32,7 +34,12 @@ body {
 }
 .sidebar h2 {
     text-align: center;
-    margin-top: 0;
+    margin-top: 2em;
+}
+
+.sidebar img {
+    text-align: center;
+    margin-top: 2em;
 }
 
 
@@ -53,7 +60,7 @@ body {
 }
 
 .sidebar ul li a {
-    color: rgb(24, 19, 19);
+    color: rgb(248, 244, 244);
     text-decoration: none;
     display: block;
     padding: 10px 15px;
@@ -62,7 +69,7 @@ body {
 }
 
 .sidebar ul li a:hover {
-    background-color: #ced2d5;
+    background-color: #979b9e;
 }
 
 .submenu {
@@ -224,6 +231,7 @@ body {
             gap: 1rem;
             margin-bottom: 1rem;
             margin-left: 2rem;
+            max-height: 450px;
 
             padding: 1rem;
             background-color: #f0f2f5;
@@ -310,25 +318,96 @@ body {
     cursor: pointer;
 }
 
-#header-btn {
+.header-btn {
 
 
+   padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
 }
 
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    
+}
+
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-3{
+    background-color: #28a745;
+    color: white;
+}
 .icon-btn {
   
     cursor: pointer;
     
     
 }
+.table-container {
+    overflow-y: auto;
+    max-height: 300px;
+    /* Adjust as needed */
 
-table {
+    /* font-size: 0.9rem; */
+}
+
+
+/*auto width for table */
+/* table {
     width: 100%;
     border-collapse: collapse;
     table-layout: auto;
-    /* Allow auto width adjustment based on content */
+     Allow auto width adjustment based on content 
+} */
+
+/*customize widht for table */
+
+table {
+    table-layout: fixed; /* Enforces colgroup widths */
+    width: 100%;
+    border-collapse: collapse;
 }
+
+th,
+td  {
+
+    width: 200px; /* or whatever default you want */
+    overflow: hidden;
+    /* text-overflow: ellipsis; /*show ... dots when text overflows */
+    /* white-space: nowrap;  */
+   
+    padding: 0.5rem;
+    text-align: center;
+  
+}
+
+th,
+td {
+    padding: 0.5rem;
+    text-align: center;
+} 
+.sticky-col {
+    position: sticky;
+    left: 0;
+    background-color: white;
+    z-index: 3; /* Make sure it stays above others */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Optional */
+  }
+
+
+ 
+
+.th-tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
 .table-row-btn{
     background-color: rgb(100, 227, 100);
     color: white;
@@ -336,15 +415,11 @@ table {
     border-radius: 4px;
     padding: 0.5rem 1rem;
 }
-th,
-td {
-    padding: 0.5rem;
-    text-align: center;
-}
 
 th{
-    background-color: #f2f2f2;
-    color: #333;
+              color: white;
+
+        background-color: #a3a6a8;
 
 }
 thead{
@@ -374,14 +449,11 @@ tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-.table-container {
-    overflow-y: auto;
-    max-height: 300px;
-    /* Adjust as needed */
-
-    /* font-size: 0.9rem; */
-}
-
+         tbody tr:hover {
+      transform: translateY(-1px);
+      box-shadow: 0px 4px 4px rgba(196, 195, 195, 0.2);
+ 
+    }
 
 
 /*new menu sbumenu style  */
@@ -513,7 +585,35 @@ tr:nth-child(even) {
 
  /* Styling for embeeded popup the icon and badge */
 
+/* loading Spinner */
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+    z-index: 1000; /* Ensure it appears above other content */
+}
 
+.spinner {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite; /* Spin animation */
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+/*...Lpading Spinner end...*/
   /* ......TOOLTIP...... */
 
  
@@ -675,31 +775,7 @@ position: absolute;
 
 
   /*...excel download popup ....*/
-  .dialog-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    z-index: 1000; /* Ensure it appears above other content */
-}
-
-.modal_container {
-    background-color: white; /* White background for the modal */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-    width: 300px; /* Set a fixed width */
-    padding: 20px; /* Padding around content */
-}
-
-.modal_heading h4 {
-    margin: 0; /* Remove default margin */
-}
-
+  
   /*...excel download popup ....*/
 
   /* action btn */
@@ -731,29 +807,159 @@ position: absolute;
     object-fit: cover;
 }
   /*end profile */
+
+
+  /*..more action btn */
+  .actions-container{
+    position: relative; /* Needed for absolute positioning of dropdown */
+    display: inline-block;
+     margin-bottom: .5em;
+  }
+
+     .more-actions {
+         display: none;
+         position: absolute;
+         right: 0; /* Align to right of container */
+    top: 100%; /* Position below the button */
+         
+    background: #fff;
+         border: 1px solid #ccc;
+         border-radius: 4px;
+         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+         z-index: 1000;
+         width: max-content;
+         margin-left: 100px;
+         min-width: 100px;
+         max-height: 200px; /* Limit the height of the popup */
+         overflow-y: auto; /* Allow scrolling if content overflows */
+         padding: 10px;
+         border-radius: 8px;
+     }
+
+     .more-actions button {
+         display: block;
+         width: 90%;
+         padding: 0.5rem;
+color: white;
+         margin-top: 10px;
+         background: rgb(117, 109, 109);
+         border: none;
+         font-size: 1em;
+         border-bottom: 1px solid #f81616;
+         text-align: center;
+         border-radius: 4px;
+     }
+
+ 
+
+     .more-actions button:last-child {
+         border-bottom: none; /* Remove border from the last button */
+     }
+
+     .three-dot-btn {
+         background: none;
+         border: none;
+         font-size: 1.5rem;
+         cursor: pointer;
+     }
+::-webkit-scrollbar{
+ height: 0px;
+ width:3px;
+}
+
+
+::-webkit-scrollbar-thumb{
+ background: rgb(133, 132, 132);
+}
+     /* Mobile view styles */
+     @media (max-width: 768px) {
+         /* Hide all action buttons in mobile view */
+         .actions-container .action-btn {
+             display: none;
+         }
+
+         /* Show the three-dot button */
+         .three-dot-btn {
+             display: inline-block;
+         }
+     }
+  /*..more action btn end...*/
  /* Media queries*/
- @media(max-width:768px){
-    .topbar{
-         max-height: 1em;
-     
-        
-        }
-        .topbar *{
-            font-size:.7em;
-           
-           }
-    .sidebar {
-        width: 15%;
-        font-size:.7em;
-    }
 
-    .sidebar.active {
-        left: 0;
-    }
 
-    .sidebar.active + .main-content {
-        margin-left: 80%;
-    }
+ /* pagnation controls */
+
+
+
+
+
+ .pagination-controls {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-top: 20px;
+}
+
+.pagination {
+ display: flex;
+ gap: 5px;
+}
+
+.pagination button {
+ padding: 3px 5px;
+ border: 1px solid #ccc;
+ background-color: #f9f9f9;
+ cursor: pointer;
+ border-radius: 4px;
+}
+
+.pagination button.active {
+ background-color: #007bff;
+ color: white;
+ border-color: #007bff;
+}
+
+.rows-per-page {
+ display: flex;
+ align-items: center;
+ gap: 10px;
+}
+
+.rows-per-page select {
+ padding: 3px;
+ border-radius: 4px;
+ border: 1px solid #ccc;
+}
+
+ /*..pagination controls end...*/
+
+
+ /* anger tag */
+ .styled-link {
+    display: inline-block;
+    padding: 3px 5px;  /* Adjust padding */
+    border-radius: 20px;  /* Rounded corners */
+    background-color: rgba(173, 216, 230, 0.3); /* Light blue with transparency */
+    color: #007bff; /* Blue text */
+    text-decoration: none; /* Remove underline */
+    font-weight: bold;
+z-index:initial;
+    border: 1px solid #cce5ff; /* Light blue border */
+    text-align: center;
+    transition: all 0.3s ease-in-out; /* Smooth transition */
+}
+
+
+.styled-link:hover {
+    background-color: rgba(173, 216, 230, 0.6); /* Slightly darker blue */
+    color: #0056b3; /* Darker blue text */
+}
+
+ /* anger tag */
+
+ /* old table media  query */
+ @media(max-width:1080px){
+   
   
     table th {
         display: none;
@@ -811,10 +1017,294 @@ position: absolute;
     }
  }
 
- .pagination-controls{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
- }
+
 
  
+ /* sidebar media query */
+ @media (max-width: 1080px) {
+
+   
+
+    .sidebar.active + .main-content {
+        margin-left: 80%;
+    } */
+  
+    .sidebar {
+        width: 60px; /* Collapsed width for mobile */
+        left: -60px; /* Hide sidebar by default */
+        padding: 0.5rem; /* Reduce padding */
+        font-size:1em;
+
+    }
+
+    .sidebar.active {
+        left: 0; /* Show sidebar when active */
+    }
+
+    .sidebar:not(.active) ul li a .menuname {
+        display: none; /* Hide text when sidebar is collapsed */
+    }
+
+    .sidebar ul li a i {
+        font-size: 2em; /* Increase icon size for better visibility */
+        margin-right: 0; /* Remove margin */
+    }
+
+    .sidebar ul li a {
+        padding: 10px; /* Reduce padding for mobile */
+    }
+
+    .submenu {
+        margin-left: 0; /* Remove left margin for submenu */
+    }
+}
+
+/* topbar media query */
+@media (max-width: 1080px) {
+
+   
+    .topbar {
+        height: 100px; /* Reduce height for mobile */
+        padding: 0.25rem; /* Reduce padding */
+        font-size:.7em;
+        max-height: 4em;
+
+    }
+
+    .topbar h1 {
+        font-size: 3em; /* Reduce font size for mobile */
+    }
+
+    .topbar .open-btn {
+        font-size: 2em; /* Reduce button size */
+        margin-left: 0.5rem; /* Adjust margin */
+    }
+
+    .topbar .topbar-menu a {
+        font-size: 1.3em; /* Reduce font size for menu items */
+        padding: 0.25rem; /* Reduce padding */
+    }
+}
+
+/* main content media query */
+
+@media (max-width: 1080px) {
+    .main-content {
+        margin-left: 0; /* Remove left margin for mobile */
+        width: 100%; /* Full width for mobile */
+        padding: 0.5rem; /* Add padding */
+    }
+
+    .main-content.shifted {
+        margin-left: 20%; /* Shift content when sidebar is active */
+        width: 40%; /* Reduce width to accommodate sidebar */
+    }
+
+    .sub-container {
+        margin-left: 0; /* Remove left margin */
+        padding: 0.5rem; /* Reduce padding */
+    }
+
+    .form {
+        grid-template-columns: 1fr; /* Single column layout for forms on mobile */
+    }
+
+    .form input[type="text"],
+    .form input[type="password"],
+    .form input[type="email"],
+    .form input[type="date"],
+    .form input[type="number"],
+    .form select,
+    .form input[type="tel"] {
+        width: 100%; /* Full width for form inputs */
+    }
+}
+
+/* container media query */
+@media(max-width: 1080px){
+
+    .main-content {
+
+        margin-top: 3rem;
+        display: flex;
+        flex-direction: column;
+        margin-left: 4rem;
+        width: 95%;
+        transition: margin-left 0.3s ease;
+        position: relative;
+        /* Ensure relative positioning for z-index */
+        z-index: 1;
+        /* Ensure main content is above sidebar toggle button */
+    }
+    .sub-container {
+    
+        display: grid;
+                gap: 1rem;
+                margin-bottom:0.5rem;
+                margin-left: 3rem;
+    width:150%;
+    max-height: 1700px;
+                padding: 1rem;
+                background-color: #354e74;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+           
+            
+            }
+}
+/* table media query */
+@media (max-width: 1080px) {
+
+    
+.table-container {
+    overflow-y: auto;
+    max-height: 1500px;
+    /* Adjust as needed */
+
+    /* font-size: 0.9rem; */
+}
+    table {
+        display: block;
+        width: 100%; /* Full width for tables */
+  
+      
+    }
+body{
+    max-height: 80vh;
+}
+    table thead {
+        display: none; /* Hide table headers on mobile */
+    }
+
+    table tr {
+        display: block;
+        margin-bottom: 1rem; /* Add space between rows */
+        border: 1px solid #ddd; /* Add border for card-like appearance */
+        border-radius: 8px; /* Rounded corners */
+        padding: 10px; /* Add padding */
+        background-color: #f9f9f9; /* Light background for cards */
+    }
+
+    table td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px; /* Add padding */
+        border: none; /* Remove borders */
+        font-size: 0.9em; /* Reduce font size */
+    }
+
+    table td::before {
+        content: attr(data-label); /* Display column name as label */
+        font-weight: bold;
+        color: #333;
+        flex-basis: 40%; /* Set consistent width for labels */
+        text-align: left;
+        padding-right: 8px; /* Add space between label and value */
+    }
+
+    table td:last-child {
+        text-align: center; /* Center-align the last column */
+    }
+
+    tfoot {
+        display: none; /* Hide footer on mobile */
+    }
+}
+
+
+/* Collaboration Icons */
+.collaboration-icons {
+    display: flex;
+    gap: 15px;  /* Space between icons */
+    align-items: center;
+    justify-content: center;
+  }
+
+  .collaboration-icons i {
+    font-size: 18px;
+    color: #b0b0b0; /* Light gray default */
+    transition: color 0.3s ease-in-out, transform 0.2s;
+  }
+
+  /* Active icon styles */
+  .collaboration-icons i.active {
+    color: #007bff; /* Blue for active icons */
+  }
+
+
+  /* Hover effect */
+  .collaboration-icons i:hover {
+    color: #0056b3;
+    cursor: pointer;
+    transform: scale(1.1); /* Slight zoom effect */
+  }
+
+  /* Collaboration Icons end */
+
+
+
+  /* page action popup validaiton */
+  .error-message {
+      color: red;
+      font-size: 12px;
+      margin-top: 4px;
+  }
+
+  .invalid {
+      border-color: red;
+  }
+
+  .popup2 {
+      position: fixed;
+
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+  }
+
+  .popup-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+  }
+
+  .popup-box {
+      position: relative;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .popup-box h2 {
+      margin: 0 0 10px;
+  }
+
+  .popup-box p {
+      font-size: 14px;
+      margin: 0 0 20px;
+  }
+
+  .popup-box button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+  }
+
+  .popup-box button:hover {
+      background: #0056b3;
+  }
+
+    /* page action popup validaiton end*/

@@ -7,8 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List</title>
     <link rel="stylesheet" href="../css/layout.css">
-    
+    <script src="../js/utils.js"></script>
     <script src="../js/layout.js"></script>
+    
     <script src="../js/embeddedPopup.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
@@ -197,6 +198,17 @@ color: white;
       .fa{
         cursor: pointer;
       }
+      #authCheck {
+    position: fixed; /* Fixes the element relative to the viewport */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centers it precisely */
+    color: red;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+}
+
         </style>
 <!-- Code injected by Five-server -->
   <script async data-id="five-server" data-file="c:\Users\Aravind J\OneDrive - SCH Infotech Private Limited\Desktop\UI\PageLayouts\html\PageLayout.html" type="application/javascript" src="/fiveserver.js"></script>
@@ -206,6 +218,8 @@ color: white;
     <div class="sidebar active" id="sidebar">
         <h2>Menu</h2>
         <ul>
+            <li><a href="/inbox"><i class="fa fa-home"></i>Inbox</a></li>
+
                      <li><a href="index2.html"><i class="fa fa-home"></i>Home</a></li>
     
              <li><a href="/views/LandingPage.html"><i class="fa fa-bar-chart fa-fw"></i><span class="menuname">Dashboard</span></i></a></li>
@@ -213,6 +227,7 @@ color: white;
                 <a href="javascript:void(0)"><i class="fa fa-truck"></i><span class="menuname">Suppliers</span ><span class="arrow">></span></a>
                 <ul class="submenu">
                     <li><a href="/views/VendorRegisteration.htm"><i class="fa fa-truck"></i><span class="menuname">Supplier Registeration</span></a></li>
+                    
                     <li><a href="/views/VendorList.htm"><i class="fa fa-truck"></i><span class="menuname">Supplier List</span></a></li>
                 </ul>
             </li>
@@ -256,7 +271,7 @@ color: white;
  <head>
 <div class="topbar">
     <button class="open-btn" onclick="toggleSidebar2()">☰</button>
-    <h2>Inventory Mangament</h2>
+    <h2>Smart Inventory System</h2>
     <div class="topbar-menu">
         <a href="/socket"><i class="fa fa-comments-o"></i>Chat Room</a>
         <a href="#">About Us</a>
@@ -284,9 +299,8 @@ color: white;
                     </span>
                     <div class="actions-container" id="actionsContainer">
 
-                        <input type="text" id="searchInput" onkeyup="searchTable1(this.id)"
-                            placeholder="Search for anything.." hidden>
-                        <button class="action-btn icon-btn" onclick="headerCall()">&#x1f50d;</button>
+                        <input type="text" id="searchInput" onkeyup="searchTable2(this,'getMaterials')"
+                            placeholder="&#x1f50d; Search for anything..">
 <button class="action-btn" onclick="location.href=href='/updateStock'">Update stock</button>
                         <!-- Filter icon, you can use your preferred icon here -->
                         <button id="action-btn header-btn" class="action-btn download-btn" onclick="downloadExcel()">&#x2B73;</button>
@@ -382,8 +396,12 @@ color: white;
     <button class="close-filter" onclick="closeFilter()">X</button>
 <div class="filter-content-left" id="filter-content-left"><p>left part</p></div>
 <div class="filter-content-right" id="filter-content-right"><p>right part</p></div>
-
 </div>
+<div id="authCheck">
+<p>you not have authorization for this page</p>
+<img src="/images/401.webp" id="404Page" alt="Girl in a jacket">
+</div>
+
 </body>
 
 <script>
@@ -442,9 +460,14 @@ color: white;
     const sectionData = extractSectionData();
     const tableData = extractTableData();
     let businessViews = combineDataSources(sectionData, tableData);
-
+function searchTable2(value,datasource){
+let searchInput=value.value
+console.log(value.value,datasource)
+loadData(1,10,datasource,null,searchInput)
+    
+}
     // Function to load data for all tables or a specific table
-    function loadData(page, limit, datasource = null,rowfilter) {
+    function loadData(page, limit, datasource = null,rowfilter,searchInput) {
         const skip = (page - 1) * limit;
 
         // Show the loading spinner
@@ -458,7 +481,7 @@ color: white;
             // Fetch data for a specific table
             businessViews=[]
             businessViews.push(datasource)
-            pagination[datasource] = { skip, limit,rowfilter };
+            pagination[datasource] = { skip, limit,rowfilter, searchInput};
         } else {
             // Fetch data for all tables (initial load)
             tableData.forEach(table => {
@@ -588,9 +611,8 @@ color: white;
 </script>
 
 </html>
-
 <script>
-    let PageControls=[
+      let PageControls=[
   {
     "section": [
       {},
@@ -641,9 +663,49 @@ color: white;
     
     ]
   }
+,{
+    'pagePermissions':["supplier","buyer","admin"]
+}
 ]
 
+    function decodeJwt(token) {
+  const base64Url = token.split('.')[1]; // Get payload
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // URL-safe Base64 decode
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+  return JSON.parse(jsonPayload);
+ }
+ let token=localStorage.getItem('admintoken')
 
+ let decodeToken=decodeJwt(token)
+ function checkPermissions(userRole, requiredPermissions) {
+  return requiredPermissions.includes(userRole);
+}
+ function pagePermissions() {
+    let userRole=decodeToken.role
+  let requiredPermissions = PageControls.find(control => control.pagePermissions).pagePermissions;
+  let isAuthorized = checkPermissions(userRole, requiredPermissions);
+
+  if (!isAuthorized) {
+    document.getElementById('authCheck').style.display = 'block';
+    // document.getElementById('authCheck').innerText = 'You do not have authorization for this page';
+    // Optionally, hide other content or disable interactions
+    document.querySelector('.main-content').style.display = 'none';
+  } else {
+    document.getElementById('authCheck').style.display = 'none';
+    document.querySelector('.main-content').style.display = 'block';
+  }
+}
+
+// Call the function to check permissions when the page loads
+pagePermissions();
+</script>
+<script>
+  
+
+
+ 
 function loadFilter(){
     console.log('load filter')
     fetch('/loadFilter', {

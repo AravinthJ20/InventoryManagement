@@ -1,0 +1,1580 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+      {{> favicon}}
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/table.css">
+       <link rel="stylesheet" href="../css/popups.css">
+              <link rel="stylesheet" href="/css/chart.css">
+
+    <link rel="stylesheet" href="/css/popupTable.css">
+    <script src="/js/layout.js"></script>
+    <script src="../js/loadChart.js"></script>
+    <script src="../js/fetchPageData.js"></script>
+    <script src="../js/embeddedPopup.js"></script>
+        <script src="../js/popupServices.js"></script>
+
+        <script src="../js/fetchPageData.js"></script>
+    <script src="../js/utils.js"></script>
+        <script src="../js/workflow.js"></script>
+     <script src="../js/tableUtils.js"></script>
+      <script src="../js/attachmentService.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        /* Card Layout Styles */
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.data-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: white;
+    position: relative;
+}
+
+.card-header {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.card-field {
+    display: flex;
+    justify-content: space-between;
+}
+
+.field-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.field-value {
+    text-align: right;
+}
+
+.card-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    background: #e0e0e0;
+}
+
+.card-status.rejected {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.card-status.Invoice\ Submitted {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+    </style>
+    <style>/* Layout Popup Styles */
+.layout-popup {
+    display: none;
+    position: absolute;
+    right: 10px;
+    top: 40px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.layout-option {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.layout-option:hover {
+    background-color: #f5f5f5;
+}
+
+/* Layout specific styles */
+.compact-rows tr {
+    height: 30px !important;
+}
+
+.card-layout {
+    display: none; /* Will be shown via JavaScript */
+}</style>
+    <style>
+         .table-container {
+    position: relative;
+    overflow-x: auto;
+}
+
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(255,255,255,0.8);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.scroll-left {
+    left: 50px;
+}
+
+.scroll-right {
+    right: 10px;
+}
+
+/* Add this to your style section */
+.card-layout .table-container table {
+    display: none !important;
+}
+
+.card-layout .table-container .cards-container {
+    display: grid !important;
+}
+
+/* Ensure table is visible by default */
+.table-container table {
+    display: table;
+    width: 100%;
+}
+
+/* Hide cards container by default */
+.cards-container {
+    display: none;
+}
+
+/* When card-layout is active */
+.card-layout .table-container table {
+    display: none;
+}
+
+.card-layout .table-container .cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Ensure table container has proper dimensions */
+.table-container {
+    position: relative;
+    min-height: 200px;
+    overflow: auto;
+}
+    </style>
+    <style>
+   
+   
+         /*Attachment Badge */
+          .upload-icon {
+        position: relative;
+        display: inline-block;
+    }
+         .badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 10px;
+    }
+    </style>
+    
+ 
+   <style>
+    /* Fullscreen styles */
+    /* Fullscreen API styles */
+:fullscreen, ::backdrop {
+    background-color: white;
+}
+
+:fullscreen .table-container {
+    height: 100vh;
+    width: 100vw;
+}
+
+:fullscreen .cards-container {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    padding: 20px;
+}
+
+/* Hide elements in fullscreen */
+:fullscreen .sidebar,
+:fullscreen .topbar {
+    display: none;
+}
+.fullscreen-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+
+.fullscreen-mode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: white;
+    padding: 20px;
+    overflow: auto;
+}
+
+.fullscreen-mode .table-container {
+    height: calc(100vh - 100px);
+    overflow: auto;
+}
+
+.fullscreen-mode .cards-container {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 30px;
+}
+
+.fullscreen-mode .data-card {
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+   </style>
+ 
+
+    <style>
+        /* customize css for table */
+        /* Sticky first column */
+#customers th:first-child,
+#customers td:first-child {
+  position: sticky;
+  left: 0;
+}
+        </style>
+
+<!-- Code injected by Five-server -->
+  </head>
+
+<body>
+    {{> sidebar}}
+
+ <head>
+   {{> topbar user=user}}
+</head>
+
+
+    <main class="main-content shifted">
+       
+      
+     
+        <div class="sub-container">
+            <div class="container">
+                <button class="collapse-btn" onclick="toggleChart('chart-Section')"
+                    id="collapse-btn"><span>➡️</span></button>
+
+                <div class="chart-Section" id="chart-Section">
+                    <div class="table-header">
+                        <h3>Chart</h3>
+                    </div>
+                    <div class="chart-container" id="chart-container">
+                        <div class="controls">
+                            <select id="chartTypeSelect" onchange="updateChart()">
+                                <option value="bar">Bar Chart</option>
+                                <option value="line">Line Chart</option>
+                                <option value="pie">Pie Chart</option>
+                            </select>
+                            <select id="dataSelect" onchange="updateChartData()">
+                                <option value="status">status</option>
+                              
+                            </select>
+                        </div>
+
+                        <canvas id="myChart"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>      
+       <script>
+      function updateStock() {
+  const selectedData = getSelectedRowData();
+
+  if (selectedData.length === 0) {
+    alert('Please select at least one row');
+    return;
+  }
+
+  const params = selectedData.map(row => ({
+    vendorId: row.phone,
+    supplierName: row.supplierName,
+  }));
+
+  console.log('updatestock called');
+
+  const queryString = encodeURIComponent(JSON.stringify(params));
+  window.location.href = `/updatestock?data=${queryString}`;
+}
+function checkbuttoncond2(){
+
+}
+function handleEmbeddedPageClick(rowDataJson) {
+    
+    try {
+            // First unescape the HTML entities
+        const cleanedJson = rowDataJson
+            .replace(/&quot;/g, '"')
+            .replace(/\\'/g, "'");
+        
+        // Then parse the JSON
+        const rowData = JSON.parse(cleanedJson);
+        console.log('Row data:', rowData.vendorId);
+        
+        // Now call your popup function with the parsed data
+        openPopup(rowData.vendorId);
+    } catch (error) {
+        console.error('Error parsing row data:', error);
+        
+    }
+}
+
+// Your button configuration function
+function checkbuttoncond(data) {
+  
+
+  let properties={
+    disabled:true
+  }
+
+  if(data.status=="Registered"){
+    properties.disabled=true
+  }
+
+  else{
+    properties.disabled=false
+  }
+    return  properties.disabled
+
+}
+       </script>
+        
+            <div class="sub-container">
+                <div class="mini-container list-container" containerType="table">
+    
+                    <div class="list-header">
+                        <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+    
+                        <h3 class="container-hederText">List of Items</h3>
+                            
+                        </span>
+                        <div class="actions-container" id="actionsContainer">
+      <input type="text" id="searchInput" onkeyup="searchTable2(this,'getSuppliers')"
+                            placeholder="&#x1f50d; Search for anything..">
+    <button class="action-btn header-btn btn-primary" onclick="updateStock()">Update stock</button>
+                            <!-- Filter icon, you can use your preferred icon here -->
+                            <button id="action-btn header-btn" class="action-btn download-btn header-btn btn-3" onclick="downloadExcel()">&#x2B73;</button>
+        <button class="action-btn layout-btn header-btn btn-secondary" onclick="showLayoutOptions()">Layout</button>
+    {{> popups/tableLayout }}
+<button class="action-btn fullscreen-btn" onclick="toggleFullscreen()">
+    <i class="fas fa-expand"></i> <!-- Font Awesome expand icon -->
+</button>
+                            <button class="action-btn header-btn-2" onclick="window.location.href='/cardView'">Card View</button>
+                            <button class="action-btn">Action 9</button>
+                            <button class="action-btn">Action 10</button>
+                            <button class="fa  header-btn btn-secondary" onclick="initFilter('customers')">&#xf0b0;</button>
+    
+                            <button class="three-dot-btn" onclick="togglePopup()">⋮</button>
+                            <div class="more-actions" id="moreActions"></div>
+    
+                        </div>
+    
+                        </div>
+                  
+    
+                    <span class="collpase-container" id="collpase-container">
+                      <div class="table-scroll-controls">
+    <button class="scroll-btn scroll-left" onclick="scrollTableLeft()">❮</button>
+    <button class="scroll-btn scroll-right" onclick="scrollTableRight()">❯</button>
+</div>
+                        <div class="table-container" datasource="getSuppliers">
+                            <table id="customers" >
+                  <colgroup>
+  <col style="width: 80px">   <!-- Vendor -->
+  <col style="width: 100px;">  <!-- Supplier Name -->
+  <col>  <!-- Contact Number -->
+  <col>  <!-- Email -->
+    <col style="width: 130px;">   <!-- Status -->
+  <col>  <!-- Registration Date -->
+
+  <col>   <!-- Edit -->
+  <col>   <!-- Delete -->
+  <col>  <!-- Category Details -->
+  <col>  <!-- Collaboration -->
+  <col>   <!-- Testing -->
+  <col>   <!-- Inbox -->
+    <col>  
+        <col>
+</colgroup>
+                                <thead>
+                                <tr>
+                                     <th   dbcolum="vendorId" data-type="link" href="/views/supplierDetails.hmtl?mediID=${vendorId}">Vendor</th>
+                                {{!-- <th data-column="Suppliers" dbcolum="vendorId" onclick="sortTable(this)">Supplier ID <i class="fa fa-sort"></i></th> --}}
+                               
+                                <th dbcolum="supplierName" >Supplier Name</th>
+                             
+
+                                <th dbcolum="phone" id="contact">Contact Number</th>
+                                <th dbcolum="email" >Email</th>
+                            
+                                <th data-type="status" dbcolum="status" >Status</th>
+                                                                <th dbcolum="regDate">Regiseration Date</th>
+
+                                  <th data-type="attachment" dbcolum="supportDocs">SupportDocs</th>
+                                 <th  data-type="date" dbcolum="createdOn">Created On</th>
+                                                                                                                                <th dbcolum="createdOn">Regiseration Date</th>
+                                                                <th  data-type="number" dbcolum="sequence">Sequence</th>
+                                <th  data-icon="fa fa-edit" data-click="EditTest()"  data-type="icon"  dbcolum="Edit" data-name="Edit"  >Edit</th>
+                                <th data-icon="fa fa-trash" data-click="EditTest()"  data-type="icon" dbcolum="Delete"   data-name="Delete">Delete</th>
+                            
+                                
+                              
+                                <th data-type="embeddedPage" dbcolum="categories" data-params="vendorId:vendorId"  data-source="getSuppliersCategories">Category Details</th>
+                                  
+                                <th data-type="table-collab" dbcolum="collab">Collaboration</th>
+                                                               
+                                     <th dbcolum="testcheck" data-type="checkbox" data-checkboxCondition="checkmyCond()"><input type="checkbox"></th>
+
+                                                                     <th dbcolum="test" data-type="link" href="/workflowlog?id=${vendorId}">Inbox</th>
+
+                                     <th dbcolum="Block" data-type="button" data-onload="checkbuttoncond(payload)" data-onclick="checkbuttoncond2()">Block</th>
+
+
+                            </tr>
+                                </thead>
+                                    <tbody id="materials">
+                       
+    
+    </tbody>
+ <tfoot>
+    <tr class="test">
+        <td  ></td> <!-- Exact position for sequence total (column 10) -->
+        <td></td> <!-- Edit column (11) -->
+        <td></td> <!-- Delete column (12) -->
+        <td></td> <!-- Category Details column (13) -->
+        <td></td> <!-- Collaboration column (14) -->
+        <td></td> <!-- Inbox column (15) -->
+        <td ></td> <!-- Exact position for sequence total (column 10) -->
+        <td></td> <!-- Edit column (11) -->
+        <td></td> <!-- Delete column (12) -->
+        <td></td> <!-- Category Details column (13) -->
+           <td></td>
+              <td></td>
+                 <td></td>
+                <td colspan="5"></td> <!-- Spans first 9 columns -->
+
+    </tr>
+</tfoot>
+      
+    
+                            </table>
+                        </div>
+                        <div class="pagination-controls">
+                            <div class="rows-per-page">
+                                <label for="rowsPerPage">Rows per page:</label>
+                                <select id="rowsPerPage" onchange="changeRowsPerPage(this.value,this)">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </div>
+                            <div class="pagination" id="pagination"></div>
+                        </div>
+                      
+                    </span>
+    
+                </div>
+             
+            </div>
+            <div class="action">
+
+                <button class="form-action-btn" id="submitBtn" onclick="submitFormData()">Submit</button>
+                <button class="form-action-btn" id="clearCart">Save as Draft</button>
+            </div>
+    </div>
+    <div id="uploadPopup" class="popup" >
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeUploadPopup()">&times;</span>
+            <h3>Select Files to Upload</h3>
+            
+            <!-- File input for multiple file upload -->
+            <input type="file" id="fileUpload" name="attachments" multiple onchange="handleFileSelection(event)">
+            
+            <div id="filePreview"></div>
+            <button type="button" onclick="submitAttachments()">Submit</button>
+            <button type="button" onclick="closeUploadPopup()">Cancel</button>
+        </div>
+    </div>
+    <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+</main>
+
+<!-- Popup for Selecting Categories -->
+
+<footer>
+  
+</footer>
+<popups>
+
+    {{> popups/nestedTablePopup }}
+ 
+   {{>popups /wfsidebar2}}
+      {{>popups /broadcasting}}
+       {{>popups /tableRowDetails}}
+  {{>popups /columnSettings}}
+    {{>popups /alertPopup}}
+        {{>popups /errorPopup}}
+        {{>popups /confimationpopup}}
+        {{>popups /modelPopup}}
+
+
+</popups>
+
+
+<script>
+  // Modify the openWorkflowSidebar function to handle the overlay
+function openWorkflowSidebar(id,logtype) {
+    const sidebar = document.getElementById('workflowSidebar');
+    const overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay active';
+    overlay.onclick = closeWorkflowSidebar;
+    document.body.appendChild(overlay);
+    
+    sidebar.classList.add('active');
+    document.querySelector('.main-content').classList.add('shifted-with-sidebar');
+    fetchWorkflowLog(id);
+}
+
+function closeWorkflowSidebar() {
+    document.getElementById('workflowSidebar').classList.remove('active');
+    document.querySelector('.sidebar-overlay')?.remove();
+    document.querySelector('.main-content').classList.remove('shifted-with-sidebar');
+}
+
+function getLog(id) {
+    openWorkflowSidebar(id);
+}
+function getLog2(id,logtype) {
+    openWorkflowSidebar(id,logtype);
+}
+</script>
+
+
+  
+
+   
+<div class="filter-popup" id="filter-popup">
+
+    <button class="close-filter" onclick="closeFilter()">X</button>
+<div class="filter-content-left" id="filter-content-left"><p>left part</p></div>
+<div class="filter-content-right" id="filter-content-right"><p>right part</p></div>
+</div>
+<div id="authCheck">
+<p>you not have authorization for this page</p>
+<img src="/images/401.webp" id="404Page" alt="Girl in a jacket">
+</div>
+
+</body>
+
+<script>
+    // Track selected rows
+let selectedRows = new Map();
+
+// Function to handle checkbox changes
+function handleCheckboxChange(checkbox, rowId) {
+  const row = document.querySelector(`tr[data-row-id="${rowId}"]`);
+  
+  if (checkbox.checked) {
+    // Get all data from the row
+    const rowData = {};
+    row.querySelectorAll('[data-name]').forEach(cell => {
+      const key = cell.getAttribute('data-name');
+      rowData[key] = cell.textContent || cell.value;
+    });
+    selectedRows.set(rowId, rowData);
+    row.classList.add('selected-row');
+  } else {
+    selectedRows.delete(rowId);
+    row.classList.remove('selected-row');
+  }
+}
+
+// Function to get selected row data
+function getSelectedRowData() {
+  return Array.from(selectedRows.values());
+}
+
+// Function to evaluate checkbox conditions
+function checkmyCond(data) {
+  
+
+  let properties={
+    disabled:true
+  }
+
+  if(data.status=="Registered"){
+    properties.disabled=true
+  }
+
+  else{
+    properties.disabled=false
+  }
+    return  properties.disabled
+
+}
+    function EditTest(){
+        console.log('EditTest function called');
+        // Your logic for EditTest goes here
+    }
+</script>
+{{!-- fetch page data global page used if  any proble compare materiallist and supplierdetail pages --}}
+<script>
+    let sortfield = 'vendorId';
+    let sortOrder = -1;
+    let currentPage = 1;
+    let rowsPerPage = 10; // Default rows per page
+    let activeTableDatasource = null; // Track the active table's datasource
+
+   
+    const sectionData = extractSectionData();
+    const tableData = extractTableData();
+    let businessViews = combineDataSources(sectionData, tableData);
+
+    // Initial load for all tables
+    loadData(currentPage, rowsPerPage);
+   
+// Call this function after table data is loaded
+</script>
+
+</html>
+
+<!-- attachment code for details page -->
+<!-- <script>
+    // Initialize dynamic structures for attachments, counts, and articleIds
+let attachments = {}; // Store attachments for each field
+let attachmentCounts = {}; // Store count for each field
+let articleIds = {}; // Store articleId for each field
+
+// Open the popup modal when any upload icon is clicked
+document.querySelectorAll('.upload-icon').forEach(icon => {
+    icon.addEventListener('click', function() {
+        const fieldId = icon.id; // Get the field ID (field1, field2, etc.)
+        
+        // If there are existing attachments (count > 0), fetch previous attachments
+        if (attachmentCounts[fieldId] > 0 && articleIds[fieldId]) {
+            fetchAttachments(articleIds[fieldId], fieldId);
+        } else {
+            openUploadPopup(fieldId); // Otherwise, let the user upload new files
+        }
+    });
+});
+
+// Open the popup modal
+function openUploadPopup(fieldId) {
+    // Store the current field ID in a global variable for later use
+    currentFieldId = fieldId;
+    document.getElementById("uploadPopup").style.display = "flex";
+}
+
+// Close the popup modal
+function closeUploadPopup() {
+    document.getElementById("uploadPopup").style.display = "none";
+    resetFilePreview(); // Reset file preview on close
+}
+
+// Handle file selection
+function handleFileSelection(event) {
+    const files = event.target.files;
+    const filePreview = document.getElementById("filePreview");
+
+    // Add selected files to the appropriate field's attachments array and display them
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!attachments[currentFieldId]) {
+            attachments[currentFieldId] = [];
+        }
+        attachments[currentFieldId].push(file);
+
+        // Create file preview element
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
+        fileItem.textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+ // Create download link for the file
+ const downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(file); // Generate object URL for the file
+        downloadLink.textContent = "Download";
+        downloadLink.onclick = (e) => {
+            e.preventDefault();
+            // Trigger download by creating an anchor element and simulating a click
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(file); // Object URL to download the file
+            a.download = file.name; // Set the file name for the download
+            a.click(); // Trigger the download
+        };
+
+        // Append download link to the file preview element
+        fileItem.appendChild(downloadLink);
+
+        // Create remove button for each file
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Remove";
+        removeButton.onclick = () => removeFile(file, fileItem);
+
+        fileItem.appendChild(removeButton);
+        filePreview.appendChild(fileItem);
+    }
+
+    // Reset the input so the user can select a file again
+    event.target.value = ''; // This resets the file input
+}
+
+
+// Reset file preview
+function resetFilePreview() {
+    const filePreview = document.getElementById("filePreview");
+    filePreview.innerHTML = ""; // Clear all file previews
+}
+
+
+// Fetch attachments based on articleId and fieldId
+function fetchAttachments(articleId, fieldId) {
+    fetch(`/getAttachments?articleId=${articleId}`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                displayFetchedAttachments(data.attachments, fieldId);
+            } else {
+                alert("No previous attachments found.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching attachments:", error);
+            alert("Error fetching attachments.");
+        });
+}
+
+// Display fetched attachments
+function displayFetchedAttachments(files, fieldId) {
+    const filePreview = document.getElementById("filePreview");
+    files.forEach((file) => {
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
+        fileItem.textContent = `${file.originalName} (${(file.fileSize / 1024).toFixed(2)} KB)`;
+// Create download link for the fetched file
+const downloadLink = document.createElement("a");
+
+// Ensure fileUrl is valid (coming from server response)
+if (file.filePath) {
+    downloadLink.href = file.filePath; // The URL where the file can be downloaded
+    downloadLink.textContent = "Download";
+    downloadLink.target = "_blank"; // Open the file in a new tab
+    downloadLink.download = file.originalName; 
+    fileItem.appendChild(downloadLink);
+} else {
+    console.error("File URL is missing for", file.originalName);
+    fileItem.textContent += " (Download link not available)";
+}
+
+        filePreview.appendChild(fileItem);
+    });
+    openUploadPopup(fieldId);
+}
+
+</script> -->
+
+<script>
+   
+    // Initialize dynamic structures for attachments, counts, and articleIds
+    let attachments = {}; // Store attachments for each field
+    let attachmentCounts = {}; // Store count for each field
+    let articleIds = {}; // Store articleId for each field
+
+    // Open the popup modal when any upload icon is clicked
+    document.querySelectorAll('.upload-icon').forEach(icon => {
+        console.log('upload icon onload')
+        icon.addEventListener('click', function () {
+            const fieldId = icon.id; // Get the field ID (field1, field2, etc.)
+
+            // If there are existing attachments (count > 0), fetch previous attachments
+            if (attachmentCounts[fieldId] > 0 && articleIds[fieldId]) {
+                fetchAttachments(articleIds[fieldId], fieldId);
+            } else {
+                openUploadPopup(fieldId); // Otherwise, let the user upload new files
+            }
+        });
+    });
+
+    
+// Initialize attachment badges when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if there are any existing attachments and update badges
+    Object.keys(articleIds).forEach(fieldId => {
+        if (articleIds[fieldId]) {
+            // If we don't have a count yet, fetch it
+            if (!attachmentCounts[fieldId]) {
+                fetchAttachments(articleIds[fieldId], fieldId);
+            } else {
+                updateBadge(fieldId);
+            }
+        }
+    });
+});
+// old Initialize attachment badges when page loads
+// document.addEventListener('DOMContentLoaded', function() {
+//     // Check if there are any existing attachments and update badges
+//     Object.keys(articleIds).forEach(fieldId => {
+//         if (articleIds[fieldId] && attachmentCounts[fieldId] > 0) {
+//             const badge = document.getElementById(`${fieldId}-badge`);
+//             if (badge) {
+//                 badge.textContent = attachmentCounts[fieldId];
+//                 badge.style.display = 'block';
+//             }
+//         }
+//     });
+// });
+function fetchAttachments2(id){
+   console.log('data', id);
+    
+    // Get the element that was clicked
+    const clickedElement = document.getElementById(id);
+    
+    // Find the sibling input element
+    const inputElement = clickedElement.nextElementSibling;
+    
+    // Get the input's value
+    const inputValue = inputElement.value;
+    
+    console.log('Input value:', inputValue);
+    const articleId=inputValue
+    const fieldId=id
+    fetch(`/getAttachments?articleId=${articleId}`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                attachmentCounts[fieldId] = data.attachments.length;
+                updateBadge(fieldId);
+                displayFetchedAttachments(data.attachments, fieldId);
+            } else {
+                attachmentCounts[fieldId] = 0;
+                updateBadge(fieldId);
+                alert("No previous attachments found.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching attachments:", error);
+            attachmentCounts[fieldId] = 0;
+            updateBadge(fieldId);
+            alert("Error fetching attachments.");
+        });
+
+}
+  
+
+</script><script>
+    let PageControls=[
+{
+  "section": [
+    {},
+    {}
+  ]
+},
+{
+  "table": [
+    {
+      "tableID": "customers",
+      "filter": true,
+
+
+    "filterDatasource":"supplierFilter",
+      "filterColumns": [
+        {
+          "columnName": "Vendor",
+          "techname": "vendorId",
+          "filterType": "checkbox",
+          "datasource": "",
+          "dbcolum": "vendorId"
+        },
+        {
+          "columnName": "Sequence",
+          "techname": "sequence",
+          "filterType": "number",
+          "datasource": "",
+          "dbcolum": "sequence"
+        },
+         {
+          "columnName": "Created On",
+          "techname": "createdOn",
+          "filterType": "dateRange",
+          "datasource": "",
+          "dbcolum": "createdOn"
+        }
+       
+      ],
+      "excelDownLoad":false
+    }
+  
+ 
+  ]
+}
+,{
+  'pagePermissions':["supplier","buyer","admin"]
+}
+]
+
+function initFilter(tableID){
+    console.log('init filter', tableID)
+    openFilter(tableID,PageControls)
+}
+
+//check below page permission available in utils js its stop initfilter process
+{{!-- let token=localStorage.getItem('admintoken')
+
+let decodeToken=decodeJwt(token)
+function checkPermissions(userRole, requiredPermissions) {
+return requiredPermissions.includes(userRole);
+}
+function pagePermissions() {
+  let userRole=decodeToken.role
+  consoel.log('page permission Auth flag',isAuthorized)
+
+let requiredPermissions = PageControls.find(control => control.pagePermissions).pagePermissions;
+let isAuthorized = checkPermissions(userRole, requiredPermissions);
+consoel.log('page permission Auth flag',isAuthorized)
+if (!isAuthorized) {
+  document.getElementById('authCheck').style.display = 'block';
+  // document.getElementById('authCheck').innerText = 'You do not have authorization for this page';
+  // Optionally, hide other content or disable interactions
+  document.querySelector('.main-content').style.display = 'none';
+} else {
+  document.getElementById('authCheck').style.display = 'none';
+  document.querySelector('.main-content').style.display = 'block';
+}
+} --}}
+
+// Call the function to check permissions when the page loads
+pagePermissions();
+</script>
+<script>
+
+
+
+
+
+loadFilter()
+
+      const filterColumns = [
+  { columnName: 'Materia Id', techname:"materialId",filterType: 'checkbox', "datasource":"","dbcolumn":"" },
+
+ { columnName: 'Material Name', techname:"materialName",filterType: 'search',"datasource":"", "dbcolumn":""}
+
+];
+let selectedFilters={}
+
+</script>
+<script>
+
+ 
+      enableSubmenus()
+   
+   </script>
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+      const table = document.getElementById("customers");
+      const headers = Array.from(table.querySelectorAll("th")).map(th => th.textContent.trim());
+
+      table.querySelectorAll("tr").forEach(row => {
+          row.querySelectorAll("td").forEach((td, index) => {
+              td.setAttribute("data-label", headers[index]);
+          });
+      });
+  });
+  const tableBody = document.getElementById("materials");
+
+
+
+</script>
+
+
+<script>
+   
+    // Initialize dynamic structures for attachments, counts, and articleIds
+    let attachments = {}; // Store attachments for each field
+    let attachmentCounts = {}; // Store count for each field
+    let articleIds = {}; // Store articleId for each field
+
+    // Open the popup modal when any upload icon is clicked
+    document.querySelectorAll('.upload-icon').forEach(icon => {
+        icon.addEventListener('click', function () {
+            const fieldId = icon.id; // Get the field ID (field1, field2, etc.)
+
+            // If there are existing attachments (count > 0), fetch previous attachments
+            if (attachmentCounts[fieldId] > 0 && articleIds[fieldId]) {
+                fetchAttachments(articleIds[fieldId], fieldId);
+            } else {
+                openUploadPopup(fieldId); // Otherwise, let the user upload new files
+            }
+        });
+    });
+
+  
+ 
+// Initialize attachment badges when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if there are any existing attachments and update badges
+    Object.keys(articleIds).forEach(fieldId => {
+        if (articleIds[fieldId]) {
+            // If we don't have a count yet, fetch it
+            if (!attachmentCounts[fieldId]) {
+                fetchAttachments(articleIds[fieldId], fieldId);
+            } else {
+                updateBadge(fieldId);
+            }
+        }
+    });
+});
+// old Initialize attachment badges when page loads
+// document.addEventListener('DOMContentLoaded', function() {
+//     // Check if there are any existing attachments and update badges
+//     Object.keys(articleIds).forEach(fieldId => {
+//         if (articleIds[fieldId] && attachmentCounts[fieldId] > 0) {
+//             const badge = document.getElementById(`${fieldId}-badge`);
+//             if (badge) {
+//                 badge.textContent = attachmentCounts[fieldId];
+//                 badge.style.display = 'block';
+//             }
+//         }
+//     });
+// });
+
+</script>
+
+<script>
+        const moreActions = document.getElementById("moreActions");
+        const actionsContainer = document.getElementById("actionsContainer");
+
+      
+
+        // Initial check for the screen size on page load
+        moveButtonsToPopup(); // Move buttons based on the initial screen size
+    </script>
+
+
+    <script>
+     function fetchPopupData() {
+         const popupTableBody = document.querySelector('#popup tbody');
+   
+         try {
+        //    const response = await fetch('https://api.example.com/categories'); // Replace with your API endpoint
+           const data = [
+  {
+    "id": "1",
+    "category": "Category A",
+    "subCategory": "Sub A1",
+    "description": "Description for A1"
+  },
+  {
+    "id": "2",
+    "category": "Category B",
+    "subCategory": "Sub B1",
+    "description": "Description for B1"
+  }
+]
+
+   
+           // Clear the table body before inserting new rows
+           popupTableBody.innerHTML = '';
+   
+           // Dynamically create table rows based on API data
+           data.forEach(item => {
+             const row = document.createElement('tr');
+             row.innerHTML = `
+               <td><input type="checkbox" value="${item.id}"></td>
+               <td>${item.category}</td>
+               <td>${item.subCategory}</td>
+               <td>${item.description}</td>
+             `;
+             popupTableBody.appendChild(row);
+           });
+         } catch (error) {
+           console.error('Error fetching popup data:', error);
+           popupTableBody.innerHTML = '<tr><td colspan="4">Failed to load data</td></tr>';
+         }
+       }
+       
+  async function fetchPopupData2(vendorId) {
+    console.log('fetchPopupData2 called with vendorId:', vendorId);
+    const popupTableBody = document.querySelector('#popup tbody');
+    
+    try {
+        // Show loading state
+        popupTableBody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+
+        const response = await fetch('http://localhost:3000/callAggregationBusinessView', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "businessView": "getSuppliersCategories",
+                "params": { "vendorId": vendorId },
+                "code": "IN"
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        
+        // Extract the results array from the response
+        const categories = responseData[0]?.results || [];
+        
+        // Clear the table body
+        popupTableBody.innerHTML = '';
+
+        if (categories.length === 0) {
+            popupTableBody.innerHTML = '<tr><td colspan="4">No categories found</td></tr>';
+            return;
+        }
+
+        // Dynamically create table rows based on API data
+        categories.forEach(item => {
+            // Skip empty objects
+            if (!item.category && !item.subCategory) return;
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="checkbox" value="${item.category}-${item.subCategory}"></td>
+                <td>${item.category || 'N/A'}</td>
+                <td>${item.subCategory || 'N/A'}</td>
+                <td>${item.description || 'No description available'}</td>
+            `;
+            popupTableBody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error('Error fetching popup data:', error);
+        popupTableBody.innerHTML = '<tr><td colspan="4">Failed to load data</td></tr>';
+    }
+}
+     // Function to open the popup
+ function openPopup(data) {
+  console.log(data,'popup row')
+
+    fetchPopupData2(data);
+    document.getElementById('popup').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+
+}
+ 
+       // Call the function to fetch and populate data when the page loads
+// Function to close the popup
+function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+}
+
+// Example: Updating the item count dynamically (could be based on your application logic)
+document.querySelectorAll('.icon-container').forEach((icon, index) => {
+    // Get the nested table rows count (this is a placeholder logic for demo purposes)
+    const itemCount = index === 0 ? 4 : 2; // Replace with the actual count logic
+
+    // Update the badge text
+    icon.querySelector('.badge').textContent = itemCount;
+});
+</script>
+
+    <script>
+    // Initialize chart data
+    let chartData = {};
+const ctx = document.getElementById('myChart').getContext('2d');
+let myChart;
+  
+    // Fetch data and initialize the chart on page load
+    window.onload = fetchChartData;
+</script>
+<script>
+    // Add this to your script section or a separate JS file
+
+// Track selected rows
+let selectedRows = [];
+
+// Function to handle checkbox changes
+function handleCheckboxChange(checkbox, rowId) {
+  const row = document.querySelector(`tr[data-row-id="${rowId}"]`);
+  
+  if (checkbox.checked) {
+    selectedRows.push(rowId);
+    row.classList.add('selected-row');
+  } else {
+    selectedRows = selectedRows.filter(id => id !== rowId);
+    row.classList.remove('selected-row');
+  }
+}
+
+// Function to get selected row data
+function getSelectedRowData() {
+  return selectedRows.map(rowId => {
+    const row = document.querySelector(`tr[data-row-id="${rowId}"]`);
+    const rowData = {};
+    
+    // Get all data attributes from the row
+    row.querySelectorAll('[data-name]').forEach(cell => {
+      const key = cell.getAttribute('data-name');
+      rowData[key] = cell.textContent;
+    });
+    
+    return rowData;
+  });
+}
+
+// Modify your table rows to include data-row-id and checkbox handlers
+document.querySelectorAll('#customers tbody tr').forEach((row, index) => {
+  const rowId = `row-${index}`;
+  row.setAttribute('data-row-id', rowId);
+  
+  const checkbox = row.querySelector('input[type="checkbox"]');
+  if (checkbox) {
+    checkbox.addEventListener('change', () => handleCheckboxChange(checkbox, rowId));
+  }
+});
+
+// Example button handler - modify your existing button handlers like this
+function handleUpdateStockButton() {
+  const selectedData = getSelectedRowData();
+  
+  if (selectedData.length === 0) {
+    alert('Please select at least one row');
+    return;
+  }
+  
+  // Prepare parameters - example: comma-separated vendor IDs
+  const vendorIds = selectedData.map(row => row.vendorId).join(',');
+  
+  // Navigate to updateStock page with parameters
+  window.location.href = `/updateStock?vendors=${vendorIds}`;
+  
+  // Or for your existing button:
+  // location.href = `/updateStock?vendors=${vendorIds}`;
+}
+
+// Update your button onclick handlers to use this approach
+document.querySelector('.action-btn[onclick*="updateStock"]').onclick = handleUpdateStockButton;
+
+// For Excel download button
+function handleExcelDownload() {
+  const selectedData = getSelectedRowData();
+  
+  if (selectedData.length === 0) {
+    alert('Please select at least one row');
+    return;
+  }
+  
+  // Convert selected data to Excel
+  downloadSelectedAsExcel(selectedData);
+}
+
+function downloadSelectedAsExcel(selectedData) {
+  // Create a new workbook
+  const wb = XLSX.utils.book_new();
+  
+  // Convert data to worksheet
+  const ws = XLSX.utils.json_to_sheet(selectedData);
+  
+  // Add worksheet to workbook
+  XLSX.utils.book_append_sheet(wb, ws, "Selected Suppliers");
+  
+  // Generate Excel file and download
+  XLSX.writeFile(wb, "selected_suppliers.xlsx");
+}
+
+document.querySelector('.download-btn').onclick = handleExcelDownload;
+
+</script>
+
+<script>
+  function updateScrollButtons() {
+    const tableContainer = document.querySelector('.table-container');
+    const scrollLeft = tableContainer.scrollLeft;
+    const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
+    
+    document.querySelector('.scroll-left').style.display = scrollLeft > 0 ? 'block' : 'none';
+    document.querySelector('.scroll-right').style.display = scrollLeft < maxScroll ? 'block' : 'none';
+}
+
+// Call this when table loads and on scroll
+tableContainer.addEventListener('scroll', updateScrollButtons);
+window.addEventListener('resize', updateScrollButtons);
+
+// Initial check
+updateScrollButtons();
+function scrollTableLeft() {
+    const tableContainer = document.querySelector('.table-container');
+    tableContainer.scrollBy({
+        left: -200, // Adjust scroll amount as needed
+        behavior: 'smooth'
+    });
+    tableContainer.attributes
+}
+
+function scrollTableRight() {
+    const tableContainer = document.querySelector('.table-container');
+    tableContainer.scrollBy({
+        left: 200, // Adjust scroll amount as needed
+        behavior: 'smooth'
+    });
+}
+</script>
+
+<script>
+
+// Call this after your table loads
+document.addEventListener('DOMContentLoaded', addSettingsButton);
+</script>
+<script>
+    function showLayoutOptions() {
+    const popup = document.getElementById('layoutPopup');
+    popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+    
+    // Close popup when clicking elsewhere
+    document.addEventListener('click', function closePopup(e) {
+        if (!e.target.closest('.layout-btn') && !e.target.closest('.layout-popup')) {
+            popup.style.display = 'none';
+            document.removeEventListener('click', closePopup);
+        }
+    });
+}
+
+function changeLayout(layoutType) {
+    const tableContainer = document.querySelector('.table-container');
+    const table = document.getElementById('customers');
+    
+    // Reset all layout classes
+    tableContainer.classList.remove('default-rows', 'compact-rows', 'card-layout');
+    table.classList.remove('default-rows', 'compact-rows');
+    
+    // Remove existing cards container if it exists
+    const existingCards = tableContainer.querySelector('.cards-container');
+    if (existingCards) {
+        existingCards.remove();
+    }
+
+    // Apply selected layout
+    switch(layoutType) {
+        case 'default':
+            tableContainer.classList.add('default-rows');
+            table.classList.add('default-rows');
+            table.style.display = 'table';
+            break;
+            
+        case 'compact':
+            tableContainer.classList.add('compact-rows');
+            table.classList.add('compact-rows');
+            table.style.display = 'table';
+            break;
+            
+        case 'card':
+            tableContainer.classList.add('card-layout');
+            convertTableToCards();
+            break;
+    }
+    
+    // Store preference in localStorage
+    localStorage.setItem('tableLayoutPreference', layoutType);
+}
+// Load saved layout preference on page load
+window.addEventListener('DOMContentLoaded', function() {
+    const savedLayout = localStorage.getItem('tableLayoutPreference');
+    if (savedLayout) {
+        changeLayout(savedLayout);
+    }
+});
+function convertTableToCards() {
+    const table = document.getElementById('customers');
+    const tableContainer = document.querySelector('.table-container');
+    
+    // Remove existing cards if any
+    const existingCards = tableContainer.querySelector('.cards-container');
+    if (existingCards) {
+        existingCards.remove();
+    }
+    
+    // Create cards container
+    const cardsContainer = document.createElement('div');
+    cardsContainer.className = 'cards-container';
+    tableContainer.appendChild(cardsContainer);
+    
+    // Get all table rows (skip header)
+    const rows = table.querySelectorAll('tbody tr');
+    
+    // Get column headers for labels
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+    
+    // Create a card for each row
+    rows.forEach(row => {
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        
+        const cells = row.querySelectorAll('td');
+        let cardHTML = '';
+        
+        // Add card header (first column as title)
+        const title = cells[0]?.textContent || 'Item';
+        cardHTML += `<div class="card-header">${title}</div>`;
+        
+        // Add card content
+        cardHTML += `<div class="card-content">`;
+        
+        // Add each cell as a card field
+        cells.forEach((cell, index) => {
+            // Skip the first column (used as title) and empty cells
+            if (index > 0 && cell.textContent.trim() !== '') {
+                const label = headers[index] || `Field ${index}`;
+                cardHTML += `
+                    <div class="card-field">
+                        <span class="field-label">${label}:</span>
+                        <span class="field-value">${cell.textContent}</span>
+                    </div>
+                `;
+            }
+        });
+        
+        cardHTML += `</div>`;
+        
+        // Add status if available
+        const statusCell = row.querySelector('.status-badge');
+        if (statusCell) {
+            cardHTML += `<div class="card-status ${statusCell.classList.contains('Rejected') ? 'rejected' : ''}">
+                ${statusCell.textContent}
+            </div>`;
+        }
+        
+        card.innerHTML = cardHTML;
+        cardsContainer.appendChild(card);
+    });
+}
+
+</script>
+
+<script>
+    // Show an error popup
+{{!-- showPopup('error', 'Failed to load data. Please try again.'); --}}
+
+// Show an alert popup
+{{!-- showPopup('alert', 'This action is not allowed.'); --}}
+
+// Show a confirm popup
+{{!-- showPopup('confirm', 'Are you sure you want to delete this item?'); --}}
+showBroadcast('hello','all')
+
+
+
+// Listen for fullscreen change events
+document.addEventListener('fullscreenchange', () => {
+    const container = document.querySelector('.list-container');
+    if (document.fullscreenElement) {
+        container.classList.add('fullscreen-mode');
+    } else {
+        container.classList.remove('fullscreen-mode');
+    }
+});
+
+// Listen for escape key to exit fullscreen
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.fullscreenElement) {
+        document.exitFullscreen();
+    }
+});
+function toggleFullscreen() {
+    const container = document.querySelector('.list-container');
+    
+    if (!document.fullscreenElement) {
+        // Enter fullscreen
+        container.requestFullscreen().then(() => {
+            // Additional fullscreen styling
+            document.documentElement.style.overflow = 'hidden';
+            document.querySelector('.fullscreen-btn i').className = 'fas fa-compress';
+            
+            // Hide scrollbars (optional)
+            document.body.style.overflow = 'hidden';
+            
+            // Force hide Chrome's toolbar (may require user gesture)
+            if (window.navigation && window.navigation.uaHintData) {
+                window.navigation.uaHintData.set('show-browser-ui', false);
+            }
+        }).catch(err => {
+            console.error('Fullscreen error:', err);
+            // Fallback to CSS fullscreen if API fails
+            container.classList.add('fullscreen-mode');
+        });
+    } else {
+        // Exit fullscreen
+        document.exitFullscreen().then(() => {
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+            document.querySelector('.fullscreen-btn i').className = 'fas fa-expand';
+        });
+    }
+}
+// Handle browser fullscreen API as fallback
+function toggleFullscreenFallback() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.error(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+</script>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Your existing CSS styles here */
+        /* (As already provided in your previous code) */
+
+        .google-button {
+            background-color: white;
+            color: #757575;
+            border: 1px solid #ccc;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .google-button img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .google-button:hover {
+            background-color: #f2f2f2;
+        }
+    </style>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body,
+        html {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f2f2f2;
+        }
+
+        .main-content {
+            display: flex;
+            height: 80vh;
+            width: 80vw;
+            max-width: 1200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .image-container {
+            flex: 2;
+            background-image: url('/images/Login.jpg');
+            /* Sample image URL */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+        }
+
+        .text-overlay {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 300px;
+        }
+
+        .text-overlay h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .text-overlay p {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .login-container {
+            flex: 1;
+            background-color: white;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        form input[type="text"],
+        form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-container span {
+            margin-left: 5px;
+            font-size: 12px;
+        }
+
+        form .button {
+            background-color: #82db34;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        form .button:hover {
+            background-color: #2980b9;
+        }
+
+        form .secondary-button {
+            background-color: rgb(124, 202, 28);
+            color: #3498db;
+            border: 1px solid #3498db;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        form .secondary-button:hover {
+            background-color: #ecf0f1;
+        }
+
+        form a {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 12px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        form a:hover {
+            text-decoration: underline;
+        }
+
+        @media screen and (max-width: 768px) {
+    .main-content {
+        flex-direction: column;  /* Stack items on top of each other */
+        width:  100vw;
+        height: 500px;
+    }
+
+    .image-container {
+        flex: none;
+        height: 100px; /* Reduce image height */
+    }
+
+    .login-container {
+        flex: none;
+        width: 40%;
+        padding: 20px;
+    }
+
+    form {
+        width: 100%;
+    }
+
+    .google-button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+
+<!-- <body>
+    <div class="main-content">
+        <div class="image-container">
+            <div class="text-overlay">
+                <h1>Admin</h1>
+                <p></p>
+                <p></p>
+            </div>
+        </div>
+        <div class="login-container">
+            <h2>Login</h2>
+            <form method="POST" action="/adminLoginTest">
+                <label for="user">User ID</label>
+                <input type="text" name="user" id="user" required>
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="showPass" onclick="showPassword()">
+                    <span>Show Password</span>
+                </div>
+                <a href="admin/forgotPassword">Change/Forgot Password?</a>
+                <button type="submit" class="button">Login</button>
+            </form>
+            <br><br>
+            <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID" data-context="signin" data-ux_mode="popup"
+                data-callback="handleCredentialResponse" data-auto_prompt="false">
+            </div>
+
+            <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
+                data-text="sign_in_with" data-size="large" data-logo_alignment="left">
+            </div>
+
+        </div>
+    </div>
+    <script>
+        function showPassword() {
+            var passwordField = document.getElementById("password");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+            } else {
+                passwordField.type = "password";
+            }
+        }
+
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+            // Use this token to authenticate the user on the server-side
+        }
+    </script>
+</body> -->
+<body>
+    <div class="main-content">
+        <div class="image-container">
+            <div class="text-overlay">
+                <h1>Smart System</h1>
+                <p></p>
+                <p></p>
+            </div>
+        </div>
+        <div class="login-container">
+            <h2>Login</h2>
+            <!-- <form method="POST" action="/adminLoginTest">  -->
+                <form id="loginForm" method="POST">
+
+                    <label for="user">User ID</label>
+                    <input type="text" name="user" id="user" required>
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" required>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="showPass" onclick="showPassword()">
+                        <span>Show Password</span>
+                    </div>
+                                        <a href="/views/Signup">Supplier Registeration</a>
+
+                    <a href="/admin/forgotPassword">Change/Forgot Password?</a>
+                    <button type="submit" class="button">Login</button>
+                </form><br><br>
+                <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID" data-context="signin" data-ux_mode="popup"
+                    data-callback="handleCredentialResponse" data-auto_prompt="false">
+                </div>
+
+                <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
+                    data-text="sign_in_with" data-size="large" data-logo_alignment="left">
+                </div>
+
+        </div>
+    </div>
+
+    <script>
+
+
+
+
+
+        document.getElementById("loginForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const user = formData.get('user');
+            const password = formData.get('password');
+
+            try {
+                const response = await fetch('/adminLoginTest', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user, password })
+                });
+
+                const data = await response.json();
+
+                if (response.status === 200 && data) {
+                    // Store the token in localStorage
+                    localStorage.setItem('admintoken', data);
+                    console.log('token stored in local storage')
+
+                    window.location.href = '/views/LandingPage.html';  // Redirect after successful login
+                } else {
+                        Swal.fire({
+                        icon: 'success',
+                        title: 'Form submitted successfully!',
+                        text: ata.error,
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            popup: 'custom-swal-width'
+                        }
+                    })                }
+            } catch (error) {
+                console.error("Error during login:", error);
+            }
+        });
+
+        function showPassword() {
+            var passwordField = document.getElementById("password");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+            } else {
+                passwordField.type = "password";
+            }
+        }
+
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+            // Use this token to authenticate the user on the server-side
+        }
+    </script>
+</body>
+</html>

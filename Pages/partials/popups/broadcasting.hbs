@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* Broadcast Banner */
+.broadcast-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f39c12; /* Orange for warning */
+    color: #fff;
+    text-align: center;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+/* Visible State */
+.broadcast-banner.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Dismiss Button */
+.dismiss-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.dismiss-btn:hover {
+    color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .broadcast-banner {
+        font-size: 14px;
+        padding: 8px 10px;
+    }
+
+    .dismiss-btn {
+        font-size: 18px;
+    }
+}
+
+    </style>
+    <style>
+        /* Broadcast Banner Styles */
+.modern-broadcast-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(90deg, #4e54c8, #8f94fb);
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    padding: 10px 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 9999;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+/* Visible State */
+.modern-broadcast-banner.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Content Section */
+.broadcast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Icon Style */
+.broadcast-icon {
+    font-size: 24px;
+}
+
+/* Message Text */
+#broadcastMessage {
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Dismiss Button */
+.dismiss-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.3s ease;
+}
+
+.dismiss-btn:hover {
+    transform: scale(1.1);
+    color: #ffd700;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    #broadcastMessage {
+        font-size: 14px;
+    }
+    .broadcast-icon {
+        font-size: 20px;
+    }
+    .dismiss-btn {
+        font-size: 18px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div id="modernBroadcastBanner" class="modern-broadcast-banner hidden">
+        <div class="broadcast-content">
+            <span class="broadcast-icon">📣</span>
+            <p id="broadcastMessage">
+                <strong>Heads Up:</strong> We'll be performing system updates on Nov 26 from 12:00 AM to 4:00 AM.
+            </p>
+        </div>
+        <button class="dismiss-btn" onclick="hideModernBanner()">✕</button>
+    </div>
+    
+    <div id="broadcastBanner" class="broadcast-banner hidden">
+        <p id="broadcastText">
+            📢 <strong>Maintenance Notice:</strong> The system will be down for maintenance on Nov 26 from 12:00 AM to 4:00 AM.
+        </p>
+        <button class="dismiss-btn" onclick="hideBanner()">✕</button>
+    </div>
+    
+</body>
+</html>
+<script>
+    function showBanner(message) {
+    const banner = document.getElementById('broadcastBanner');
+    const bannerText = document.getElementById('broadcastText');
+
+    // Set the message
+    bannerText.innerHTML = message || 'This is a broadcast message.';
+
+    // Show the banner
+    banner.classList.add('visible');
+}
+
+function hideBanner() {
+    const banner = document.getElementById('broadcastBanner');
+    banner.classList.remove('visible');
+}
+// Show the broadcast banner
+// showBanner(
+//     '📢 <strong>Scheduled Maintenance:</strong> The system will be down on Nov 26 from 12:00 AM to 4:00 AM.'
+// );
+function showModernBanner(message) {
+    const banner = document.getElementById('modernBroadcastBanner');
+    const messageElement = document.getElementById('broadcastMessage');
+
+    // Set the message
+    messageElement.innerHTML = message || '<strong>Notification:</strong> This is your broadcast message.';
+
+    // Show the banner
+    banner.classList.add('visible');
+}
+
+function hideModernBanner() {
+    const banner = document.getElementById('modernBroadcastBanner');
+    banner.classList.remove('visible');
+}
+
+// Show a modern broadcast banner with a custom message
+showModernBanner(
+    '<strong>Scheduled Downtime:</strong> The system will be offline on Nov 26 from 12:00 AM to 4:00 AM. Please save your work!'
+);
+
+
+</script>

@@ -14,6 +14,7 @@
 
 
     <script src="/js/layout.js"></script>
+    <script src="/js/utils.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
@@ -94,6 +95,7 @@
             margin: 10px 0;
             font-weight: bold;
         }
+    
     </style>
 <!-- Code injected by Five-server -->
   <script async data-id="five-server" data-file="c:\Users\Aravind J\OneDrive - SCH Infotech Private Limited\Desktop\UI\PageLayouts\html\PageLayout.html" type="application/javascript" src="/fiveserver.js"></script>
@@ -104,7 +106,7 @@
    <div class="sidebar active" id="sidebar">
     <h2>Menu</h2>
     <ul>
-                 <li><a href="index2.html"><i class="fa fa-home"></i>Home</a></li>
+                 <li><a href="/index"><i class="fa fa-home"></i>Home</a></li>
 
          <li><a href="/views/LandingPage.html"><i class="fa fa-bar-chart fa-fw"></i><span class="menuname">Dashboard</span></i></a></li>
          <li>
@@ -154,7 +156,7 @@
  <head>
 <div class="topbar">
     <button class="open-btn" onclick="toggleSidebar2()">☰</button>
-    <h2>Inventory Mangament</h2>
+    <h2>Smart Inventory System</h2>
     <div class="topbar-menu">
         <a href="/socket"><i class="fa fa-comments-o"></i>Chat Room</a>
         <a href="#">About Us</a>
@@ -234,5 +236,114 @@
 
 </html>
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById("sidebar").querySelector("ul");
+    // const role = getCookie('userRole'); // Retrieve role from cookies, if necessary
+
+    function decodeJwt(token) {
+  const base64Url = token.split('.')[1]; // Get payload
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // URL-safe Base64 decode
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+  return JSON.parse(jsonPayload);
+ }
+ let token=localStorage.getItem('admintoken')
+
+ let decodeToken=decodeJwt(token)
+
+    // Check for cached menu data
+    const cachedMenus = JSON.parse(sessionStorage.getItem('cachedMenus'));
+    const cacheTimestamp = sessionStorage.getItem('cacheTimestamp');
+    const cacheDuration = 60 * 60 * 1000; // Cache duration: 1 hour
+
+    if (cachedMenus && cacheTimestamp && (Date.now() - cacheTimestamp < cacheDuration)) {
+        // Load menus from cache if available and not expired
+        loadMenus(cachedMenus);
+    } else {
+        // Fetch menu data from API with custom headers and store it in sessionStorage
+        fetch('/permission', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+                'Role': 'admin',
+                'User':decodeToken.user
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok: " + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('data',data)
+            const menus = data.menus;
+
+            // Cache the menu data and timestamp
+            sessionStorage.setItem('cachedMenus', JSON.stringify(menus));
+            sessionStorage.setItem('cacheTimestamp', Date.now().toString());
+
+            // Load menus from the fetched data
+            loadMenus(menus);
+        })
+        .catch(error => console.error("Error fetching menu data:", error));
+    }
+
+    // Function to dynamically create the sidebar menu items
+    function loadMenus(menus) {
+        sidebar.innerHTML = ''; // Clear any existing menu items
+
+        menus.forEach(menu => {
+            const li = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = menu.url;
+     
+
+            link.innerHTML = `<i></i><span class="menuname">${menu.name}</span>`;
+
+            if (menu.subMenus && menu.subMenus.length > 0) {
+                link.href = "javascript:void(0)";
+                link.innerHTML += '<span class="arrow">></span>';
+                li.appendChild(link);
+
+                const subMenu = document.createElement("ul");
+                subMenu.classList.add("submenu");
+                subMenu.style.display = "none"; // Hide submenu initially
+
+                menu.subMenus.forEach(sub => {
+                    const subLi = document.createElement("li");
+                    const subLink = document.createElement("a");
+                    const iconElem=document.createElement("i");
+                    const iconClasses = sub.icon.split(" ");
+iconElem.classList.add(...iconClasses);
+                    subLink.href = sub.url;
+                    subLink.innerHTML = `<i class="${iconClasses.join(' ')}"><i><span>${sub.name}</span>`;
+                    
+                        subLi.appendChild(subLink);
+                    subMenu.appendChild(subLi);
+
+                });
+
+                li.appendChild(subMenu);
+
+                // Toggle submenu visibility on arrow click
+                link.querySelector(".arrow").addEventListener("click", function (e) {
+                    e.preventDefault();
+                    subMenu.style.display = subMenu.style.display === "none" ? "block" : "none";
+                    this.classList.toggle("open");
+                });
+            } else {
+                li.appendChild(link);
+            }
+
+            sidebar.appendChild(li);
+        });
+    }
+
+
+});
+
       enableSubmenus()
 </script>

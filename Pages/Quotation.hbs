@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Quotation</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <script src="/js/layout.js"></script>
+    <script src="../js/fetchPageData.js"></script>
+</head>
+
+<body>
+    {{> sidebar}}
+    <head>
+        {{> topbar user=user}}
+    </head>
+
+    <main class="main-content shifted">
+        <div class="sub-container">
+            <div class="mini-container formContainter">
+                <div class="section-header">
+                    <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                        <h3 class="container-hederText">Quotation Details</h3>
+                    </span>
+                </div>
+                <span id="quotationInfo">
+                    <form method="POST" id="quotationForm" class="form" action="/CreateQuotation">
+                        <div class="form-group" datasource="quotationHeader" dbcolumn="quotationNumber">
+                            <label for="quotationNumber">Quotation #:</label>
+                            <input type="text" id="quotationNumber" name="quotationNumber" readonly>
+                        </div>
+                        <div class="form-group" datasource="quotationHeader" dbcolumn="rfqNumber">
+                            <label for="rfqNumber">RFQ #:</label>
+                            <input type="text" id="rfqNumber" name="rfqNumber" required>
+                        </div>
+                        <div class="form-group" datasource="quotationHeader" dbcolumn="supplier">
+                            <label for="supplier">Supplier:</label>
+                            <select id="supplier" name="supplier" required>
+                                <option value="">Select Supplier</option>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group" datasource="quotationHeader" dbcolumn="validUntil">
+                            <label for="validUntil">Valid Until:</label>
+                            <input type="date" id="validUntil" name="validUntil" required>
+                        </div>
+                        <div class="form-group" datasource="quotationHeader" dbcolumn="paymentTerms">
+                            <label for="paymentTerms">Payment Terms:</label>
+                            <select id="paymentTerms" name="paymentTerms" required>
+                                <option value="Net 30">Net 30</option>
+                                <option value="Net 60">Net 60</option>
+                                <option value="Immediate">Immediate</option>
+                            </select>
+                        </div>
+                        <div class="form-group" datasource="quotationHeader" dbcolumn="deliveryTerms">
+                            <label for="deliveryTerms">Delivery Terms:</label>
+                            <input type="text" id="deliveryTerms" name="deliveryTerms" required>
+                        </div>
+                        <div class="form-group" datasource="quotationHeader" dbcolumn="notes">
+                            <label for="notes">Notes:</label>
+                            <textarea id="notes" name="notes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </span>
+            </div>
+        </div>
+
+        <div class="sub-container">
+            <div class="mini-container list-container">
+                <div class="list-header">
+                    <span class="secttinInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                    </span>
+                    <h3 class="container-hederText">Quotation Items</h3>
+                    <div>
+                        <button id="addRowBtn" onclick="addRow()">+</button>
+                        <button class="table-header-btn" onclick="importFromRFQ()">Import from RFQ</button>
+                    </div>
+                </div>
+                <span class="collpase-container" id="collpase-container">
+                    <div id="quotationItems" class="table-container" datasource="quotationItems">
+                        <table id="quotationItemsTable">
+                            <thead>
+                                <tr>
+                                    <th type="inputString" dbcolum="itemCode">Item Code</th>
+                                    <th type="inputString" dbcolum="description">Description</th>
+                                    <th type="inputNumber" dbcolum="quantity">Quantity</th>
+                                    <th type="inputString" dbcolum="uom">UOM</th>
+                                    <th type="inputNumber" dbcolum="unitPrice">Unit Price</th>
+                                    <th type="inputNumber" dbcolum="amount">Amount</th>
+                                    <th type="inputString" dbcolum="deliveryTime">Delivery Time</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="quotationItemsTable">
+                                <tr>
+                                    <td><input type="text" name="itemCode" required></td>
+                                    <td><input type="text" name="description" required></td>
+                                    <td><input type="number" name="quantity" min="1" required></td>
+                                    <td>
+                                        <select name="uom" required>
+                                            <option value="EA">EA</option>
+                                            <option value="KG">KG</option>
+                                            <option value="L">L</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" name="unitPrice" min="0" step="0.01" required></td>
+                                    <td><span name="amount" data-type="number">0.00</span></td>
+                                    <td><input type="text" name="deliveryTime"></td>
+                                    <td><button class="deleteRowBtn" onclick="deleteRow(this);">-</button></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5">Total</td>
+                                    <td id="totalAmount">0.00</td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </span>
+            </div>
+        </div>
+
+        <div class="action">
+            <button class="form-action-btn" id="submitBtn" onclick="submitFormData()">Submit</button>
+            <button class="form-action-btn" id="saveDraftBtn">Save as Draft</button>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            generateQuotationNumber();
+            loadSuppliers();
+            
+            // Add event listeners for price/quantity changes
+            document.querySelector('#quotationItemsTable tbody').addEventListener('input', function(e) {
+                if (e.target.name === 'unitPrice' || e.target.name === 'quantity') {
+                    calculateRowAmount(e.target.closest('tr'));
+                    calculateTotal();
+                }
+            });
+        });
+
+        function generateQuotationNumber() {
+            const now = new Date();
+            const year = now.getFullYear().toString().substr(-2);
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const seq = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('quotationNumber').value = `QT-${year}${month}-${seq}`;
+        }
+
+        function loadSuppliers() {
+            // This would typically fetch from your API
+            const suppliers = [
+                { id: 'SUP001', name: 'ABC Suppliers' },
+                { id: 'SUP002', name: 'XYZ Corporation' }
+            ];
+            
+            const select = document.getElementById('supplier');
+            suppliers.forEach(supplier => {
+                const option = document.createElement('option');
+                option.value = supplier.id;
+                option.textContent = `${supplier.name} (${supplier.id})`;
+                select.appendChild(option);
+            });
+        }
+
+        function addRow() {
+            const tbody = document.querySelector('#quotationItemsTable tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="text" name="itemCode" required></td>
+                <td><input type="text" name="description" required></td>
+                <td><input type="number" name="quantity" min="1" required></td>
+                <td>
+                    <select name="uom" required>
+                        <option value="EA">EA</option>
+                        <option value="KG">KG</option>
+                        <option value="L">L</option>
+                    </select>
+                </td>
+                <td><input type="number" name="unitPrice" min="0" step="0.01" required></td>
+                <td><span name="amount" data-type="number">0.00</span></td>
+                <td><input type="text" name="deliveryTime"></td>
+                <td><button class="deleteRowBtn" onclick="deleteRow(this);">-</button></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function deleteRow(btn) {
+            const row = btn.closest('tr');
+            row.remove();
+            calculateTotal();
+        }
+
+        function calculateRowAmount(row) {
+            const quantity = parseFloat(row.querySelector('input[name="quantity"]').value) || 0;
+            const unitPrice = parseFloat(row.querySelector('input[name="unitPrice"]').value) || 0;
+            const amount = quantity * unitPrice;
+            row.querySelector('span[name="amount"]').textContent = amount.toFixed(2);
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            const rows = document.querySelectorAll('#quotationItemsTable tbody tr');
+            
+            rows.forEach(row => {
+                const amount = parseFloat(row.querySelector('span[name="amount"]').textContent) || 0;
+                total += amount;
+            });
+            
+            document.getElementById('totalAmount').textContent = total.toFixed(2);
+        }
+
+        function importFromRFQ() {
+            const rfqNumber = document.getElementById('rfqNumber').value;
+            if (!rfqNumber) {
+                alert('Please enter an RFQ number first');
+                return;
+            }
+            
+            // This would typically fetch RFQ items from your API
+            console.log(`Importing items from RFQ ${rfqNumber}`);
+            // Add your import logic here
+        }
+
+        function submitFormData() {
+            if (validatePage()) {
+                const payload = collectPayload();
+                console.log('Submitting Quotation:', payload);
+                // Add your submission logic here
+            }
+        }
+    </script>
+</body>
+</html>

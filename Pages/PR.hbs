@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Purchase Requisition</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <script src="/js/layout.js"></script>
+    <script src="../js/fetchPageData.js"></script>
+    <script src="../js/executeData.js"></script>
+</head>
+
+<body>
+    {{> sidebar}}
+    <head>
+        {{> topbar user=user}}
+    </head>
+
+    <main class="main-content shifted">
+        <div class="sub-container">
+            <div class="mini-container formContainter">
+                <div class="section-header">
+                    <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                        <h3 class="container-hederText">Purchase Requisition</h3>
+                    </span>
+                </div>
+                <span id="prInfo">
+                    <form method="POST" id="prForm" class="form" action="/CreatePR">
+                        <div class="form-group" datasource="prHeader" dbcolumn="prNumber">
+                            <label for="prNumber">PR Number:</label>
+                            <input type="text" id="prNumber" name="prNumber" readonly>
+                        </div>
+                        <div class="form-group" datasource="prHeader" dbcolumn="requester">
+                            <label for="requester">Requester:</label>
+                            <input type="text" id="requester" name="requester" required>
+                        </div>
+                        <div class="form-group" datasource="prHeader" dbcolumn="department">
+                            <label for="department">Department:</label>
+                            <select id="department" name="department" required>
+                                <option value="">Select Department</option>
+                                <option value="IT">IT</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Operations">Operations</option>
+                            </select>
+                        </div>
+                        <div class="form-group" datasource="prHeader" dbcolumn="requiredDate">
+                            <label for="requiredDate">Required Date:</label>
+                            <input type="date" id="requiredDate" name="requiredDate" required>
+                        </div>
+                        <div class="form-group" datasource="prHeader" dbcolumn="priority">
+                            <label for="priority">Priority:</label>
+                            <select id="priority" name="priority" required>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                        <div class="form-group" datasource="prHeader" dbcolumn="justification">
+                            <label for="justification">Justification:</label>
+                            <textarea id="justification" name="justification" rows="3" required></textarea>
+                        </div>
+                    </form>
+                </span>
+            </div>
+        </div>
+
+        <div class="sub-container">
+            <div class="mini-container list-container">
+                <div class="list-header">
+                    <span class="secttinInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                    </span>
+                    <h3 class="container-hederText">PR Items</h3>
+                    <div>
+                        <button id="addRowBtn" onclick="addRow()">+</button>
+                        <button class="table-header-btn" onclick="downloadTemplate()">Download Template</button>
+                        <input type="file" id="excelUpload" accept=".xls,.xlsx" onchange="uploadExcel(event)" style="display: none;">
+                        <label for="excelUpload" class="table-header-btn">Upload Excel</label>
+                    </div>
+                </div>
+                <span class="collpase-container" id="collpase-container">
+                    <div id="prItems" class="table-container" datasource="prItems">
+                        <table id="prItemsTable">
+                            <thead>
+                                <tr>
+                                    <th type="inputString" dbcolum="itemCode">Item Code</th>
+                                    <th type="inputString" dbcolum="description">Description</th>
+                                    <th type="inputNumber" dbcolum="quantity">Quantity</th>
+                                    <th type="inputString" dbcolum="uom">UOM</th>
+                                    <th type="inputNumber" dbcolum="estimatedPrice">Estimated Price</th>
+                                    <th type="inputString" dbcolum="glAccount">GL Account</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="prItemsTable">
+                                <tr>
+                                    <td><input type="text" name="itemCode" required></td>
+                                    <td><input type="text" name="description" required></td>
+                                    <td><input type="number" name="quantity" min="1" required></td>
+                                    <td>
+                                        <select name="uom" required>
+                                            <option value="EA">EA</option>
+                                            <option value="KG">KG</option>
+                                            <option value="L">L</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" name="estimatedPrice" min="0" step="0.01"></td>
+                                    <td><input type="text" name="glAccount"></td>
+                                    <td><button class="deleteRowBtn" onclick="deleteRow(this);">-</button></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4">Total</td>
+                                    <td id="totalPrice">0.00</td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </span>
+            </div>
+        </div>
+
+        <div class="action">
+            <button class="form-action-btn" id="submitBtn" onclick="submitFormData()">Submit</button>
+            <button class="form-action-btn" id="saveDraftBtn">Save as Draft</button>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            generatePRNumber();
+            calculateTotal();
+            
+            // Add event listeners for price changes
+            document.querySelector('#prItemsTable tbody').addEventListener('input', function(e) {
+                if (e.target.name === 'estimatedPrice' || e.target.name === 'quantity') {
+                    calculateTotal();
+                }
+            });
+        });
+
+        function generatePRNumber() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const seq = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('prNumber').value = `PR-${year}${month}-${seq}`;
+        }
+
+        function addRow() {
+            const tbody = document.querySelector('#prItemsTable tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="text" name="itemCode" required></td>
+                <td><input type="text" name="description" required></td>
+                <td><input type="number" name="quantity" min="1" required></td>
+                <td>
+                    <select name="uom" required>
+                        <option value="EA">EA</option>
+                        <option value="KG">KG</option>
+                        <option value="L">L</option>
+                    </select>
+                </td>
+                <td><input type="number" name="estimatedPrice" min="0" step="0.01"></td>
+                <td><input type="text" name="glAccount"></td>
+                <td><button class="deleteRowBtn" onclick="deleteRow(this);">-</button></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function deleteRow(btn) {
+            const row = btn.closest('tr');
+            row.remove();
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            const rows = document.querySelectorAll('#prItemsTable tbody tr');
+            
+            rows.forEach(row => {
+                const quantity = parseFloat(row.querySelector('input[name="quantity"]').value) || 0;
+                const price = parseFloat(row.querySelector('input[name="estimatedPrice"]').value) || 0;
+                total += quantity * price;
+            });
+            
+            document.getElementById('totalPrice').textContent = total.toFixed(2);
+        }
+
+        function submitFormData() {
+            if (validatePage()) {
+                const payload = collectPayload();
+                console.log('Submitting PR:', payload);
+                // Add your submission logic here
+            }
+        }
+    </script>
+</body>
+</html>

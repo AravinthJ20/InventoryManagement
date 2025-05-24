@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Web Portal - Signup</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100%;
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .main-content {
+      display: flex;
+      width: 90vw;
+      max-width: 1000px;
+      height: 80vh;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .image-container {
+      flex: 1.5;
+      background: url('/images/Login.jpg') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      align-items: flex-end;
+      padding: 20px;
+      position: relative;
+    }
+
+    .text-overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 300px;
+    }
+
+    .text-overlay h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .text-overlay p {
+      margin: 5px 0 0;
+      font-size: 13px;
+    }
+
+    .login-container {
+      flex: 1;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .login-container h2 {
+      font-size: 24px;
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    form {
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    form label {
+      font-size: 14px;
+      color: #444;
+    }
+
+    form input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    #message {
+      font-size: 13px;
+      margin-top: -10px;
+      color: red;
+    }
+
+    .button {
+      background-color: #82db34;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .button:hover {
+      background-color: #6abf2a;
+    }
+
+    .g_id_signin {
+      margin-top: 20px;
+      width: 100% !important;
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-content">
+    <div class="image-container">
+      <div class="text-overlay">
+        <h1>Welcome to Our Portal</h1>
+        <p>Sign up and explore amazing features today.</p>
+      </div>
+    </div>
+
+    <div class="login-container">
+      <h2>Signup</h2>
+      <form method="POST" action="/userRoutes/signup">
+        <label for="user">User Name</label>
+        <input type="text" name="user" required />
+
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required />
+
+        <label for="email">Email Id</label>
+        <input type="email" name="email" id="email" onchange="checkduplicateBkp()" required />
+
+        <label for="contact">Contact</label>
+        <input type="tel" name="contact" required />
+
+        <p id="message"></p>
+
+        <button type="submit" class="button">Submit</button>
+      </form>
+
+      <!-- Google Sign-In -->
+      <div id="g_id_onload"
+        data-client_id="YOUR_GOOGLE_CLIENT_ID"
+        data-context="signup"
+        data-ux_mode="popup"
+        data-callback="handleCredentialResponse"
+        data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="outline"
+        data-text="sign_in_with"
+        data-size="large"
+        data-logo_alignment="left">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleCredentialResponse(response) {
+      console.log("Encoded JWT ID token: " + response.credential);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const input = document.getElementById('email');
+      const message = document.getElementById('message');
+
+      input.addEventListener('change', function () {
+        const value = input.value;
+
+        fetch('/user/checkDuplicate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: value })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.isDuplicate) {
+            message.textContent = 'Email already exists';
+            alert('Duplicate found');
+          } else {
+            message.textContent = '';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          message.textContent = 'Error checking value';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

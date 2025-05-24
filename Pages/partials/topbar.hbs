@@ -1,0 +1,379 @@
+{{!-- <div class="topbar">
+    <button class="open-btn" onclick="toggleSidebar2()">☰</button>
+    <h2>Smart Inventory System</h2>
+    <div class="topbar-menu">
+        <a href="/socket"><i class="fa fa-comments-o"></i>Chat Room</a>
+        <a href="#">About Us</a>
+        <a href="#">Contacts</a>
+        <a href="#"><i class="fa fa-bell"></i></a>
+        <a onclick="logout()"><i class="fa fa-sign-out"></i>Logout</a>
+        <a href="/user/userProfile?user={{user}}"> <img class="profile" src="../images/home.jpg" alt="Picture"></a>
+    </div>
+</div> --}}
+  <style>
+    /* Notification Icon Container */
+.notification-icon-container {
+    position: relative;
+    display: inline-block;
+}
+
+/* Badge Styles */
+.badge {
+    position: absolute;
+    top: -5px; /* Adjust to position the badge */
+    right: -10px; /* Adjust to position the badge */
+    background-color: red; /* Badge background color */
+    color: white; /* Badge text color */
+    border-radius: 50%; /* Make it circular */
+    padding: 2px; /* Adjust padding for size */
+    font-size: 10px; /* Adjust font size */
+    font-weight: bold; /* Make the text bold */
+    min-width: 20px; /* Ensure the badge has a minimum width */
+    text-align: center;
+}
+
+    /* Sidebar Popup Styles */
+.sidebar-popup {
+    position: fixed;
+    top: 0;
+    right: -300px; /* Hidden by default */
+    width: 300px;
+    height: 100vh;
+    color: #000;
+    background-color: white;
+    border-left: 1px solid #ccc;
+    box-shadow: -4px 0 8px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+.sidebar-popup.active {
+    right: 0; /* Show sidebar */
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.sidebar-header .close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.sidebar-popup ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-popup ul li {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar-popup ul li:last-child {
+    border-bottom: none;
+}
+
+
+/* global search styles */
+.global-search-container {
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.global-search-container input[type="text"] {
+    padding: 5px 30px 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 14px;
+    width: 300px;
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
+}
+
+/* Search Popup Styles */
+.search-popup {
+    display: none;
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: 300px;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    z-index: 1001;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.search-popup.active {
+    display: block;
+}
+
+.popup-content {
+    position: relative;
+}
+
+.popup-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.popup-content ul li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.popup-content .close-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+/* global search styles */
+
+  </style>
+
+<div class="topbar">
+    <button class="open-btn" onclick="toggleSidebar2()">☰</button>
+<div class="global-search-container">
+    <input type="text" id="global-search" placeholder="Search..." oninput="handleGlobalSearch(this.value)" />
+    <i class="fa fa-search search-icon"></i>
+</div>
+
+    <h2>Smart Inventory System</h2>
+    <!-- Global Search -->
+
+
+    <div class="topbar-menu">
+        <a href="/http://localhost:5000/"><i class="fa fa-comments-o" id="chat-icon"></i>Chat Room</a>
+        <a href="#">About Us</a>
+        <a href="#">Contacts</a>
+        <div class="notification-icon-container">
+            <a href="#" id="notification-icon">
+                <i class="fa fa-bell"></i>
+                <span class="badge" id="notification-badge">3</span> <!-- Badge with count -->
+            </a>
+        </div>
+        <a onclick="logout()"><i class="fa fa-sign-out"></i>Logout</a>
+        <a href="/user/userProfile?user={{user}}"> <img class="profile" src="../images/home.jpg" alt="Picture"></a>
+    </div>
+
+    <!-- Notification Sidebar -->
+    <div class="sidebar-popup" id="notification-sidebar">
+        <div class="sidebar-header">
+            <h3>Notifications</h3>
+            <button class="close-btn" onclick="closeNotificationSidebar()">×</button>
+        </div>
+        <ul>
+            <li>New message from John</li>
+            <li>Order #1234 has been shipped</li>
+            <li>Reminder: Meeting at 3 PM</li>
+        </ul>
+    </div>
+
+    <!-- Chat Sidebar -->
+    <div class="sidebar-popup" id="chat-sidebar">
+        <div class="sidebar-header">
+            <h3>Chat</h3>
+            <button class="close-btn" onclick="closeChatSidebar()">×</button>
+        </div>
+        <ul>
+            <li>John: Hi, how are you?</li>
+            <li>Jane: Can you send the report?</li>
+            <li>Mike: Let's meet tomorrow</li>
+        </ul>
+    </div>
+
+
+</div>
+<div class="search-popup" id="search-popup">
+    <div class="popup-content">
+        <h3>Search Results</h3>
+        <ul id="search-results"></ul>
+        <p id="no-results" style="display:none;">No data found</p>
+        <button onclick="closeSearchPopup()" class="close-btn">×</button>
+    </div>
+</div>
+<!-- Profile Popup -->
+<div class="sidebar-popup" id="profile-sidebar">
+    <div class="sidebar-header">
+        <h3>User Profile</h3>
+        <button class="close-btn" onclick="closeProfileSidebar()">×</button>
+    </div>
+    <ul>
+        <li><strong>User ID:</strong> SCHSUPPORT1</li>
+        <li><strong>Email:</strong> aravinth.j@supplychainhub.com</li>
+        <li><strong>Category:</strong> Test44</li>
+        <li><strong>Roles:</strong> Audit Compliance, ESA Specific, Admin, Analytics, VM Team, Buyer, TECH APPROVER</li>
+    </ul>
+    <div style="padding: 10px; text-align: center;">
+        <button onclick="openSettings()">⚙️ Settings</button>
+        <button onclick="logout()">🔓 Logout</button>
+    </div>
+</div>
+<script>
+    // Profile picture click
+    document.querySelector(".profile").addEventListener("click", function (event) {
+        event.preventDefault();
+        const profileSidebar = document.getElementById("profile-sidebar");
+        profileSidebar.classList.toggle("active");
+
+        // Close other sidebars
+        document.getElementById("notification-sidebar").classList.remove("active");
+        document.getElementById("chat-sidebar").classList.remove("active");
+    });
+
+    function closeProfileSidebar() {
+        document.getElementById("profile-sidebar").classList.remove("active");
+    }
+
+    // Close when clicking outside
+    document.addEventListener("click", function (event) {
+        const profileSidebar = document.getElementById("profile-sidebar");
+        if (!event.target.closest(".profile") && !event.target.closest("#profile-sidebar")) {
+            profileSidebar.classList.remove("active");
+        }
+    });
+
+    function openSettings() {
+        alert("Settings clicked");
+    }
+</script>
+
+
+ <script>
+   // Toggle Notification Sidebar
+document.getElementById("notification-icon").addEventListener("click", function (event) {
+    event.preventDefault(); // Prevent default link behavior
+    const notificationSidebar = document.getElementById("notification-sidebar");
+    notificationSidebar.classList.toggle("active");
+
+    // Close chat sidebar if it's open
+    const chatSidebar = document.getElementById("chat-sidebar");
+    chatSidebar.classList.remove("active");
+});
+
+// Toggle Chat Sidebar
+document.getElementById("chat-icon").addEventListener("click", function (event) {
+    event.preventDefault(); // Prevent default link behavior
+    const chatSidebar = document.getElementById("chat-sidebar");
+    chatSidebar.classList.toggle("active");
+
+    // Close notification sidebar if it's open
+    const notificationSidebar = document.getElementById("notification-sidebar");
+    notificationSidebar.classList.remove("active");
+});
+
+// Close Notification Sidebar
+function closeNotificationSidebar() {
+    const notificationSidebar = document.getElementById("notification-sidebar");
+    notificationSidebar.classList.remove("active");
+}
+
+// Close Chat Sidebar
+function closeChatSidebar() {
+    const chatSidebar = document.getElementById("chat-sidebar");
+    chatSidebar.classList.remove("active");
+}
+
+// Close sidebars when clicking outside
+document.addEventListener("click", function (event) {
+    const notificationSidebar = document.getElementById("notification-sidebar");
+    const chatSidebar = document.getElementById("chat-sidebar");
+
+    if (!event.target.closest("#notification-icon") && !event.target.closest("#notification-sidebar")) {
+        notificationSidebar.classList.remove("active");
+    }
+
+    if (!event.target.closest("#chat-icon") && !event.target.closest("#chat-sidebar")) {
+        chatSidebar.classList.remove("active");
+    }
+});
+
+// Example: Update the badge count
+function updateBadge(count) {
+    const badge = document.getElementById("notification-badge");
+    badge.textContent = count; // Update the badge text
+    if (count === 0) {
+        badge.style.display = "none"; // Hide the badge if count is 0
+    } else {
+        badge.style.display = "inline-block"; // Show the badge
+    }
+}
+
+// Example usage
+updateBadge(5); // Set the badge count to 5
+    </script>
+
+    <script>
+        const mockData = [
+    "Product A",
+    "Product B",
+    "Service X",
+    "Workflow Y",
+    "Inventory Item Z"
+];
+
+function handleGlobalSearch(query) {
+    const popup = document.getElementById("search-popup");
+    const resultList = document.getElementById("search-results");
+    const noResults = document.getElementById("no-results");
+
+    query = query.trim().toLowerCase();
+    
+    if (query === "") {
+        popup.classList.remove("active");
+        return;
+    }
+
+    const filtered = mockData.filter(item => item.toLowerCase().includes(query));
+
+    resultList.innerHTML = ""; // clear previous results
+    if (filtered.length > 0) {
+        filtered.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = item;
+            resultList.appendChild(li);
+        });
+        noResults.style.display = "none";
+    } else {
+        noResults.style.display = "block";
+    }
+
+    popup.classList.add("active");
+}
+
+function closeSearchPopup() {
+    document.getElementById("search-popup").classList.remove("active");
+}
+
+    </script>

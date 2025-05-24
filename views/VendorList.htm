@@ -7,12 +7,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List</title>
     <link rel="stylesheet" href="../css/layout.css">
-    
+    <link rel="stylesheet" href="../css/table.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/utils.js"></script>
+
     <script src="../js/layout.js"></script>
     <script src="../js/embeddedPopup.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<style>
 
+.dialog-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 9999; /* High z-index to stay above other elements */
+}
+
+.modal_container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    padding: 20px;
+    text-align: center; /* Center text inside */
+}
+
+
+
+/* Collaboration Icons */
+.collaboration-icons {
+      display: flex;
+      gap: 15px;  /* Space between icons */
+      align-items: center;
+      justify-content: center;
+    }
+
+    .collaboration-icons i {
+      font-size: 18px;
+      color: #b0b0b0; /* Light gray default */
+      transition: color 0.3s ease-in-out, transform 0.2s;
+    }
+
+    /* Active icon styles */
+    .collaboration-icons i.active {
+      color: #007bff; /* Blue for active icons */
+    }
+
+
+    /* Hover effect */
+    .collaboration-icons i:hover {
+      color: #0056b3;
+      cursor: pointer;
+      transform: scale(1.1); /* Slight zoom effect */
+    }
+
+          /* chart Style start  */
+   
+
+.chart-Section {
+background: #fff;
+display: block;
+border-radius: 8px;
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+margin-bottom: 20px;
+}
+
+.chart-container {
+margin: 0 auto;
+width: 400px;
+text-align: center;
+}
+
+/* Make the chart visible by default */
+#myChart {
+display: block;
+/* Start as visible */
+}
+
+.collapse-btn {
+background: none;
+position: absolute;
+border: none;
+font-size: 18px;
+cursor: pointer;
+transition: transform 0.3s;
+}
+
+.collapsed {
+transform: rotate(90deg);
+}
+
+/* chart style end */
+</style>
     <style>
      .actions-container{
         margin-bottom: .5em;
@@ -142,7 +238,9 @@ color: white;
     <div class="sidebar active" id="sidebar">
         <h2>Menu</h2>
         <ul>
-                     <li><a href="index2.html"><i class="fa fa-home"></i>Home</a></li>
+            <li><a href="inbox"><i class="fa fa-home"></i>Inbox</a></li>
+
+                     <li><a href="/index"><i class="fa fa-home"></i>Home</a></li>
     
              <li><a href="/views/LandingPage.html"><i class="fa fa-bar-chart fa-fw"></i><span class="menuname">Dashboard</span></i></a></li>
              <li>
@@ -192,7 +290,7 @@ color: white;
  <head>
 <div class="topbar">
     <button class="open-btn" onclick="toggleSidebar2()">☰</button>
-    <h2>Inventory Mangament</h2>
+    <h2>Smart Inventory System</h2>
     <div class="topbar-menu">
         <a href="/socket"><i class="fa fa-comments-o"></i>Chat Room</a>
         <a href="#">About Us</a>
@@ -208,6 +306,35 @@ color: white;
 
     <main class="main-content shifted">
        
+        <div class="sub-container">
+            <div class="container">
+                <button class="collapse-btn" onclick="toggleChart('chart-Section')"
+                    id="collapse-btn"><span>➡️</span></button>
+
+                <div class="chart-Section" id="chart-Section">
+                    <div class="table-header">
+                        <h3>Chart</h3>
+                    </div>
+                    <div class="chart-container" id="chart-container">
+                        <div class="controls">
+                            <select id="chartTypeSelect" onchange="updateChart()">
+                                <option value="bar">Bar Chart</option>
+                                <option value="line">Line Chart</option>
+                                <option value="pie">Pie Chart</option>
+                            </select>
+                            <select id="dataSelect" onchange="updateChartData()">
+                                <option value="status">status</option>
+                              
+                            </select>
+                        </div>
+
+                        <canvas id="myChart"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
         <div class="sub-container">
             <div class="mini-container list-container">
 
@@ -225,7 +352,7 @@ color: white;
                         <button class="action-btn icon-btn" onclick="headerCall()">&#x1f50d;</button>
 <button class="action-btn" onclick="location.href=href='/updateStock'">Update stock</button>
                         <!-- Filter icon, you can use your preferred icon here -->
-                        <button id="action-btn header-btn" class="action-btn download-btn" onclick="downloadExcel()">&#x2B73;</button>
+                        <button id="action-btn header-btn" class="action-btn download-btn" onclick="openExcelpopup()">&#x2B73;</button>
 
                         <button class="action-btn header-btn-2" onclick="window.location.href='/cardView'">Card View</button>
                         <button class="action-btn">Action 9</button>
@@ -252,7 +379,7 @@ color: white;
                                 <th>Supplier Name</th>
                              
 
-                                <th>Contact</th>
+                                <th id="contact">Contact</th>
                                 <th>Email</th>
                             
                                 <th>Regiseration Date</th>
@@ -263,6 +390,8 @@ color: white;
                                 
                               
                                 <th>Category Details</th>
+                                  
+                                <th>Collaboration</th>
 
                             </tr>
                             </thead>
@@ -323,6 +452,253 @@ color: white;
 </main>
 
 <footer>
+    <!-- <script>
+        // const chartData = {
+        //     Approved: [10, 15, 20],  // Sample data for approved
+        //     Pending: [5, 10, 15],    // Sample data for pending
+        //     Rejected: [2, 3, 5]      // Sample data for rejected
+        // };
+
+        // let myChart;
+
+        // const ctx = document.getElementById('myChart').getContext('2d');
+
+        function initChart() {
+            myChart = new Chart(ctx, {
+                type: 'bar', // Default type
+                data: {
+                    labels: ['Item 1', 'Item 2', 'Item 3'],
+                    datasets: [{
+                        label: 'Status Count',
+                        data: chartData.Approved,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // function updateChart() {
+        //     const chartType = document.getElementById('chartTypeSelect').value;
+        //     myChart.config.type = chartType;
+        //     myChart.update();
+        // }
+
+        // function updateChartData() {
+        //     const selectedStatus = document.getElementById('dataSelect').value;
+        //     myChart.data.datasets[0].data = chartData[selectedStatus];
+        //     myChart.update();
+        // }
+
+        
+
+    // Initialize chart data
+    const chartData = {
+        Registered: 0,
+        Blocked: 0,
+        Invited: 0,
+        Submitted: 0
+    };
+
+    // Function to fetch data from /fetchPageData2
+    async function fetchChartData() {
+        try {
+            const response = await fetch('/fetchPageData2'); // Fetch data from the endpoint
+            const data = await response.json(); // Parse the JSON response
+
+            // Extract chart data from the response
+            if (data.items && data.items[0].chartData) {
+                data.items[0].chartData.forEach(item => {
+                    chartData[item.x] = item.y; // Update chartData with counts
+                });
+            }
+
+            // Initialize or update the chart
+            initChart();
+        } catch (error) {
+            console.error('Error fetching chart data:', error);
+        }
+    }
+
+    // Initialize the chart
+    const ctx = document.getElementById('myChart').getContext('2d');
+    let myChart;
+
+    function initChart() {
+        if (myChart) {
+            myChart.destroy(); // Destroy existing chart instance if it exists
+        }
+
+        myChart = new Chart(ctx, {
+            type: 'bar', // Default type
+            data: {
+                labels: Object.keys(chartData),
+                datasets: [{
+                    label: 'Status Count',
+                    data: Object.values(chartData),
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Function to update chart type
+    function updateChart() {
+        const chartType = document.getElementById('chartTypeSelect').value;
+        myChart.config.type = chartType;
+        myChart.update();
+    }
+
+    // Function to toggle chart visibility
+    function toggleChart(id) {
+        const chart = document.getElementById(id);
+        const header = document.querySelector('.collapse-btn');
+        chart.style.display = (chart.style.display === 'none') ? 'block' : 'none';
+        header.classList.toggle('collapsed');
+    }
+
+    // Fetch data and initialize the chart on page load
+    window.onload = fetchChartData;
+
+        function toggleChart(id) {
+            const chart = document.getElementById(id);
+            const header = document.querySelector('.collapse-btn');
+            chart.style.display = (chart.style.display === 'none') ? 'block' : 'none';
+            header.classList.toggle('collapsed');
+        }
+
+       
+
+
+        window.onload = initChart; // Initialize the chart on page load
+    </script> -->
+    <script>
+    // Initialize chart data
+    let chartData = {};
+
+    // Function to fetch data from /fetchPageData2
+    async function fetchChartData() {
+        try {
+            const response = await fetch('/fetchPageData2'); // Fetch data from the endpoint
+            const data = await response.json(); // Parse the JSON response
+
+            // Extract chart data from the response
+            if (data.items && data.items[0].chartData) {
+                // Reset chartData
+                chartData = {};
+
+                // Dynamically populate chartData based on the response
+                data.items[0].chartData.forEach(item => {
+                    chartData[item.x] = item.y; // Add status and count to chartData
+                });
+            }
+
+            // Initialize or update the chart
+            initChart();
+        } catch (error) {
+            console.error('Error fetching chart data:', error);
+        }
+    }
+
+    // Initialize the chart
+    const ctx = document.getElementById('myChart').getContext('2d');
+    let myChart;
+
+    function initChart() {
+        if (myChart) {
+            myChart.destroy(); // Destroy existing chart instance if it exists
+        }
+
+        // Dynamically generate background and border colors based on the number of statuses
+        const backgroundColors = Object.keys(chartData).map((_, index) => {
+            const hue = (index * 50) % 360; // Generate a unique hue for each status
+            return `hsla(${hue}, 70%, 50%, 0.2)`; // Light color for background
+        });
+
+        const borderColors = Object.keys(chartData).map((_, index) => {
+            const hue = (index * 50) % 360; // Generate a unique hue for each status
+            return `hsla(${hue}, 70%, 50%, 1)`; // Darker color for border
+        });
+
+        myChart = new Chart(ctx, {
+            type: 'bar', // Default type
+            data: {
+                labels: Object.keys(chartData), // Dynamic labels based on statuses
+                datasets: [{
+                    label: 'Status Count',
+                    data: Object.values(chartData), // Dynamic data based on counts
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            },
+            onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const clickedIndex = elements[0].index; // Get the index of the clicked bar
+                            const clickedStatus = Object.keys(chartData)[clickedIndex]; // Get the status label
+                            filterByStatus(clickedStatus); // Filter data based on the clicked status
+                        }
+                    }
+        });
+
+
+     
+    }
+
+    // Function to update chart type
+    function updateChart() {
+        const chartType = document.getElementById('chartTypeSelect').value;
+        myChart.config.type = chartType;
+        myChart.update();
+    }
+
+    // Function to toggle chart visibility
+    function toggleChart(id) {
+        const chart = document.getElementById(id);
+        const header = document.querySelector('.collapse-btn');
+        chart.style.display = (chart.style.display === 'none') ? 'block' : 'none';
+        header.classList.toggle('collapsed');
+    }
+    function filterByStatus(data){
+            console.log(status)
+        }
+    // Fetch data and initialize the chart on page load
+    window.onload = fetchChartData;
+</script>
     <script>
         const moreActions = document.getElementById("moreActions");
         const actionsContainer = document.getElementById("actionsContainer");
@@ -425,18 +801,27 @@ color: white;
         </div>
         <div class="footer">
             <button class="footer_btn_primary">Download</button>
-            <button class="footer_btn">Close</button>
+            <button class="close-Excel-pop" onclick="closeExcelpopup()">Close</button>
         </div>
     </div>
 </div>
 </poups>
 
 <script>
-  function downloadExcel(){
+  function openExcelpopup(){
 console.log('downloadExcel called')
 let input=  document.querySelector('.dialog-container')
 console.log('input',input)
-input.display='flex';
+input.style.display='flex';
+
+console.log(input.display)
+}
+function closeExcelpopup(){
+console.log('downloadExcel called')
+let input=  document.querySelector('.dialog-container')
+console.log('input',input)
+input.style.display='none';
+
 console.log(input.display)
 }
    function toggleTable(input) {
@@ -634,17 +1019,17 @@ document.querySelectorAll('.fa-sort-up, .fa-sort-down, .fa-sort').forEach(icon =
              const table = document.querySelector('tbody');
              table.innerHTML = `
         
-         ${data.items.map(item => `
+         ${data.items[0].paginatedResults.map(item => `
              <tr>    
                 
-<td><a href='/views/VendorDetails.hmtl?mediID=${item.vendorId}'>${item.vendorId}</a></td>
+<td><a class="styled-link"href='/views/supplierDetails.hmtl?mediID=${item.vendorId}'>${item.vendorId}</a></td>
                                 <td><a href='/workflowlog?id=${item.vendorId}'>inbox</a></td>
 
              <td  class="supplierName">${item.supplierName}</td>
                <td  class="phone">${item.phone}</td>
                  <td  class="email">${item.email}</td>
                    <td  class="regDate">${item.regDate}</td>
-                    <td  class="regDate">${item.status}</td>
+                    <td  class="status ${item.status}">${item.status}</td>
                 <td><a href='/getMedicine?mediID=${item.vendorId}}'><i class="fa fa-edit"></i></a></td>
                 <td><i class="fa fa-trash" style="color:red;" onclick="return confirmDelete('${item.vendorId}}')"></i></td>
                  <td>
@@ -653,6 +1038,12 @@ document.querySelectorAll('.fa-sort-up, .fa-sort-down, .fa-sort').forEach(icon =
                         <i class="fa fa-table" id="item-count"><span class="badge">${5}</span></i>
                     </div>
                 </td>
+                 <td>
+      <div class="collaboration-icons">
+        <i class="fa-regular fa-comment"></i>   
+        <i class="fa-regular fa-file"></i>      
+      </div>
+    </td>
                 </tr>
          `).join('')}
      `;
@@ -1121,4 +1512,11 @@ function sendQueryToServer() {
    console.log('Prepared query for server:', query);
 }
 </script>
-  
+  <script>
+    document.querySelector('.footer_btn_primary').addEventListener('click',function(){
+            console.log('excel download function')
+             const columnsToDownload = ["contact"]; // Example: Medicine, Medicine Name, Price, Quantity
+downloadPartialExcel(columnsToDownload)
+// downloadExcel()
+        })
+  </script>

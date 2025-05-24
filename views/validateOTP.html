@@ -1,0 +1,78 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login / Signup</title>
+        <link rel="stylesheet" href="/css/layout.css">
+        <link rel="stylesheet" href="/css/form.css">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f5f5f5;
+                margin: 0;
+                padding: 0;
+            }
+        
+            .countdown {
+                color: red;
+                font-weight: bold;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main-content">
+            <div class="topbar">
+                <h1>Login / Signup</h1>
+                <div class="topbar-menu">
+                    <a href="#">About Us</a>
+                    <a href="#">Contacts</a>
+                    <a href="/">Logout</a>
+                </div>
+            </div>
+            <div class="content">
+                <form method="POST" action="/admin/verifyOTP">
+                    <div class="container">
+                        <input type="text" name="recipientEmail" value="{{recipientEmail}}" required hidden>
+                        <label for="otp">Enter The OTP</label>
+                        <input type="text" name="otp" required>
+                    </div>
+                    <div class="countdown" id="countdown"></div>
+                    <input type="submit" id="submitBtn">
+                </form>
+            </div>
+        </div>
+    
+        <script>
+            // Set the timeout duration (in seconds)
+            const timeoutDuration = 30; // 5 minutes
+            let timeRemaining = timeoutDuration;
+    
+            const countdownElement = document.getElementById('countdown');
+            const submitButton = document.getElementById('submitBtn');
+    
+            // Function to update the countdown display
+            function updateCountdown() {
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                countdownElement.textContent = `Time remaining: ${minutes}m ${seconds}s`;
+    
+                if (timeRemaining <= 0) {
+                    clearInterval(timer);
+                    countdownElement.textContent = 'OTP expired.';
+                   // Disable the submit button
+                }
+    
+                timeRemaining--;
+            }
+    
+            // Start the countdown timer
+            const timer = setInterval(updateCountdown, 1000);
+            updateCountdown(); // Initial display
+        </script>
+    </body>
+    </html>
+    
+    

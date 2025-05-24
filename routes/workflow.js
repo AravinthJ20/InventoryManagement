@@ -177,7 +177,7 @@ router.post('/PublishWorkflow',async (req, res) => {
     const primaryKey = req.body.primaryKey;
     const {Workflow_Id,InstanceId}=req.body
     // console.log(req.body)
-    console.log('workflow called')
+    console.log('workflow called',req.body)
 
     const eventData = await client.collection('eventTrigger').find({WorkFlow_Id:Workflow_Id}).toArray();
     const Start_Step_Id=eventData[0].Start_Step_Id
@@ -256,15 +256,16 @@ router.post('/actionOnWorkItem',async(req,res)=>{
     const postAPI_Payload=currentRule.post_Activity_api_payload
     postAPI_Payload.actionName=postAPI_Payload.rulesetName
 
-    if(PostAPI!=""){
+    if(PostAPI!="" && PostAPI=="/executeRules"){
       console.log('pre api called',postAPI_Payload)
       const collection2 = db.collection('pageActions');
      
-    
+   
+      let actionsDocument = await collection2.findOne({ actionName:  postAPI_Payload.actionName });
+     
       let actions = actionsDocument.actions;
 let actionName= postAPI_Payload.actionName 
-      let actionsDocument = await collection2.findOne({ actionName:  postAPI_Payload.actionName });
-     await executeActions(actions,postAPI_Payload,actionName)
+      await executeActions(actions,postAPI_Payload,actionName)
       // axios.post(`http://localhost:3000${PostAPI}`, postAPI_Payload)
     
     }
@@ -293,7 +294,13 @@ let actionName= postAPI_Payload.actionName
             let  PreAPI_Payload=currentRule.prev_Activity_api_payload
  
             if(PostAPI!=""){
-              axios.post(`http://localhost:3000${PreAPI}`, PreAPI_Payload)
+              try{
+                axios.post(`http://localhost:3000${PreAPI}`, PreAPI_Payload)
+
+              }catch(err){
+                console.log('error in pre api',err)
+
+              }
             
             }
             else{console.log('empty post api')}

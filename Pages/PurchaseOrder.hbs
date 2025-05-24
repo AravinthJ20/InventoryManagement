@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Purchase Order</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/popupTable.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="../js/utils.js"></script>
+    <script src="/js/layout.js"></script>
+    <script src="../js/embeddedPopup.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .invalid {
+            border-color: red;
+        }
+
+        .popup2 {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .popup-box {
+            position: relative;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .popup-box h2 {
+            margin: 0 0 10px;
+        }
+
+        .popup-box p {
+            font-size: 14px;
+            margin: 0 0 20px;
+        }
+
+        .popup-box button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .popup-box button:hover {
+            background: #0056b3;
+        }
+        
+        .table-container input {
+            padding: 5px;
+        }
+
+        .actions-container {
+            margin-bottom: .5em;
+        }
+
+        .more-actions {
+            display: none;
+            position: absolute;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: max-content;
+            margin-left: 100px;
+            min-width: 100px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .more-actions button {
+            display: block;
+            width: 90%;
+            padding: 0.5rem;
+            color: white;
+            margin-top: 10px;
+            background: rgb(117, 109, 109);
+            border: none;
+            font-size: 1em;
+            border-bottom: 1px solid #f81616;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .more-actions button:last-child {
+            border-bottom: none;
+        }
+
+        .three-dot-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        ::-webkit-scrollbar {
+            height: 0px;
+            width: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgb(133, 132, 132);
+        }
+
+        @media (max-width: 768px) {
+            .actions-container .action-btn {
+                display: none;
+            }
+            .three-dot-btn {
+                display: inline-block;
+            }
+        }
+        
+        /* Additional styles for PO */
+        .po-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .po-number {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .po-date {
+            color: #666;
+        }
+        
+        .supplier-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .total-section {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+        
+        .amount-in-words {
+            font-style: italic;
+            margin-top: 5px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+   {{> sidebar}}
+    
+    {{> topbar user=user}}
+
+    <main class="main-content shifted">
+        <div class="sub-container">
+            <div class="mini-container formContainter">
+                <div class="section-header">
+                    <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                        <h3 class="container-hederText">Purchase Order Information</h3>
+                    </span>
+                </div>
+                <span id="1">
+                    <form method="POST" id="section" class="form" action="/CartAdd">
+                        <div class="po-header">
+                            <div>
+                                <label for="poNumber">PO Number:</label>
+                                <input type="text" id="poNumber" name="poNumber" value="PO-{{generateId}}" readonly>
+                            </div>
+                            <div class="po-date">
+                                <label for="poDate">Date:</label>
+                                <input type="date" id="poDate" name="poDate" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="supplier">Supplier:</label>
+                            <select id="supplier" name="supplier" required onchange="getSupplierDetails(this.value)">
+                                <option value="">Select Supplier</option>
+                                {{#each suppliers}}
+                                <option value="{{this._id}}">{{this.name}} ({{this.code}})</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        
+                        <div class="supplier-info" id="supplierInfo" style="display: none;">
+                            <h4>Supplier Details</h4>
+                            <div id="supplierDetails"></div>
+                        </div>
+                        
+                        <div>
+                            <label for="deliveryDate">Delivery Date:</label>
+                            <input type="date" id="deliveryDate" name="deliveryDate" required>
+                        </div>
+                        
+                        <div>
+                            <label for="paymentTerms">Payment Terms:</label>
+                            <select id="paymentTerms" name="paymentTerms" required>
+                                <option value="Net 30">Net 30</option>
+                                <option value="Net 45">Net 45</option>
+                                <option value="Net 60">Net 60</option>
+                                <option value="Advance">Advance</option>
+                                <option value="On Delivery">On Delivery</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="shippingMethod">Shipping Method:</label>
+                            <select id="shippingMethod" name="shippingMethod" required>
+                                <option value="Ground">Ground</option>
+                                <option value="Air">Air</option>
+                                <option value="Sea">Sea</option>
+                                <option value="Courier">Courier</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="notes">Notes:</label>
+                            <textarea id="notes" name="notes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </span>
+            </div>
+        </div>
+
+        <div class="sub-container">
+            <div class="mini-container list-container">
+                <div class="list-header">
+                    <span class="secttinInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                    </span>
+                    <h3 class="container-hederText">Order Items</h3>
+                    <div>
+                        <span class="filter-icon">&#x1f50d;</span>
+                        <button id="addRowBtn" onclick="addRow('poItemsTable')">+ Add Item</button>
+                        <button class="table-header-btn" onclick="downloadTemplate()">Download Template</button>
+                        <input type="file" id="excelUpload" accept=".xls,.xlsx" onchange="uploadExcel(event)" style="display: none;">
+                        <label for="excelUpload" class="table-header-btn">Upload Excel</label>
+                    </div>
+                </div>
+
+                <span id="2">
+                    <div id="poItems" class="table-container">
+                        <table id="poItemsTable">
+                            <thead>
+                                <tr>
+                                    <th>Item Code</th>
+                                    <th>Description</th>
+                                    <th>Quantity</th>
+                                    <th>Unit</th>
+                                    <th>Unit Price</th>
+                                    <th>Tax Rate</th>
+                                    <th>Tax Amount</th>
+                                    <th>Line Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="text" name="itemCode" required></td>
+                                    <td><input type="text" name="description" required></td>
+                                    <td><input type="number" name="quantity" min="1" value="1" required onchange="calculateLineTotal(this)"></td>
+                                    <td>
+                                        <select name="unit" required>
+                                            <option value="EA">EA</option>
+                                            <option value="KG">KG</option>
+                                            <option value="L">Liter</option>
+                                            <option value="M">Meter</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" name="unitPrice" min="0" step="0.01" required onchange="calculateLineTotal(this)"></td>
+                                    <td>
+                                        <select name="taxRate" onchange="calculateLineTotal(this)">
+                                            <option value="0">0%</option>
+                                            <option value="5">5%</option>
+                                            <option value="12">12%</option>
+                                            <option value="18">18%</option>
+                                            <option value="28">28%</option>
+                                        </select>
+                                    </td>
+                                    <td><span name="taxAmount">0.00</span></td>
+                                    <td><span name="lineTotal">0.00</span></td>
+                                    <td><button class="deleteRowBtn" onclick="deleteRow(this);">-</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="total-section">
+                        <div>
+                            <strong>Subtotal: </strong><span id="subtotal">0.00</span>
+                        </div>
+                        <div>
+                            <strong>Tax: </strong><span id="totalTax">0.00</span>
+                        </div>
+                        <div>
+                            <strong>Total: </strong><span id="grandTotal">0.00</span>
+                        </div>
+                        <div class="amount-in-words" id="amountInWords"></div>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+        <div class="sub-container">
+            <div class="mini-container formContainter">
+                <div class="section-header">
+                    <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                        <h3 class="container-hederText">Approval & Authorization</h3>
+                    </span>
+                </div>
+                <span id="3">
+                    <form method="POST" id="approvalSection" class="form" action="/CartAdd">
+                        <div>
+                            <label for="preparedBy">Prepared By:</label>
+                            <input type="text" id="preparedBy" name="preparedBy" value="{{user.name}}" readonly>
+                        </div>
+                        
+                        <div>
+                            <label for="approvedBy">Approved By:</label>
+                            <select id="approvedBy" name="approvedBy" required>
+                                <option value="">Select Approver</option>
+                                {{#each approvers}}
+                                <option value="{{this._id}}">{{this.name}} ({{this.role}})</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="approvalDate">Approval Date:</label>
+                            <input type="date" id="approvalDate" name="approvalDate">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><input type="checkbox" name="termsAgreement" required> I confirm that all information provided is accurate</label>
+                        </div>
+                    </form>
+                </span>
+            </div>
+        </div>
+        
+        <div class="action">
+            <button class="form-action-btn" id="submitBtn" onclick="submitFormData()">Submit PO</button>
+            <button class="form-action-btn" id="saveDraftBtn">Save as Draft</button>
+            <button class="form-action-btn" id="printBtn" onclick="printPO()">Print PO</button>
+        </div>
+    </main>
+
+    <script>
+        // Set today's date as default for PO date
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('poDate').value = today;
+            
+            // Set default delivery date to 7 days from today
+            const deliveryDate = new Date();
+            deliveryDate.setDate(deliveryDate.getDate() + 7);
+            document.getElementById('deliveryDate').value = deliveryDate.toISOString().split('T')[0];
+            
+            markRequiredFields();
+            tableDataCheck();
+        });
+
+        // Function to get supplier details
+        function getSupplierDetails(supplierId) {
+            if (!supplierId) {
+                document.getElementById('supplierInfo').style.display = 'none';
+                return;
+            }
+            
+            fetch(`/api/suppliers/${supplierId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const supplierInfo = document.getElementById('supplierInfo');
+                    const supplierDetails = document.getElementById('supplierDetails');
+                    
+                    supplierDetails.innerHTML = `
+                        <p><strong>Contact:</strong> ${data.contactPerson}</p>
+                        <p><strong>Phone:</strong> ${data.phone}</p>
+                        <p><strong>Email:</strong> ${data.email}</p>
+                        <p><strong>Address:</strong> ${data.address}, ${data.city}, ${data.country}</p>
+                        <p><strong>Tax ID:</strong> ${data.taxId}</p>
+                    `;
+                    
+                    supplierInfo.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching supplier details:', error);
+                });
+        }
+
+        // Function to calculate line total
+        function calculateLineTotal(input) {
+            const row = input.closest('tr');
+            const quantity = parseFloat(row.querySelector('[name="quantity"]').value) || 0;
+            const unitPrice = parseFloat(row.querySelector('[name="unitPrice"]').value) || 0;
+            const taxRate = parseFloat(row.querySelector('[name="taxRate"]').value) || 0;
+            
+            const subtotal = quantity * unitPrice;
+            const taxAmount = subtotal * (taxRate / 100);
+            const lineTotal = subtotal + taxAmount;
+            
+            row.querySelector('[name="taxAmount"]').textContent = taxAmount.toFixed(2);
+            row.querySelector('[name="lineTotal"]').textContent = lineTotal.toFixed(2);
+            
+            calculateTotals();
+        }
+
+        // Function to calculate totals
+        function calculateTotals() {
+            const rows = document.querySelectorAll('#poItemsTable tbody tr');
+            let subtotal = 0;
+            let totalTax = 0;
+            
+            rows.forEach(row => {
+                subtotal += parseFloat(row.querySelector('[name="quantity"]').value) * 
+                           parseFloat(row.querySelector('[name="unitPrice"]').value);
+                totalTax += parseFloat(row.querySelector('[name="taxAmount"]').textContent);
+            });
+            
+            const grandTotal = subtotal + totalTax;
+            
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('totalTax').textContent = totalTax.toFixed(2);
+            document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
+            
+            // Convert amount to words
+            document.getElementById('amountInWords').textContent = convertToWords(grandTotal);
+        }
+
+        // Function to convert number to words
+        function convertToWords(num) {
+            // Implementation of number to words conversion
+            // This is a simplified version - you might want to use a library for full functionality
+            const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+            const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            const tens = ['', 'Ten', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+            
+            if (num === 0) return 'Zero';
+            
+            let result = '';
+            const dollars = Math.floor(num);
+            const cents = Math.round((num - dollars) * 100);
+            
+            if (dollars >= 1000) {
+                const thousands = Math.floor(dollars / 1000);
+                result += ones[thousands] + ' Thousand ';
+            }
+            
+            const hundreds = Math.floor((dollars % 1000) / 100);
+            if (hundreds > 0) {
+                result += ones[hundreds] + ' Hundred ';
+            }
+            
+            const remainder = dollars % 100;
+            if (remainder > 0) {
+                if (remainder < 10) {
+                    result += ones[remainder];
+                } else if (remainder < 20) {
+                    result += teens[remainder - 10];
+                } else {
+                    result += tens[Math.floor(remainder / 10)];
+                    if (remainder % 10 > 0) {
+                        result += ' ' + ones[remainder % 10];
+                    }
+                }
+            }
+            
+            result += ' Dollars';
+            
+            if (cents > 0) {
+                result += ' and ';
+                if (cents < 10) {
+                    result += ones[cents];
+                } else if (cents < 20) {
+                    result += teens[cents - 10];
+                } else {
+                    result += tens[Math.floor(cents / 10)];
+                    if (cents % 10 > 0) {
+                        result += ' ' + ones[cents % 10];
+                    }
+                }
+                result += ' Cents';
+            }
+            
+            return result;
+        }
+
+        // Function to add a new row to the PO items table
+        function addRow(tableId) {
+            const table = document.getElementById(tableId);
+            const tbody = table.querySelector('tbody');
+            const newRow = document.createElement('tr');
+            
+            newRow.innerHTML = `
+                <td><input type="text" name="itemCode" required></td>
+                <td><input type="text" name="description" required></td>
+                <td><input type="number" name="quantity" min="1" value="1" required onchange="calculateLineTotal(this)"></td>
+                <td>
+                    <select name="unit" required>
+                        <option value="EA">EA</option>
+                        <option value="KG">KG</option>
+                        <option value="L">Liter</option>
+                        <option value="M">Meter</option>
+                    </select>
+                </td>
+                <td><input type="number" name="unitPrice" min="0" step="0.01" required onchange="calculateLineTotal(this)"></td>
+                <td>
+                    <select name="taxRate" onchange="calculateLineTotal(this)">
+                        <option value="0">0%</option>
+                        <option value="5">5%</option>
+                        <option value="12">12%</option>
+                        <option value="18">18%</option>
+                        <option value="28">28%</option>
+                    </select>
+                </td>
+                <td><span name="taxAmount">0.00</span></td>
+                <td><span name="lineTotal">0.00</span></td>
+                <td><button class="deleteRowBtn" onclick="deleteRow(this);">-</button></td>
+            `;
+            
+            tbody.appendChild(newRow);
+            checkTableForEmptyData(tableId);
+        }
+
+        // Function to delete a row
+        function deleteRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+            calculateTotals();
+            checkTableForEmptyData('poItemsTable');
+        }
+
+        // Function to validate the form
+        function validateForm() {
+            const requiredInputs = document.querySelectorAll('input[required], select[required], textarea[required]');
+            let isValid = true;
+            
+            // Clear previous error messages
+            document.querySelectorAll('.error-message').forEach(error => error.remove());
+            
+            requiredInputs.forEach(input => {
+                if (!input.value) {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'error-message';
+                    errorMessage.textContent = 'This field is required';
+                    input.after(errorMessage);
+                    input.classList.add('invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('invalid');
+                }
+            });
+            
+            // Validate at least one PO item exists
+            const poItems = document.querySelectorAll('#poItemsTable tbody tr');
+            if (poItems.length === 0) {
+                alert('Please add at least one item to the purchase order');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        // Function to collect form data
+        function collectPayload() {
+            if (!validateForm()) {
+                return null;
+            }
+            
+            const payload = {
+                poInfo: {},
+                items: [],
+                totals: {},
+                approval: {}
+            };
+            
+            // Collect PO information
+            const poForm = document.getElementById('section');
+            const formData = new FormData(poForm);
+            formData.forEach((value, key) => {
+                payload.poInfo[key] = value;
+            });
+            
+            // Collect items
+            const rows = document.querySelectorAll('#poItemsTable tbody tr');
+            rows.forEach(row => {
+                const item = {
+                    itemCode: row.querySelector('[name="itemCode"]').value,
+                    description: row.querySelector('[name="description"]').value,
+                    quantity: parseFloat(row.querySelector('[name="quantity"]').value),
+                    unit: row.querySelector('[name="unit"]').value,
+                    unitPrice: parseFloat(row.querySelector('[name="unitPrice"]').value),
+                    taxRate: parseFloat(row.querySelector('[name="taxRate"]').value),
+                    taxAmount: parseFloat(row.querySelector('[name="taxAmount"]').textContent),
+                    lineTotal: parseFloat(row.querySelector('[name="lineTotal"]').textContent)
+                };
+                payload.items.push(item);
+            });
+            
+            // Collect totals
+            payload.totals = {
+                subtotal: parseFloat(document.getElementById('subtotal').textContent),
+                tax: parseFloat(document.getElementById('totalTax').textContent),
+                grandTotal: parseFloat(document.getElementById('grandTotal').textContent)
+            };
+            
+            // Collect approval information
+            const approvalForm = document.getElementById('approvalSection');
+            const approvalData = new FormData(approvalForm);
+            approvalData.forEach((value, key) => {
+                payload.approval[key] = value;
+            });
+            
+            return payload;
+        }
+
+        // Function to submit the form
+        function submitFormData() {
+            const payload = collectPayload();
+            if (!payload) return;
+            
+            fetch('/api/purchase-orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Purchase Order Created!',
+                    text: `PO Number: ${data.poNumber}`,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = `/purchase-orders/${data._id}`;
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to create purchase order'
+                });
+            });
+        }
+
+        // Function to print the PO
+        function printPO() {
+            window.print();
+        }
+
+        // Function to mark required fields
+        function markRequiredFields() {
+            const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+            
+            requiredFields.forEach(field => {
+                const label = document.querySelector(`label[for="${field.id}"]`);
+                if (label && !label.querySelector('.required')) {
+                    const asterisk = document.createElement('span');
+                    asterisk.textContent = ' *';
+                    asterisk.style.color = 'red';
+                    asterisk.classList.add('required');
+                    label.appendChild(asterisk);
+                }
+                
+                const th = field.closest('table')?.querySelector(`th:nth-child(${field.closest('td').cellIndex + 1})`);
+                if (th && !th.querySelector('.required')) {
+                    const asterisk = document.createElement('span');
+                    asterisk.textContent = ' *';
+                    asterisk.style.color = 'red';
+                    asterisk.classList.add('required');
+                    th.appendChild(asterisk);
+                }
+            });
+        }
+
+        // Function to check for empty tables
+        function checkTableForEmptyData(tableId) {
+            const table = document.getElementById(tableId);
+            const tableBody = table.querySelector('tbody');
+            if (!tableBody) return;
+            
+            const noDataRowId = `${tableId}-noData`;
+            const existingNoDataRow = document.getElementById(noDataRowId);
+            
+            if (tableBody.rows.length === 0) {
+                if (!existingNoDataRow) {
+                    const noDataRow = document.createElement('tr');
+                    noDataRow.id = noDataRowId;
+                    const noDataCell = document.createElement('td');
+                    const columnCount = table.querySelectorAll('th').length;
+                    noDataCell.colSpan = columnCount;
+                    
+                    const noDataImage = document.createElement('img');
+                    noDataImage.src = '/images/nodata.jpg';
+                    noDataImage.alt = 'No data available';
+                    noDataImage.style.display = 'block';
+                    noDataImage.style.margin = '20px auto';
+                    
+                    noDataCell.appendChild(noDataImage);
+                    noDataRow.appendChild(noDataCell);
+                    tableBody.appendChild(noDataRow);
+                }
+            } else {
+                if (existingNoDataRow) {
+                    existingNoDataRow.remove();
+                }
+            }
+        }
+
+        // Function to check all tables on page load
+        function tableDataCheck() {
+            const tables = document.querySelectorAll('table');
+            tables.forEach(table => {
+                if (!table.id) {
+                    table.id = `table-${Math.random().toString(36).substr(2, 9)}`;
+                }
+                checkTableForEmptyData(table.id);
+            });
+        }
+
+        // Function to toggle table visibility
+        function toggleTable(button) {
+            const value = button.innerText;
+            const collapse = button.closest('.section-header').nextElementSibling;
+            button.innerText = value === '+' ? '-' : '+';
+            collapse.style.display = collapse.style.display === 'none' ? '' : 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Log</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #container{
+            display: none;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+          
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .button.reject {
+            background-color: #DC3545;
+        }
+        input[type="text"]{
+            border:none
+        }
+
+    </style>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.input-group {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.input-field {
+    width: 60%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    outline: none;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.logs-container {
+    margin-top: 20px;
+}
+
+.log-card {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+.log-field {
+    margin-bottom: 10px;
+}
+
+.log-label {
+    font-weight: bold;
+    color: #555;
+}
+
+    </style>
+</head>
+<body>
+    
+    <script>
+        function sendAction(action) {
+        var approver=document.getElementById("approver").value
+        var productId=document.getElementById("productId").value
+        
+                const payload = {
+                    approver: approver,  // Replace with dynamic data if necessary
+                    workflowId: "dbflow",
+                    action: action,
+                    productId:productId
+                };
+        
+        
+                fetch('/workflow-engine/triggerWorkFlow', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => response.json())
+                .then(data => {
+                console.log(data)
+                  window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('response').innerText = 'An error occurred.';
+                });
+            }
+         
+        </script>
+<div class="container">
+    
+    <div>
+       <p for="approver">Current approver: </p>
+             <input type="text"  id="approver" name="approver" class="approver" readonly>
+        <p>Workflow ID: </p>
+          <input type="text" id="workflowId" class="workflowId"  name="workflowId" readonly></input>
+   
+     <p>Product ID: </p>
+        <input type="text" id="productId" readonly>
+        <input type="text" id="role" hidden   ></input>
+
+    </div>
+    <div>
+     
+        <span id="actions">
+        <!-- <button class="button approve" value="Approve" onclick="sendAction(this.value)">Approve</button>
+        <button class="button reject"  value="Reject" onclick="sendAction(this.value)">Reject</button>
+     -->
+    </span>
+   
+    </div>
+    <div id="response"></div>
+</div><br><br>
+ <div class="container">
+        <h1 class="title">Workflow Logs</h1>
+       
+        <div id="logsContainer" class="logs-container">
+            <!-- Workflow logs will be inserted here -->
+           
+
+    
+      </div>
+      </div>
+      
+      </body>
+      <script>
+        
+        document.addEventListener('DOMContentLoaded', () => {
+    async function fetchWorkflowLog(id) {
+        try {
+
+            let workflowElement=document.getElementById("workflowId")
+            let action=document.getElementById("actions")
+            let container=document.getElementById("container")
+            let approver=document.getElementById("approver")
+            let productId=document.getElementById("productId")
+            console.log('elem',workflowElement)
+            // Fetch the log using the given ID
+            const response = await fetch(`/log/${id}`);
+            if (!response.ok) {
+                throw new Error(`Error fetching workflow log: ${response.statusText}`);
+            }
+            const data = await response.json();
+            pendingUser=data.pendingUser
+user=data.role
+
+            // Update the DOM with the received data
+            console.log('Workflow Log Data:', data);
+
+            const logsContainer = document.getElementById('logsContainer');
+
+            if (data.workflowId) {
+    workflowElement.value =data.workflowId;
+    console.log('workflowElement',workflowElement,user,pendingUser)
+} else {
+    console.log('workflowId is missing in the API response.');
+    workflowElement.value = 'Default Value'; // Replace with a fallback value
+}
+if(data.pendingUser==null || pendingUser!=user){
+
+    console.log('pending null')
+   
+    approver.value=data.pendingUser
+    productId.value=data.log[0].productId
+    
+}
+else{
+    data.decisions.forEach(decision=>{
+    let button=document.createElement('button')
+    button.value=decision
+    button.style.display='block'
+
+    button.classList.add('button')
+    button.classList.add(decision.toLowerCase())
+    button.onclick=()=>{
+        sendAction(decision)
+    }
+    button.textContent=decision
+    action.appendChild(button)
+})
+
+    
+    approver.value=data.pendingUser
+    productId.value=data.log[0].productId
+
+}
+console.log(data.decisions)
+
+        data.log.forEach(log => {
+                const logCard = document.createElement('div');
+                logCard.className = 'log-card';
+                logCard.innerHTML = `
+                    <div class="log-field"><span class="log-label">User Profile:</span> ${log.approver}</div>
+                    <div class="log-field"><span class="log-label">Status:</span> ${log.status}</div>
+                `;
+                logsContainer.appendChild(logCard);
+             
+            });
+               container.style.display='block'
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Function to get the `id` parameter from the URL
+    function getIdFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('id');
+    }
+
+    // Fetch the `id` from the URL or any other source
+    const id = getIdFromUrl(); // Adjust this as per your use case
+    if (id) {
+        console.log(`Fetched ID: ${id}`);
+        fetchWorkflowLog(id); // Call the API with the ID
+    } else {
+        console.warn('No ID found in the URL');
+    }
+
+    // Additional setup or event listeners can go here
+});
+
+      </script>
+ 
+
+
+</body>
+</html>

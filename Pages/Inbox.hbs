@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Layout</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <script src="../js/layout.js"></script>
+    <script src="../js/embeddedPopup.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+  <style>
+     
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .card {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            width: 320px;
+            padding: 15px;
+        }
+
+        .card .number {
+            width: 50px;
+            height: 50px;
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+
+        .card .content {
+            flex: 1;
+        }
+
+        .card .content h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .card .content p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: gray;
+        }
+
+        /* Different background colors */
+        .color-1 { background-color: #4a9093; }
+        .color-2 { background-color: #b2942e; }
+        .color-3 { background-color: #3a96db; }
+        .color-4 { background-color: #d34541; }
+        .color-5 { background-color: #d34541; }
+        .color-6 { background-color: #3a96db; }
+        .color-7 { background-color: #4a9093; }
+        .color-8 { background-color: #d34541; }
+        .color-9 { background-color: #b2942e; }
+        .color-10 { background-color: #3a96db; }
+        .color-11 { background-color: #3a96db; }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .card {
+                width: 90%;
+            }
+        }
+    </style>
+
+    
+</head>
+
+<body>
+      {{> sidebar}}
+
+ <head>
+{{> topbar}}
+</head>
+
+    <main class="main-content shifted">
+        <div class="sub-container"  style="max-height:1000px">
+          <div class="container">
+        <div class="card">
+            <div class="number color-1">1</div>
+            <div class="content">
+                <h3>Registration Guide</h3>
+                <p>Click Here To View</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="number color-2">2</div>
+            <div class="content">
+                <h3>Self Registration Request</h3>
+                <p>Click Here To View</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="number color-3">3</div>
+            <div class="content">
+                <h3>Modifying Questionnaire</h3>
+                <p>Click Here To View</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="number color-4">4</div>
+            <div class="content">
+                <h3>Add Additional User Guide</h3>
+                <p>Click Here To View</p>
+            </div>
+        </div>
+
+       
+
+       
+    </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer content -->
+    </footer>
+
+ 
+</body>
+
+</html>
+
+
+
+  

@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
     <link rel="stylesheet" href="styles.css">
     <style>
         /* Your existing CSS styles here */
@@ -254,7 +256,9 @@
                         <input type="checkbox" id="showPass" onclick="showPassword()">
                         <span>Show Password</span>
                     </div>
-                    <a href="/adminLoginTest">Change/Forgot Password?</a>
+                    <a href="/userRoutes/Register">User Registeration</a>
+
+                    <a href="/admin/forgotPassword">Change/Forgot Password?</a>
                     <button type="submit" class="button">Login</button>
                 </form><br><br>
                 <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID" data-context="signin" data-ux_mode="popup"
@@ -297,9 +301,16 @@
                     localStorage.setItem('admintoken', data);
                     console.log('token stored in local storage')
 
-                    window.location.href = '/views/LandingPage.html';  // Redirect after successful login
+                    window.location.href = '/views/ProjectBranding.html';  // Redirect after successful login
                 } else {
-                    alert(data.error || "Login failed");
+                    Swal.fire({
+    icon: 'error', // Use 'error' icon for failure
+    title: data.error || 'Something went wrong. Please try again.', // Title for the error message
+    confirmButtonText: 'Cancel', // Button text
+    customClass: {
+        popup: 'custom-swal-width' // Custom CSS class for styling
+    }
+});
                 }
             } catch (error) {
                 console.error("Error during login:", error);

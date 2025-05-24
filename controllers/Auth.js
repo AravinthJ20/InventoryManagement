@@ -1,5 +1,6 @@
 const jwt=require('jsonwebtoken')
 const dotenv=require('dotenv')
+const path=require('path')
 const dbo=require('../config/db.js')
 const bcrypt=require('bcrypt')
 const {connectDB}=require('../config/db.js')
@@ -11,21 +12,21 @@ const BASE_URL=process.env.BASE_URL
 // Render the login page for the user
 const login = ((req, res) => {
     try {
-        res.render("adminLogin", (err) => {
+        res.render('Login', (err) => {
             if (err) {
-                
+                console.log(err)
                 if (err.message.includes("Failed to lookup view")) {
                     return res.status(404).render("404Page");
                 } else {
-                    return res.status(500).render("500");
+                    return res.status(500).render("500Page");
                 }
             }
             // res.status(200).render("adminLogin", { admin: true })
-          res.sendFile(path.join(__dirname,'views','Login.html'))
+          res.sendFile(path.join(__dirname,'../views','Login.html'))
         
         })
     } catch (error) {
-        return res.status(500).render("500");
+        return res.status(500).render("500Page");
     }
 })
 
@@ -36,15 +37,15 @@ const loginVerify = (async (req, res) => {
         let client=await connectDB("InventoryMangement");
     const collection=client.collection('Users')
     const validate=await collection.findOne({userid: req.body.user})
-    console.log(user,password)
-
+    console.log(user,password,validate)
+    if (!validate) {
+        return res.status(401).json({ error: "Unauthorized User" })
+    }
     const validPassword=await bcrypt.compare(password,validate.password)
 console.log(validPassword)
 let role=validate.role;
-        if (user != validate.userid) {
-            return res.status(401).json({ error: "Unauthorized Admin" })
-        }
-        else if (!validPassword) {
+      
+         if (!validPassword) {
             return res.status(400).json({ error: "Wrong Password" })
         }
         else {

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    img {
+        width: 100%;
+
+        object-fit: fill;
+    }
+</style>
+      <link rel="stylesheet" href="/css/admin.css">
+
+         <script src="/js/toggleSidebar.js"></script>
+<body>
+
+     <div class="sidebar active" id="sidebar">
+        <h2>Menu</h2>
+        <ul>
+<li><a href="/getdashboard">Dashboard</a></li>
+               <li><a href="/getOrders">Orders</a></li>
+        <li><a href="/getMedicineList">Medicines</a></li>
+        <li><a href="/create">Create</a></li>
+        </ul>
+    </div>
+    <div class="main-content shifted">
+        <div class="topbar">
+            <button class="open-btn" onclick="toggleSidebar()">☰</button>
+            <h1>Smart ERP</h1>
+            <div class="topbar-menu">
+                <a href="#">About Us</a>
+                <a href="#">Contacts</a>
+                <a href="/">Logout</a>
+            </div>
+        </div>
+    <img src="/images/404img.jpg" id="404Page" alt="Girl in a jacket">
+</div>
+</body>
+
+</html>

@@ -1,68 +1,144 @@
-const express=require('express')
 require('dotenv').config()
-const app=express()
-let test=238;
-
 const BASE_URL=process.env.BASE_URL
 const PORT=process.env.PORT
+const express=require('express')
+const morgan=require('morgan');
+const cors=require('cors')
+const app=express()
 const path=require('path')
-const {connectDB}=require('./config/db')
 const axios=require('axios')
 const fs=require('fs')
-const api=require('./routes/api')
 const multer=require('multer')
 const {ObjectId}=require('mongodb')
-const adminAuth=require('./controllers/Auth')
 const session = require('express-session');
+const exhbs=require('express-handlebars')
+const {connectDB}=require('./config/db')
+const api=require('./routes/api')
+const {sendemail,verifyOTP}=require('./controllers/nodeMailer')
+const bcrypter=require('./controllers/control.js')
 const {executeActions}=require('./ActionsExecuter')
+const adminAuth=require('./controllers/Auth')
+const supplierRoutes=require('./routes/supplierRoutes')
+const workflow=require('./routes/workflow')
+const userRoutes=require('./routes/userRoutes')
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+// app.use(morgan('combined')) morgan log on hold
 app.use(session({
   secret: 'your-secret-key',
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 20 * 60 * 10000 } // 2 minutes cookie: { secure: false } // Set to true if using HTTPS
+  cookie: { maxAge: 200 * 60 * 10000 }
+  // cookie: { maxAge: 20 * 60 * 10000 } // 2 minutes cookie: { secure: false } // Set to true if using HTTPS
 }));
-const workflow=require('./routes/workflow')
-app.use(express.json())
-app.use(express.urlencoded())
+
+// const corsOptions = {
+//   origin: "http://localhost:300", // Allow only this origin
+//   methods: 'POST', // Allow only GET and POST requests
+//   allowedHeaders: 'Content-Type,Authorization', // Allow specific headers
+// };
+const allowedOrigins = ['http://localhost:3000', 'https://example.com'];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+      // Allow requests with no origin (e.g., same-origin requests, server-to-server requests)
+      if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true); // Allow the request
+      } else {
+          callback(new Error('Not allowed by CORS')); // Block the request
+      }
+  },
+  methods: 'GET', // Allow only GET requests
+  allowedHeaders: 'Content-Type,Authorization', // Allow specific headers
+};
+
+app.use(cors(corsOptions));
+app.engine('hbs',exhbs.engine({
+  extname: '.hbs',
+  layoutsDir: path.join(__dirname, 'Pages'), // Use path.join for cross-platform compatibility
+  defaultLayout: false,
+
+  partialsDir: path.join(__dirname, 'Pages/partials'), 
+  defaultLayout:false,helpers: {
+  ifCond: function (v1, operator, v2, options) {
+      switch (operator) {
+          case '===':
+              return (v1 === v2) ? options.fn(this) : options.inverse(this);
+          case '!==':
+              return (v1 !== v2) ? options.fn(this) : options.inverse(this);
+          case '<':
+              return (v1 < v2) ? options.fn(this) : options.inverse(this);
+          case '<=':
+              return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+          case '>':
+              return (v1 > v2) ? options.fn(this) : options.inverse(this);
+          case '>=':
+              return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+          default:
+              return options.inverse(this);
+      }
+  },  gt: function (v1, v2) {
+      return v1 > v2;
+  },  increment: function(value) {
+      return parseInt(value) + 1;
+  },eq:function(a,b){
+      return a === b;
+
+  }
+}
+}))
+
+app.set('view engine','hbs')
+app.set('views','Pages')
+
+
 app.use('/workflow-engine',workflow)
+app.use('/userRoutes',userRoutes)
 app.use(express.static(path.join(__dirname,'public')))
 
+app.get('/admin/forgotPassword',(req,res)=>{
+  res.sendFile(path.join(__dirname,'views','PasswordReset.html'))
+})
+.post('/admin/forgotPassword',sendemail)
+app.post('/admin/verifyOTP',verifyOTP)
+app.get('/index',(req,res)=>{
+  res.render('HomePage')
+})
+app.get('/inbox',(req,res)=>{
+  res.render('inbox')
+})
+app.post('/admin/setPassword',async (req,res)=>{
+
+  let client=await connectDB("InventoryMangement");
+  const collection=client.collection('Users')
+
+    const newPassword=await bcrypter.securePassword(req.body.newToken)
+    console.log('new pass',newPassword)
+    const updatePassword=await collection.updateOne({email:req.body.email},{$set:{password:newPassword}})
+    console.log('reset maik',req.body,req.body.email,updatePassword)
+    res.send('data updated')
+})
 
 app.post('/api/sendEmail2',api.sendemail3)
 app.get('/workflowlog',(req,res)=>{
-  res.sendFile(path.join(__dirname,'views','workflowlog.html'))
+  // res.sendFile(path.join(__dirname,'views','workflowlog.html'))
+  res.render('workflowlog')
 })
 app.get('/',async (req,res)=>{
 
-    res.sendFile(path.join(__dirname,'views','Home.html'))
+    // res.sendFile(path.join(__dirname,'views','Home.html'))
+    res.render('Home')
 })
-app.get('/views/:viewname',(req,res)=>{
-  let viewName = req.params.viewname;
-  viewName = path.basename(viewName, path.extname(viewName)); 
+app.get('/views/:viewname',adminAuth.isLogged,supplierRoutes.supplierRoutes2)
+app.get('/pages/:viewname',adminAuth.isLogged,supplierRoutes.supplierRoutes)
 
-  try{
-      console.log('view',req.params.viewname)
-      res.sendFile(path.join(__dirname, 'views', `${viewName}.html`), (err) => {
-        if (err) {
-            // If .html is not found, try .htm
-            res.sendFile(path.join(__dirname, 'views', `${viewName}.htm`), (err2) => {
-                if (err2) {
-                    res.status(404).send('View not found');
-                }
-            });
-        }
-    });
-// res.render(req.params.viewname)
-  }
-  catch(err){
-      res.status(500).send(err)
-  }
-})
 app.get('/popups/:pop', (req, res) => {
   console.log(req.params)
   let popupupName=req.params.pop
   res.sendFile(path.join(__dirname, 'views', popupupName))
 });
+
+
 app.post('/PostData',async (req,res)=>{
 
     try{
@@ -114,6 +190,8 @@ categories:data.table_2
    
 })
 app.get("/adminLogin",adminAuth.islogout,adminAuth.login)
+app.get("/logout",adminAuth.logout)
+
 app.post("/adminLoginTest",adminAuth.loginVerify)
 app.post('/adminLogin',adminAuth.adminLogin)
 app.get('/getProductDetails',async(req,res)=>{
@@ -175,8 +253,50 @@ console.log(`page${page} limit${limit} sort${sortfield} order${sortOrder}`)
           }
         },
         { $sort: { numericPart: -1 } },               // Sort by extracted numeric part
-        { $skip: skip },                             // Skip the specified number of documents
-        { $limit: limit }                            // Limit the result set
+                             // Limit the result set
+        
+         { $facet: {
+
+
+          paginatedResults: [
+                   { $skip: skip },                             // Skip the specified number of documents
+        { $limit: limit }, 
+          {
+              $project: {_id:0}
+          }
+      ],
+              totalCount: [
+                  {
+                      $count: "count"
+                  }
+              ],
+              chartData: [
+              
+                  {
+                      $group: {
+                          _id:"$status",
+                          count: {
+                              $sum:1
+                          }
+                      }
+                  },
+                  {
+                      $match: {
+                          _id: {
+                              $ne: null
+                          }
+                      }
+                  },
+                  {
+                      $project: {
+                          _id: 0,
+                          x: "$_id",
+                          y: "$count"
+                      }
+                  }
+              ]
+            }}
+      
       ]).toArray();
       console.log('Data fetched');
 
@@ -239,6 +359,7 @@ app.post('/fetchPageData', async (req, res) => {
 // }
 
 let data=req.body
+console.log('fetch page data',data.params.pagination)
   for (const businessView of data.businessViews) {
 
     const page = parseInt(req.params.pagination) || 1; // Default to page 1
@@ -249,6 +370,8 @@ let data=req.body
   data.params.limit=limit;
  let componentSetting=req?.body?.params?.pagination[businessView] ||{}
  componentSetting.rowfilter=req?.body?.params?.pagination[businessView]?.rowfilter || {}
+ //new
+ componentSetting.searchInput=req?.body?.params?.pagination[businessView]?.searchInput || {}
  console.log('componentSetting',componentSetting,req.body.params.pagination.getMaterials)
   try {
 
@@ -525,10 +648,27 @@ app.post('/callAggregationBusinessView', async (req, res) => {
     }
     const convertedAggregation = convertDollarOperators(businessViewDocument.aggregation);
 
+let searchtermfields=businessViewDocument.searchTermFields
+let searchInput=req?.body?.componentSetting?.searchInput
 
-    console.log('converted Aggregation:', JSON.stringify(convertedAggregation, null, 2));
+
+if (!req.body.componentSetting) {
+  req.body.componentSetting = {}; // Initialize componentSetting if undefined
+}
+
+if (searchInput && Object.keys(searchInput).length > 0) {
+  req.body.componentSetting.searchInput = {
+    "$or": searchtermfields.map(field => ({
+      [field]: { "$regex": searchInput, "$options": "i" } // Case-insensitive search
+    }))
+  };
+} else {
+  req.body.componentSetting.searchInput = {};
+}
+    console.log('converted Aggregation:',searchInput, JSON.stringify(convertedAggregation, null, 2));
 
     // Replace placeholders in the aggregation pipeline
+    
     const replacedAggregation = replacePlaceholders(convertedAggregation, {
       componentSetting: req.body.componentSetting,
 params:req.body.params,
@@ -621,11 +761,12 @@ app.post('/executeRules',async(req,res)=>{
 
   // Extract actions array
   let actions = actionsDocument.actions;
+  let output = actionsDocument.output;
   // Execute actions
-  console.log()
+ 
 
-let result=executeActions(actions,payload,req.body.actionName)
-
+let result =await executeActions(actions,payload,req.body.actionName,output)
+console.log(result)
 res.send({"resulset":"24","result1":result})
 })
 app.get('/log/:productId',async(req,res)=>{
@@ -804,7 +945,7 @@ console.log('permission api',userRole)
   
         const permissions = await client.collection('Permissions').findOne({ role: userRole });
         console.log('permissions',permissions)
-       if(permissions.length<0){
+       if(permissions!=null){
         try{
         const settings = await client.collection('Settings').find().toArray();
         console.log('Settings:', JSON.stringify(settings, null, 2));
@@ -813,12 +954,29 @@ console.log('role',req.headers.role)
         let dynamicMenus = [];
         if(permissions!=null){
         permissions.Menus.forEach(menu => {
-            let menuItem = { name: menu, url: '#', subMenus: [] };
+          const mainMenuSetting = settings.find(setting => 
+            setting.MainMenu.some(m => m.Menu === menu)
+        );
+        
+        let menuIcon = '#';
+        if (mainMenuSetting) {
+            const matchedMainMenu = mainMenuSetting.MainMenu.find(m => m.Menu === menu);
+            if (matchedMainMenu) {
+                menuIcon = matchedMainMenu.icon;
+            }
+        }
+        let menuItem = { 
+          name: menu, 
+          url: '#', 
+          icon: menuIcon, // Add the main menu icon here
+          subMenus: [] 
+      };
 
             // Find matching submenus and their routes
             permissions.SubMenus.forEach(subMenu => {
                 if (subMenu.startsWith(menu)) {
                     const subMenuName = subMenu.split('.')[1];
+
                     // const routeObj = settings.find(r => r.Menu === subMenu);
                     // const routeUrl = routeObj ? routeObj.url : '#';
                     const routeObj = settings.find(setting => 
@@ -830,13 +988,15 @@ console.log('role',req.headers.role)
             
                     // Check if routeObj is found and get the route URL
                     let routeUrl = '#'; // Default to '#' if not found
+                    let icon = '#';
                     if (routeObj) {
                         const matchedRoute = routeObj.Routes.find(route => route.Menu === subMenu);
                         if (matchedRoute) {
                             routeUrl = matchedRoute.url; // Get the URL if matched
+                            icon=matchedRoute.icon
                         }}
 console.log(routeObj,routeUrl)
-                    menuItem.subMenus.push({ name: subMenuName, url: routeUrl });
+                    menuItem.subMenus.push({ name: subMenuName, url: routeUrl,icon:icon });
                 }
             });
 
@@ -861,3 +1021,31 @@ console.log(routeObj,routeUrl)
 })
 
 app.listen(PORT,()=>console.log(`app listening at http://localhost:${PORT}`))
+
+app.post('/random',async (req, res) => {
+  let db=await connectDB("InventoryMangement");
+  let collection=db.collection('Suppliers')
+  const bulkOps = [];
+
+for (let i = 1; i <= 40; i++) {
+  const id = `VEND${i.toString().padStart(2, '0')}`;
+  const numberValue = i * 10; // Just an example: number increases per vendor
+  const dateValue = new Date(2025, 0, i); // Jan 1st to Jan 40th (some will overflow to Feb)
+
+  bulkOps.push({
+    updateOne: {
+      filter: { vendorId: id },
+      update: {
+        $set: {
+          sequence: numberValue,
+          createdOn: dateValue
+        }
+      }
+    }
+  });
+}
+
+collection.bulkWrite(bulkOps);
+
+
+})

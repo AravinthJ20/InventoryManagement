@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Layout</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <script src="../js/layout.js"></script>
+    <script src="../js/embeddedPopup.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Responsive grid */
+            gap: 20px; /* Consistent spacing between cards */
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 20px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
+            padding: 20px; /* Inner spacing */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between; /* Space content evenly */
+            transition: transform 0.2s; /* Smooth hover effect */
+            text-align: center; /* Center text */
+        }
+
+        .card:hover {
+            transform: scale(1.05); /* Scale up on hover */
+        }
+
+        .card-icon img {
+            width: 80px; /* Set a fixed width for the image */
+            height: 80px; /* Set a fixed height for the image */
+            object-fit: cover; /* Ensures the image covers the area without distortion */
+            border-radius: 20%; /* Optional: Makes the image circular */
+            margin-bottom: 10px; /* Adds space below the image */
+        }
+    </style>
+</head>
+
+<body>
+ {{> sidebar}}
+
+ <head>
+   {{> topbar user=user}}
+</head>
+
+    <main class="main-content shifted">
+        <div class="sub-container"  style="max-height:1800px">
+            <div class="card-container" id="card-container">
+                <!-- Cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer content -->
+    </footer>
+
+    <script>
+        // Define the cards array
+        const cards = [
+            {
+                icon: "/images/mylogo.ico",
+                title: "My Apps",
+                description: "Description for My Apps"
+            },
+            {
+                icon: "/images/home.jpg",
+                title: "Inbox",
+                description: "Inbox for workflow items"
+            },
+            {
+                icon: "/images/home.jpg",
+                title: "Outbox",
+                description: "Outbox for workflow items"
+            },
+            {
+                icon: "/images/home.jpg",
+                title: "BroadCast",
+                description: "Where we can view the buyer ..."
+            },
+            {
+                icon: "/images/home.jpg",
+                title: "MDM Dashboard",
+                description: "Description for MDM Dashboard"
+            },
+            {
+                icon: "/images/home.jpg",
+                title: "Data Cleansing Rules",
+                description: "Description for Data Cleansing Rules"
+            },
+            {
+                icon: "https://via.placeholder.com/80",
+                title: "Run Analysis",
+                description: "Description for Run Analysis"
+            },
+            {
+                icon: "https://via.placeholder.com/80",
+                title: "Run Duplicate Check",
+                description: "Description for Run Duplicate Check"
+            },
+            {
+                icon: "https://via.placeholder.com/80",
+                title: "Duplicate Search History",
+                description: "Description for Duplicate Search History"
+            },
+            {
+                icon: "https://via.placeholder.com/80",
+                title: "Buyer Dashboard",
+                description: "Where we can view the buyer..."
+            },
+            {
+                icon: "https://via.placeholder.com/80",
+                title: "Material Create",
+                description: "Where we can view the vendor..."
+            },
+            {
+                icon: "https://via.placeholder.com/80",
+                title: "Material List",
+                description: "Where we can view the vendor..."
+            }
+        ];
+
+        // Function to create a card element
+        function createCard(card) {
+            const cardElement = document.createElement("div");
+            cardElement.classList.add("card");
+
+            const cardIcon = document.createElement("div");
+            cardIcon.classList.add("card-icon");
+            const iconImage = document.createElement("img");
+            iconImage.src = card.icon;
+            iconImage.alt = "Icon";
+            cardIcon.appendChild(iconImage);
+
+            const cardTitle = document.createElement("div");
+            cardTitle.classList.add("card-title");
+            cardTitle.textContent = card.title;
+
+            const cardDescription = document.createElement("div");
+            cardDescription.classList.add("card-description");
+            cardDescription.textContent = card.description;
+
+            cardElement.appendChild(cardIcon);
+            cardElement.appendChild(cardTitle);
+            cardElement.appendChild(cardDescription);
+
+            return cardElement;
+        }
+
+        // Function to render all cards
+        function renderCards() {
+            const cardContainer = document.getElementById("card-container");
+            cards.forEach(card => {
+                const cardElement = createCard(card);
+                cardContainer.appendChild(cardElement);
+            });
+        }
+
+        // Render cards when the page loads
+        document.addEventListener("DOMContentLoaded", renderCards);
+    </script>
+</body>
+
+</html>

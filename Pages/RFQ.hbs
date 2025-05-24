@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create RFQ</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="/js/attachmentService.js"></script>
+    <script src="/js/layout.js"></script>
+    <script src="/js/tableUtils.js"></script>
+    <script src="../js/fetchPageData.js"></script>
+    <script src="../js/embeddedPopup.js"></script>
+    <script src="../js/executeData.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        .upload-icon {
+            position: relative;
+            display: inline-block;
+        }
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+        }
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .invalid {
+            border-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    {{> sidebar}}
+    <head>
+        {{> topbar user=user}}
+    </head>
+
+    <main class="main-content shifted">
+        <div class="sub-container">
+            <div class="mini-container formContainter">
+                <div class="section-header">
+                    <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                        <h3 class="container-hederText">RFQ Information</h3>
+                    </span>
+                </div>
+                <span id="rfqInfo">
+                    <form method="POST" id="rfqForm" class="form" action="/CreateRFQ">
+                        <div class="form-group" datasource="rfqHeader" dbcolumn="rfqNumber">
+                            <label for="rfqNumber">RFQ Number:</label>
+                            <input type="text" id="rfqNumber" name="rfqNumber" readonly>
+                        </div>
+                        <div class="form-group" datasource="rfqHeader" dbcolumn="title">
+                            <label for="title">Title:</label>
+                            <input type="text" id="title" name="title" required>
+                        </div>
+                        <div class="form-group" datasource="rfqHeader" dbcolumn="description">
+                            <label for="description">Description:</label>
+                            <textarea id="description" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group" datasource="rfqHeader" dbcolumn="requestedBy">
+                            <label for="requestedBy">Requested By:</label>
+                            <input type="text" id="requestedBy" name="requestedBy" required>
+                        </div>
+                        <div class="form-group" datasource="rfqHeader" dbcolumn="department">
+                            <label for="department">Department:</label>
+                            <select id="department" name="department" required>
+                                <option value="">Select Department</option>
+                                <option value="Procurement">Procurement</option>
+                                <option value="Operations">Operations</option>
+                                <option value="Finance">Finance</option>
+                            </select>
+                        </div>
+                        <div class="form-group" datasource="rfqHeader" dbcolumn="requiredDate">
+                            <label for="requiredDate">Required Date:</label>
+                            <input type="date" id="requiredDate" name="requiredDate" required>
+                        </div>
+                    </form>
+                </span>
+            </div>
+        </div>
+
+        <div class="sub-container">
+            <div class="mini-container list-container">
+                <div class="list-header">
+                    <span class="secttinInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                    </span>
+                    <h3 class="container-hederText">RFQ Items</h3>
+                    <div>
+                        <button id="addRowBtn" onclick="addRow()">+</button>
+                        <button class="table-header-btn" onclick="downloadTemplate()">Download Template</button>
+                        <input type="file" id="excelUpload" accept=".xls,.xlsx" onchange="uploadExcel(event)" style="display: none;">
+                        <label for="excelUpload" class="table-header-btn">Upload Excel</label>
+                    </div>
+                </div>
+                <span class="collpase-container" id="collpase-container">
+                    <div id="rfqItems" class="table-container" datasource="rfqItems">
+                        <table id="rfqItemsTable">
+                            <thead>
+                                <tr>
+                                    <th type="inputString" dbcolum="itemCode">Item Code</th>
+                                    <th type="inputString" dbcolum="description">Description</th>
+                                    <th type="inputNumber" dbcolum="quantity">Quantity</th>
+                                    <th type="inputString" dbcolum="uom">UOM</th>
+                                    <th type="inputDate" dbcolum="requiredDate">Required Date</th>
+                                    <th type="inputString" dbcolum="remarks">Remarks</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="rfqItemsTable">
+                                <tr>
+                                    <td><input type="text" name="itemCode"></td>
+                                    <td><input type="text" name="description"></td>
+                                    <td><input type="number" name="quantity" min="1"></td>
+                                    <td>
+                                        <select name="uom">
+                                            <option value="EA">EA</option>
+                                            <option value="KG">KG</option>
+                                            <option value="L">L</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="date" name="requiredDate"></td>
+                                    <td><input type="text" name="remarks"></td>
+                                    <td><button class="deleteRowBtn" onclick="deleteRow(this);">-</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </span>
+            </div>
+        </div>
+
+        <div class="action">
+            <button class="form-action-btn" id="submitBtn" onclick="submitFormData()">Submit</button>
+            <button class="form-action-btn" id="clearCart">Save as Draft</button>
+        </div>
+    </main>
+
+    <script>
+        // Initialize RFQ number on load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateRFQNumber();
+        });
+
+        function generateRFQNumber() {
+            const now = new Date();
+            const year = now.getFullYear().toString().substr(-2);
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            
+            document.getElementById('rfqNumber').value = `RFQ-${year}${month}${day}-${randomNum}`;
+        }
+
+        function addRow() {
+            const tbody = document.querySelector('#rfqItemsTable tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="text" name="itemCode"></td>
+                <td><input type="text" name="description"></td>
+                <td><input type="number" name="quantity" min="1"></td>
+                <td>
+                    <select name="uom">
+                        <option value="EA">EA</option>
+                        <option value="KG">KG</option>
+                        <option value="L">L</option>
+                    </select>
+                </td>
+                <td><input type="date" name="requiredDate"></td>
+                <td><input type="text" name="remarks"></td>
+                <td><button class="deleteRowBtn" onclick="deleteRow(this);">-</button></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function deleteRow(btn) {
+            const row = btn.closest('tr');
+            row.remove();
+        }
+
+        function submitFormData() {
+            if (validatePage()) {
+                const payload = collectPayload();
+                console.log('Submitting RFQ:', payload);
+                // Add your submission logic here
+            }
+        }
+    </script>
+</body>
+</html>

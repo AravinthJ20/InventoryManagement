@@ -24,10 +24,29 @@
         }
 
      
-        h1{
-          font-size:1em;
-          text-align: center;
-        }
+        h1 {
+    font-size: 1.5em;
+    text-align: center;
+    color: #ffffff; /* White text color */
+    font-family: 'Georgia', serif;
+    border: 3px solid #454443; /* Orange border */
+    border-radius: 9%;
+    padding: 15px 175px;
+    background: linear-gradient(135deg, #57504e, #abdee2); /* Warm orange gradient */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin: 20px auto;
+    width: fit-content;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+/* Hover Effect */
+h1:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, #1c1b1b, #333433); /* Reverse gradient on hover */
+    cursor: pointer;
+}
 
         .menu {
             display: flex;
@@ -84,12 +103,12 @@
     <div class="background-container" id="backgroundContainer"></div>
     <div class="container">
         <div class="header">
-            <h1>ERP Mangament</h1>
+            <h1>Smart Inventory System</h1>
         </div>
         
         <div class="menu">
             <a href="#">Dashboard</a>
-            <a href="/views/Login.html">Supplier Login</a>
+            <a href="/adminLogin">Supplier Login</a>
             <a href="#">Buyer Login</a>
             <a href="#">Supplier Regiseration</a>
         </div>

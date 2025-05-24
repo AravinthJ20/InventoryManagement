@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 900px;
+            padding: 20px;
+        }
+        .form-header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .form-header .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        .form-header label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-header select,
+        .form-header input[type="text"],
+        .form-header input[type="email"],
+        .form-header input[type="tel"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .tab-menu {
+            display: flex;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        .tab-menu div {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .tab-menu .active {
+            border-bottom: 2px solid #007bff;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-section {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .form-section .address-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        .address-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .address-section input,
+        .address-section select {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .note {
+            font-size: 12px;
+            color: #555;
+            background: #fffbe6;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+        }
+        .btn-save {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            background: #f4f4f9;
+            color: #333;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-header">
+        <div class="form-group">
+            <label>Salutation</label>
+            <select>
+                <option>Salutation</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>First Name</label>
+            <input type="text" placeholder="First Name">
+        </div>
+        <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" placeholder="Last Name">
+        </div>
+        <div class="form-group" style="flex: 2;">
+            <label>Company Name</label>
+            <input type="text" placeholder="Company Name">
+        </div>
+        <div class="form-group" style="flex: 2;">
+            <label>Customer Display Name</label>
+            <input type="text" placeholder="Customer Display Name">
+        </div>
+        <div class="form-group" style="flex: 2;">
+            <label>Customer Email</label>
+            <input type="email" placeholder="Customer Email">
+        </div>
+        <div class="form-group">
+            <label>Customer Phone</label>
+            <input type="tel" placeholder="Customer Phone">
+        </div>
+    </div>
+
+    <div class="tab-menu">
+        <div class="tab active" onclick="showTab(event, 'address')">Address</div>
+        <div class="tab" onclick="showTab(event, 'other')">Other Details</div>
+        <div class="tab" onclick="showTab(event, 'contacts')">Contact Persons</div>
+        <div class="tab" onclick="showTab(event, 'custom')">Custom Fields</div>
+        <div class="tab" onclick="showTab(event, 'reporting')">Reporting Tags</div>
+    </div>
+
+    <div id="address" class="tab-content active">
+        <div class="form-section">
+            <div class="address-section">
+                <h4>Billing Address</h4>
+                <label>Attention</label>
+                <input type="text" placeholder="Attention">
+                <label>Country / Region</label>
+                <select>
+                    <option>Select Country / Region</option>
+                </select>
+                <label>Address</label>
+                <input type="text" placeholder="Street 1">
+                <input type="text" placeholder="Street 2">
+                <label>City</label>
+                <input type="text" placeholder="City">
+                <label>State</label>
+                <select>
+                    <option>Select or type to add</option>
+                </select>
+                <label>Zip Code</label>
+                <input type="text" placeholder="Zip Code">
+                <label>Phone</label>
+                <input type="tel" placeholder="Phone">
+                <label>Fax Number</label>
+                <input type="text" placeholder="Fax Number">
+            </div>
+            <div class="address-section">
+                <h4>Shipping Address</h4>
+                <label>Attention</label>
+                <input type="text" placeholder="Attention">
+                <label>Country / Region</label>
+                <select>
+                    <option>Select Country / Region</option>
+                </select>
+                <label>Address</label>
+                <input type="text" placeholder="Street 1">
+                <input type="text" placeholder="Street 2">
+                <label>City</label>
+                <input type="text" placeholder="City">
+                <label>State</label>
+                <select>
+                    <option>Select or type to add</option>
+                </select>
+                <label>Zip Code</label>
+                <input type="text" placeholder="Zip Code">
+                <label>Phone</label>
+                <input type="tel" placeholder="Phone">
+                <label>Fax Number</label>
+                <input type="text" placeholder="Fax Number">
+            </div>
+        </div>
+    </div>
+
+    <div id="other" class="tab-content">
+        <p>Other Details Content</p>
+    </div>
+    <div id="contacts" class="tab-content">
+        <p>Contact Persons Content</p>
+    </div>
+    <div id="custom" class="tab-content">
+        <p>Custom Fields Content</p>
+    </div>
+    <div id="reporting" class="tab-content">
+        <p>Reporting Tags Content</p>
+    </div>
+
+    <div class="note">
+        <p>Note: You can add and manage additional addresses from Customers and Vendors details section. View and edit the address format of your transactions under Settings &gt; Preferences &gt; Customers and Vendors.</p>
+    </div>
+
+    <div class="form-footer">
+        <button class="btn-save">Save</button>
+        <button class="btn-cancel">Cancel</button>
+    </div>
+</div>
+
+<script>
+    function showTab(event, tabId) {
+        const tabs = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => tab.classList.remove('active'));
+
+        const tabLinks = document.querySelectorAll('.tab-menu .tab');
+        tabLinks.forEach(tab => tab.classList.remove('active'));
+
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+</script>
+
+</body>
+</html>

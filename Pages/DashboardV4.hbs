@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Dashboard with Stylish Charts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+      {{!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css"> --}}
+    {{!-- above file affecting topbar issue --}}
+      <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="/js/layout.js"></script>
+    <script src="../js/embeddedPopup.js"></script>
+    <script src="../js/executeData.js"></script>
+    <script src="../js/attachmentService.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+        .dashboard {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .dashboard-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .kpi-card {
+            text-align: center;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #ecf8ff;
+        }
+        .kpi-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .kpi-card .label {
+            font-size: 0.9rem;
+            color: #555;
+        }
+        canvas {
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .chart-title {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+            margin-top: 10px;
+        }
+        .progress {
+            height: 100%;
+            transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+
+    {{> sidebar}}
+
+ <head>
+   {{> topbar}}
+</head>
+ <main  class="main-content shifted">
+    <h1>ERP Dashboard with Stylish Charts</h1>
+
+    <!-- Dashboard 1 -->
+    <div class="dashboard">
+        <div class="dashboard-title">Sales Overview</div>
+        <div class="container">
+            <div class="card kpi-card">
+                <i class="fas fa-shopping-cart fa-2x"></i>
+                <div class="value">1,250</div>
+                <div class="label">Total Orders</div>
+            </div>
+            <div class="card kpi-card">
+                <i class="fas fa-dollar-sign fa-2x"></i>
+                <div class="value">$10,500</div>
+                <div class="label">Total Revenue</div>
+            </div>
+            <div class="card kpi-card">
+                <i class="fas fa-users fa-2x"></i>
+                <div class="value">300</div>
+                <div class="label">Active Customers</div>
+            </div>
+            <div class="card kpi-card">
+                <i class="fas fa-box fa-2x"></i>
+                <div class="value">1,000</div>
+                <div class="label">Total Products</div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="card">
+                <div class="chart-title">Sales Trend</div>
+                <canvas id="salesTrendChart" width="400" height="200"></canvas>
+            </div>
+            <div class="card">
+                <div class="chart-title">Revenue Distribution</div>
+                <canvas id="revenueDistributionChart" width="400" height="200"></canvas>
+            </div>
+            <div class="card">
+                <div class="chart-title">Order Fulfillment</div>
+                <canvas id="orderFulfillmentChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard 2 -->
+    <div class="dashboard">
+        <div class="dashboard-title">Performance Metrics</div>
+        <div class="container">
+            <div class="card kpi-card">
+                <i class="fas fa-chart-line fa-2x"></i>
+                <div class="value">4.5</div>
+                <div class="label">Avg. Rating</div>
+            </div>
+            <div class="card kpi-card">
+                <i class="fas fa-clock fa-2x"></i>
+                <div class="value">10 Days</div>
+                <div class="label">Avg. Delivery Time</div>
+            </div>
+            <div class="card kpi-card">
+                <i class="fas fa-clipboard-check fa-2x"></i>
+                <div class="value">90%</div>
+                <div class="label">Task Completion</div>
+            </div>
+            <div class="card kpi-card">
+                <i class="fas fa-comments fa-2x"></i>
+                <div class="value">150</div>
+                <div class="label">Feedback Received</div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="card">
+                <div class="chart-title">Performance Over Time</div>
+                <canvas id="performanceOverTimeChart" width="400" height="200"></canvas>
+            </div>
+            <div class="card">
+                <div class="chart-title">Customer Satisfaction</div>
+                <canvas id="customerSatisfactionChart" width="400" height="200"></canvas>
+            </div>
+            <div class="card">
+                <div class="chart-title">Task Completion Rate</div>
+                <canvas id="taskCompletionChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Sales Trend Chart
+        const salesTrendCtx = document.getElementById('salesTrendChart').getContext('2d');
+        const salesTrendChart = new Chart(salesTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May'],
+                datasets: [{
+                    label: 'Sales',
+                    data: [1000, 1500, 2000, 2500, 3000],
+                    borderColor: 'rgba(46, 204, 113, 1)',
+                    backgroundColor: 'rgba(46, 204, 113, 0.3)',
+                    borderWidth: 2,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: $${context.raw}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Revenue Distribution Chart
+        const revenueDistributionCtx = document.getElementById('revenueDistributionChart').getContext('2d');
+        const revenueDistributionChart = new Chart(revenueDistributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Product A', 'Product B', 'Product C', 'Product D'],
+                datasets: [{
+                    label: 'Revenue Distribution',
+                    data: [3000, 2500, 2000, 1500],
+                    backgroundColor: ['#3498db', '#2ecc71', '#e67e22', '#e74c3c'],
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+
+        // Order Fulfillment Chart
+        const orderFulfillmentCtx = document.getElementById('orderFulfillmentChart').getContext('2d');
+        const orderFulfillmentChart = new Chart(orderFulfillmentCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Pending', 'Shipped', 'Delivered', 'Returned'],
+                datasets: [{
+                    label: 'Order Status',
+                    data: [50, 100, 75, 25],
+                    backgroundColor: ['#3498db', '#2ecc71', '#f1c40f', '#e74c3c']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+
+        // Performance Over Time Chart
+        const performanceOverTimeCtx = document.getElementById('performanceOverTimeChart').getContext('2d');
+        const performanceOverTimeChart = new Chart(performanceOverTimeCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Sales', 'Customer Feedback', 'Delivery Time', 'Returns', 'Product Quality'],
+                datasets: [{
+                    label: 'Performance',
+                    data: [65, 59, 90, 81, 56],
+                    backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                    borderColor: 'rgba(46, 204, 113, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+
+        // Customer Satisfaction Chart
+        const customerSatisfactionCtx = document.getElementById('customerSatisfactionChart').getContext('2d');
+        const customerSatisfactionChart = new Chart(customerSatisfactionCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied', 'Very Dissatisfied'],
+                datasets: [{
+                    label: 'Customer Satisfaction',
+                    data: [30, 45, 15, 7, 3],
+                    backgroundColor: ['#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#e74c3c']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+
+        // Task Completion Rate Chart
+        const taskCompletionCtx = document.getElementById('taskCompletionChart').getContext('2d');
+        const taskCompletionChart = new Chart(taskCompletionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Completed', 'In Progress', 'Not Started'],
+                datasets: [{
+                    label: 'Task Status',
+                    data: [80, 15, 5],
+                    backgroundColor: ['#2ecc71', '#f1c40f', '#e74c3c']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
+<script>
+    enablemenus()
+</script>

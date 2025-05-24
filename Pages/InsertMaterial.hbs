@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="/js/layout.js"></script>
+    <script src="../js/embeddedPopup.js"></script>
+        <script src="../js/executeData.js"></script>
+    <script src="../js/attachmentService.js"></script>
+
+
+<style>
+     .table-container input{
+padding:5px;
+        }
+</style>
+  
+
+    <style>
+        #uploadPopup{
+            display:'flex';
+        }
+    </style>
+
+  </head>
+
+<body>
+    {{> sidebar}}
+
+ <head>
+   {{> topbar user=user}}
+</head>
+
+
+    <main class="main-content shifted">
+       
+      
+       
+        <div class="sub-container">
+            <div class="mini-container formContainter">
+                <div class="section-header">
+                    <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                        <h3 class="container-hederText">Material Details</h3>
+                    </span>
+                </div>
+                <span id="2">
+                    <form method="POST" id="section" class="form" action="/CartAdd">
+                        <div>
+                            <label for="materialName">Material Name:</label>
+                            <input type="text" id="materialName" name="materialName" required>
+                        </div>
+                        <div>
+                            <label for="materialCode">Material Code:</label>
+                            <input type="text" id="materialCode" name="materialCode" required>
+                        </div>
+                        <div>
+                            <label for="materialDescription">Material Description:</label>
+                            <textarea id="materialDescription" name="materialDescription" rows="4" required></textarea>
+                        </div>
+                        <div>
+                            <label for="unitOfMeasure">Unit of Measure:</label>
+                            <select id="unitOfMeasure" name="unitOfMeasure" required>
+                                <option value="" disabled selected>Select Unit</option>
+                                <option value="KG">Kilogram (KG)</option>
+                                <option value="L">Liter (L)</option>
+                                <option value="M">Meter (M)</option>
+                                <option value="PCS">Pieces (PCS)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" id="quantity" name="quantity" required>
+                        </div>
+                        <div>
+                            <label for="price">Price:</label>
+                            <input type="number" id="price" name="price" required>
+                        </div>
+                        <div>
+                            <label for="supplier">Supplier:</label>
+                            <select id="supplier" name="supplier" required>
+                                <option value="" disabled selected>Select Supplier</option>
+                                <option value="Supplier 1">Supplier 1</option>
+                                <option value="Supplier 2">Supplier 2</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="materialType">Material Type:</label>
+                            <select id="materialType" name="materialType" required>
+                                <option value="" disabled selected>Select Type</option>
+                                <option value="Raw">Raw Material</option>
+                                <option value="Finished">Finished Goods</option>
+                                <option value="Semi-Finished">Semi-Finished Goods</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="storageLocation">Storage Location:</label>
+                            <input type="text" id="storageLocation" name="storageLocation" required>
+                        </div>
+                        <div>
+                            <label for="expiryDate">Expiry Date:</label>
+                            <input type="date" id="expiryDate" name="expiryDate">
+                        </div>
+                        <div>
+                   
+                            <label for="otherDocs">Other Docs</label>
+                            <span class="upload-icon" id="filed2"><i class="fa fa-upload"></i></span> <!-- Upload icon -->
+                            <input type="hidden" id="filed2-article" name="otherDocs" required>
+                         
+                </div>
+                    </form>
+                </span>
+            </div>
+        </div>
+            <div class="action">
+
+                <button class="form-action-btn" id="submitBtn" onclick="submitFormData()">Submit</button>
+         <button class="form-action-btn" id="clearCart" >Save as Draft</button>
+            </div>
+    </div>
+<span id="popupContainer"></span>
+</main>
+
+<footer>
+    <script>
+         function loadPopups(...popupNames) {
+    popupNames.forEach(popupName => {
+        fetch(`/popups/${popupName}.html`) // Fetch each popup
+            .then(response => response.text())
+            .then(html => {
+                // Create a container for each popup
+                let popupDiv = document.createElement("div");
+                popupDiv.innerHTML = html;
+                document.getElementById('popupContainer').appendChild(popupDiv);
+            })
+            .catch(error => console.error(`Error loading ${popupName} popup:`, error));
+    });
+}
+
+// Example Usage: Load multiple popups at once
+loadPopups('uploadpopup','settingspopup');
+
+        const moreActions = document.getElementById("moreActions");
+        const actionsContainer = document.getElementById("actionsContainer");
+
+      
+
+        // Initial check for the screen size on page load
+        moveButtonsToPopup(); // Move buttons based on the initial screen size
+    </script>
+</footer>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    markRequiredFields();
+});
+
+// // Example: Calling it again after adding new elements dynamically
+// setTimeout(() => {
+//     markRequiredFields();  // Ensures new elements get marked properly
+// }, 500);
+// document.addEventListener('DOMContentLoaded', markRequiredFields);
+
+ 
+// Call the function after DOM content loads
+
+  function downloadExcel(){
+console.log('downloadExcel called')
+let input=  document.querySelector('.dialog-container')
+console.log('input',input)
+input.display='flex';
+console.log(input.display)
+}
+ 
+    enableSubmenus()
+ 
+    
+ </script>
+
+
+  
+
+   
+
+</body>
+
+</html>
+<script>
+    function validatePage2() {
+    const requiredInputs = document.querySelectorAll('input[required], textarea[required], select[required]');
+    let isValid = true;
+    let errorMessages = [];
+
+    // Clear previous error messages
+    document.querySelectorAll('.error-message').forEach((error) => error.remove());
+
+    requiredInputs.forEach((input) => {
+        let isFieldValid = true;
+
+        // Check for hidden fields
+        if (input.type === 'hidden' && !input.value) {
+            isFieldValid = false;
+        }
+
+        // Check for other input types
+        if (!input.checkValidity()) {
+            isFieldValid = false;
+        }
+
+        // If the field is invalid, show an error message
+        if (!isFieldValid) {
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = input.validationMessage || 'This field is required.';
+            input.after(errorMessage);
+
+            // Highlight invalid field
+            input.classList.add('invalid');
+            isValid = false;
+
+            // Add to error messages
+            const fieldName = input.name || input.placeholder || 'Field';
+            errorMessages.push(`${fieldName}: ${input.validationMessage || 'This field is required.'}`);
+        } else {
+            // Remove invalid highlighting
+            input.classList.remove('invalid');
+        }
+    });
+
+    // Show popup with error messages if there are any
+    if (!isValid && errorMessages.length > 0) {
+        showPopup('Validation Errors', errorMessages.join('\n'));
+    }
+
+    return isValid;
+}
+function validatePage() {
+    const requiredInputs = document.querySelectorAll('input[required], textarea[required], select[required]');
+    let isValid = true;
+    let errorMessages = [];
+console.log('requiredFields',requiredInputs)
+    // Clear previous error messages
+    document.querySelectorAll('.error-message').forEach((error) => error.remove());
+    const errorMessage = document.createElement('div');
+
+    requiredInputs.forEach((input) => {
+        let isFieldValid = input.checkValidity(); // Default checkValidity validation
+
+// Custom validation for hidden fields or dynamic fields
+if (input.type === 'hidden' && !input.value) {
+    errorMessage.className = 'error-message';
+            errorMessage.textContent = input.validationMessage || 'This field is required.';
+            input.after(errorMessage);
+
+            // Highlight invalid field
+            input.classList.add('invalid');
+            isValid = false;
+
+            // Add to error messages
+            const fieldName = input.name || input.placeholder || 'Field';
+            errorMessages.push(`${fieldName}: ${input.validationMessage || 'This field is required.'}`);
+        
+}
+
+// Check for other specific custom validation cases, like empty inputs in a certain state
+if (input.type === 'select' && input.selectedIndex === 0) {
+    isFieldValid = false; // Example: check for the default "Please Select" option
+}
+        if (!input.checkValidity()) {
+            // Show error message below input
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = input.validationMessage || 'This field is required.';
+            input.after(errorMessage);
+
+            // Highlight invalid field
+            input.classList.add('invalid');
+            isValid = false;
+
+            // Add to error messages
+            const fieldName = input.name || input.placeholder || 'Field';
+            errorMessages.push(`${fieldName}: ${input.validationMessage || 'This field is required.'}`);
+        
+        } else {
+            // Remove invalid highlighting
+            input.classList.remove('invalid');
+        }
+    });
+
+    // Show popup with error messages if there are any
+    if (!isValid && errorMessages.length > 0) {
+        showPopup('Validation Errors', errorMessages.join('\n'));
+    }
+
+    return isValid;
+}
+
+
+function checkConditions() {
+    let isValid = true;
+    let errorMessages = [];
+
+    // Example conditions:
+    const ageInput = document.querySelector('input[name="age"]');
+    if (ageInput && parseInt(ageInput.value, 10) < 18) {
+        errorMessages.push('Age must be 18 or older.');
+        isValid = false;
+    }
+
+    const emailInput = document.querySelector('input[name="email"]');
+    if (emailInput && !emailInput.value.endsWith('@example.com')) {
+        errorMessages.push('Email must end with @example.com.');
+        isValid = false;
+    }
+
+    const checkbox = document.querySelector('input[name="terms"]');
+    if (checkbox && !checkbox.checked) {
+        errorMessages.push('You must accept the terms and conditions.');
+        isValid = false;
+    }
+
+    // If any conditions fail, show a popup and return false
+    if (!isValid) {
+        showPopup('Condition Check Errors', errorMessages.join('\n'));
+    }
+
+    return isValid;
+}
+
+
+
+// Close function
+
+
+
+</script>
+<!-- <script>
+          
+    function submitFormData() {
+        let tableData=[]
+         var tableRows = document.querySelectorAll("#addrowtest tbody tr");
+         const customers = document.getElementById("addrowtest").getElementsByTagName('tbody')[0];
+
+    tableRows.forEach(function(row) {
+        var rowData = new FormData();
+        var inputs = row.querySelectorAll("input");
+        inputs.forEach(function(input) {
+            rowData.append(input.name, input.value);
+        });
+        tableData.push(Object.fromEntries(rowData));
+    });
+    console.log(JSON.stringify(tableData))
+         var section = new FormData(document.getElementById("section"));
+var payload={
+    "section":Object.fromEntries(section),
+    "tableData":tableData
+}
+
+      
+    
+
+        // Submit formData to Node.js API using fetch or XMLHttpRequest
+       fetch('/PostData', {
+    method: 'POST',
+     headers: {
+            'Content-Type': 'application/json'
+
+        },
+    body: JSON.stringify({data:payload})
+})
+.then(response => {
+    if (response.ok) {
+        return response.json(); // Parse response body as JSON
+    } else {
+        throw new Error('Form submission failed!');
+    }
+})
+.catch(error => {
+    console.error('Error submitting form:', error);
+});
+
+    }
+  
+    
+</script> -->
+
+<script>
+    // Initialize dynamic structures for attachments, counts, and articleIds
+let attachments = {}; // Store attachments for each field
+let attachmentCounts = {}; // Store count for each field
+let articleIds = {}; // Store articleId for each field
+
+// Open the popup modal when any upload icon is clicked
+document.querySelectorAll('.upload-icon').forEach(icon => {
+    icon.addEventListener('click', function() {
+        const fieldId = icon.id; // Get the field ID (field1, field2, etc.)
+        
+        // If there are existing attachments (count > 0), fetch previous attachments
+        if (attachmentCounts[fieldId] > 0 && articleIds[fieldId]) {
+            fetchAttachments(articleIds[fieldId], fieldId);
+        } else {
+            openUploadPopup(fieldId); // Otherwise, let the user upload new files
+        }
+    });
+});
+
+
+</script>
+
+  
+
+     

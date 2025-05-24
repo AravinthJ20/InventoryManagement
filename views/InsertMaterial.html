@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/css/layout.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
+    <script src="../js/utils.js"></script>
     <script src="/js/layout.js"></script>
 
     <script src="../js/embeddedPopup.js"></script>
@@ -167,14 +167,16 @@ color: white;
     <div class="sidebar active" id="sidebar">
         <h2>Menu</h2>
         <ul>
+            <li><a href="inbox"><i class="fa fa-home"></i>Inbox</a></li>
+
                      <li><a href="index2.html"><i class="fa fa-home"></i>Home</a></li>
     
              <li><a href="/views/LandingPage.html"><i class="fa fa-bar-chart fa-fw"></i><span class="menuname">Dashboard</span></i></a></li>
              <li>
                 <a href="javascript:void(0)"><i class="fa fa-truck"></i><span class="menuname">Suppliers</span ><span class="arrow">></span></a>
                 <ul class="submenu">
-                    <li><a href="/views/VendorRegisteration.htm"><i class="fa fa-truck"></i><span class="menuname">Supplier Registeration</span></a></li>
-                    <li><a href="/views/VendorList.htm"><i class="fa fa-truck"></i><span class="menuname">Supplier List</span></a></li>
+                    <li><a href="/views/VendorRegisteration"><i class="fa fa-truck"></i><span class="menuname">Supplier Registeration</span></a></li>
+                    <li><a href="/views/VendorList"><i class="fa fa-truck"></i><span class="menuname">Supplier List</span></a></li>
                 </ul>
             </li>
             <li>
@@ -217,7 +219,7 @@ color: white;
  <head>
 <div class="topbar">
     <button class="open-btn" onclick="toggleSidebar2()">☰</button>
-    <h2>Inventory Mangament</h2>
+    <h2>Smart Inventory System</h2>
     <div class="topbar-menu">
         <a href="/socket"><i class="fa fa-comments-o"></i>Chat Room</a>
         <a href="#">About Us</a>

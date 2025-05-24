@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/popupTable.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="/js/layout.js"></script>
+    <script src="/js/utils.js"></script>
+
+
+
+</head>
+
+<body>
+    {{> sidebar}}
+
+
+    <head>
+        {{> topbar user=user}}
+
+    </head>
+
+
+    <main class="main-content shifted">
+
+
+
+        <!-- Dashboard 1 -->
+        <div class="sub-container">
+            <div class="dashboard">
+                <div class="dashboard-title">Sales Dashboard</div>
+                <div class="chartcontainer">
+                    <!-- KPI Cards -->
+                    <div class="card kpi-card">
+                        <i class="fas fa-shopping-cart fa-2x"></i>
+                        <div class="value">1,250</div>
+                        <div class="label">Total Orders</div>
+                    </div>
+
+                    <div class="card kpi-card">
+                        <i class="fas fa-users fa-2x"></i>
+                        <div class="value">300</div>
+                        <div class="label">Active Customers</div>
+                    </div>
+                    <div class="card kpi-card">
+                        <i class="fas fa-box fa-2x"></i>
+                        <div class="value">1,000</div>
+                        <div class="label">Total Products</div>
+                    </div>
+
+                    <!-- Progress Bar Charts -->
+                    <div class="card">
+                        <h3>Order Fulfillment</h3>
+                        <div class="progress-container">
+                            <div class="progress" style="width: 75%; background: #3498db;"></div>
+                        </div>
+                        <div style="text-align: right;">75%</div>
+                    </div>
+                    <div class="card">
+                        <h3>Customer Satisfaction</h3>
+                        <div class="progress-container">
+                            <div class="progress" style="width: 85%; background: #27ae60;"></div>
+                        </div>
+                        <div style="text-align: right;">85%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        </div>
+
+    </main>
+
+    <footer>
+
+    </footer>
+
+
+
+
+
+
+
+
+</body>
+
+</html>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        initMenus()
+
+    });
+
+
+
+    enableSubmenus()
+</script>

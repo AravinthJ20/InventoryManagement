@@ -1,0 +1,91 @@
+td.status {
+    text-align: center;
+    vertical-align: middle;
+    padding: 5px;
+  }
+  
+ 
+  .status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.7rem;
+    color: white;
+                transition: background-color 0.3s;
+
+    text-align: center;
+  }
+  
+  /* Status-specific colors */
+  .status-badge.Registered {
+    background-color: rgb(14, 201, 253);
+}
+.status-badge.Invited {
+    background-color: green;
+}
+  .status-badge.Submitted {
+    background-color: rgb(42, 171, 173);
+  }
+  
+   
+  .status-badge.Blocked {
+    background-color: red;
+  }
+ 
+  .status-badge.pending {
+    background-color: #FBC02D; /* yellow */
+  }
+  /* Reset the global padding */
+/* td.status {
+    padding: 0.2rem !important;  
+    text-align: center;
+    margin-top:1rem;
+} */
+
+/* .status {
+    display: inline-block;  
+    padding: 10px 20px !important;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+} */
+
+     
+
+
+.status.Registered{
+background-color: rgb(14, 201, 253);
+         color: white;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+}
+
+
+.status.Invited {
+background-color: green;
+        
+         color: white;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+}
+
+.status.Blocked {
+background-color: red;
+        
+         color: white;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+}
+.status.Submitted {
+background-color: rgb(42, 171, 173);
+       
+         
+         color: white;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+}

@@ -159,6 +159,61 @@ let data={
     let output=await axios.post(url,data)
     return output;
 }
+function replacePlaceholders(obj, replacements) {
+    if (typeof obj === 'string') {
+      return obj.replace(/\{\{(.*?)\}\}/g, (match, path) => {
+        // Handle special cases like timestamp functions
+        if (path.startsWith('timeStamp')) {
+          const format = path.match(/timeStamp\s+(.*)/)[1];
+          return new Date().toISOString(); // Implement your timestamp formatting
+        }
+        if (path.startsWith('toInt')) {
+          const valuePath = path.match(/toInt\s+(.*)/)[1];
+          const value = valuePath.split('.').reduce((o, k) => o?.[k], replacements);
+          return parseInt(value) || 0;
+        }
+        
+        // Handle normal path replacements
+        return path.split('.').reduce((o, k) => o?.[k] ?? match, replacements);
+      });
+    }
+    
+    if (Array.isArray(obj)) {
+      return obj.map(item => replacePlaceholders(item, replacements));
+    }
+    
+    if (typeof obj === 'object' && obj !== null) {
+      return Object.fromEntries(
+        Object.entries(obj).map(([key, value]) => [
+          key, 
+          replacePlaceholders(value, replacements)
+        ])
+      );
+    }
+    
+    return obj;
+  }
+  async function handlePublishEvent(action, payload, actionResponses) {
+    console.log('handlePublishEvent started!');
+    
+    // Replace all placeholders in the action body
+    const processedBody = replacePlaceholders(
+      action.actionDetails.Body,
+      {
+        payload,
+        actionsResponse: actionResponses,
+        timeStamp: (format) => new Date().toISOString() // Implement your timestamp formatting
+      }
+    );
+
+    let baseurl = "http://localhost:3000/";
+    let absoluteUrl = "workflow-engine/PublishWorkflow";
+    let url = baseurl.concat(absoluteUrl);
+    
+    console.log('publishEvent payload:', processedBody);
+    let output = await axios.post(url, processedBody);
+    return output.data;
+}
 async function executeApi(action, payload, actionResponses) {
     let data={
         subject:"Subject Tester",
@@ -483,53 +538,172 @@ async function finalizeLog(logId) {
     }
 }
 
-async function executeActions(actions, payload, ruleSetName ) {
+//..execute action before output ...//
+// async function executeActions(actions, payload, ruleSetName ) {
+//     const actionResponses = {};
+//     let currentIndex = 0;
+
+//     // Create the log document and get its ID
+//     const logId = await createLogDocument(ruleSetName, payload);
+// console.log('actions',actions)
+//     async function executeNextAction() {
+//         if (currentIndex >= actions.length) {
+//             console.log('All actions completed.');
+//             console.log('Final Action Responses:', actionResponses);
+//             await finalizeLog(logId);
+//             return;
+//         }
+
+//         const action = actions[currentIndex];
+//         console.log(`Executing action: ${action.actionName} (ID: ${action.id})`);
+
+//         let response;
+//         let nextActionId = null;
+//         const startTime = new Date();
+
+//         try {
+//             switch (action.actionType) {
+//                 case 'conditional':
+//                     response = await handleConditional(action, payload, actionResponses);
+//                     nextActionId = response.nextActionId;
+//                     actionResponses[action.actionName] = response.response;
+//                     break;
+//                 case 'getDataFromDB':
+//                     response = await handleGetDataFromDB(action, payload, actionResponses);
+//                     console.log('getdatafr',response)
+//                     actionResponses[action.actionName] = response;
+//                     nextActionId = action.actionDetails?.nextAction;
+//                     break;
+//                 case 'mapFields':
+//                     response = await handleMapFields(action, payload, actionResponses);
+//                     actionResponses[action.actionName] = response;
+//                     nextActionId = action.actionDetails?.nextAction;
+//                     break;
+//                 case 'updateBusinessView':
+//                     response = await handleUpdateBusinessView(action, payload, actionResponses);
+//                     actionResponses[action.actionName] = response;
+//                     nextActionId = action.actionDetails?.nextAction;
+//                     break;
+//                     case 'insertData':
+//                         response = await handleInsertISData(action, payload, actionResponses);
+//                         actionResponses[action.actionName] = response;
+//                         nextActionId = action.actionDetails?.nextAction;
+//                         break;
+
+//                         case 'workflowPublishEvent':
+//                             response = await handlePublishEvent(action, payload, actionResponses);
+//                             actionResponses[action.actionName] = response;
+//                             nextActionId = action.actionDetails?.nextAction;
+//                             break;
+//                     case 'webhook':
+//                         response = await handleWebhook(action, payload, actionResponses);
+//                         actionResponses[action.actionName] = response;
+//                         nextActionId = action.actionDetails?.nextAction;
+//                         break;
+                        
+//             case 'executeApi':
+//                 response = await executeApi(action, payload, actionResponses);
+//                 actionResponses[action.actionName] = response;
+//                 nextActionId = action.actionDetails?.nextAction;
+//                 break;
+//                 case 'completed':
+//                     response = await handleCompleted(action, payload, actionResponses);
+//                     actionResponses[action.actionName] = response;
+//                     await finalizeLog(logId);
+//                     return;
+//                     default:
+//                         console.warn(`Unknown action type: ${action.actionType}. Skipping to next action.`);
+//                         break;
+//             }
+
+//             const endTime = new Date();
+
+//             // Update log with executed action details
+//             await updateLogWithAction(logId, action, payload, response, true, startTime, endTime);
+
+//             // Determine next action
+//             if (nextActionId) {
+//                 currentIndex = findIndexById(actions, nextActionId);
+//             } else {
+//                 currentIndex++;
+//             }
+
+//             console.log(`Waiting for 2 seconds before executing next action...`);
+//             setTimeout(executeNextAction, 2000);
+//         } catch (error) {
+//             console.error(`Error executing action: ${action.actionName}`, error);
+
+//             const endTime = new Date();
+
+//             // Log failed action execution
+//             await updateLogWithAction(logId, action, payload, { error: error.message }, false, startTime, endTime);
+
+//             currentIndex++; // Move to the next action
+//             executeNextAction();
+//         }
+//     }
+
+//     executeNextAction();
+// }
+//...execute action after ouput ..//
+async function executeActions(actions, payload, ruleSetName, workflowOutputConfig) {
     const actionResponses = {};
     let currentIndex = 0;
-
-    // Create the log document and get its ID
+    
+    // Create the log document
     const logId = await createLogDocument(ruleSetName, payload);
+    console.log('actions', actions);
 
-    async function executeNextAction() {
-        if (currentIndex >= actions.length) {
-            console.log('All actions completed.');
-            console.log('Final Action Responses:', actionResponses);
-            await finalizeLog(logId);
-            return;
-        }
+    // Return a Promise that resolves with the final output
+    return new Promise(async (resolve, reject) => {
+        async function executeNextAction() {
+            if (currentIndex >= actions.length) {
+                console.log('All actions completed.');
+                console.log('Final Action Responses:', actionResponses);
+                await finalizeLog(logId);
+                
+                // Generate final output based on the workflow's Output configuration
+                const finalOutput = generateFinalOutput(workflowOutputConfig, actionResponses);
+                resolve(finalOutput);
+                return;
+            }
 
-        const action = actions[currentIndex];
-        console.log(`Executing action: ${action.actionName} (ID: ${action.id})`);
+            const action = actions[currentIndex];
+            console.log(`Executing action: ${action.actionName} (ID: ${action.id})`);
 
-        let response;
-        let nextActionId = null;
-        const startTime = new Date();
+            try {
+                let response;
+                let nextActionId = null;
+                const startTime = new Date();
 
-        try {
-            switch (action.actionType) {
-                case 'conditional':
-                    response = await handleConditional(action, payload, actionResponses);
-                    nextActionId = response.nextActionId;
-                    actionResponses[action.actionName] = response.response;
-                    break;
-                case 'getDataFromDB':
-                    response = await handleGetDataFromDB(action, payload, actionResponses);
-                    console.log('getdatafr',response)
-                    actionResponses[action.actionName] = response;
-                    nextActionId = action.actionDetails?.nextAction;
-                    break;
-                case 'mapFields':
-                    response = await handleMapFields(action, payload, actionResponses);
-                    actionResponses[action.actionName] = response;
-                    nextActionId = action.actionDetails?.nextAction;
-                    break;
-                case 'updateBusinessView':
-                    response = await handleUpdateBusinessView(action, payload, actionResponses);
-                    actionResponses[action.actionName] = response;
-                    nextActionId = action.actionDetails?.nextAction;
-                    break;
+                switch (action.actionType) {
+                    case 'conditional':
+                        response = await handleConditional(action, payload, actionResponses);
+                        nextActionId = response.nextActionId;
+                        actionResponses[action.actionName] = response.response;
+                        break;
+                    case 'getDataFromDB':
+                        response = await handleGetDataFromDB(action, payload, actionResponses);
+                        actionResponses[action.actionName] = response;
+                        nextActionId = action.actionDetails?.nextAction;
+                        break;
+                    case 'mapFields':
+                        response = await handleMapFields(action, payload, actionResponses);
+                        actionResponses[action.actionName] = response;
+                        nextActionId = action.actionDetails?.nextAction;
+                        break;
+                    case 'updateBusinessView':
+                        response = await handleUpdateBusinessView(action, payload, actionResponses);
+                        actionResponses[action.actionName] = response;
+                        nextActionId = action.actionDetails?.nextAction;
+                        break;
                     case 'insertData':
                         response = await handleInsertISData(action, payload, actionResponses);
+                        actionResponses[action.actionName] = response;
+                        nextActionId = action.actionDetails?.nextAction;
+                        break;
+                    case 'workflowPublishEvent':
+                        response = await handlePublishEvent(action, payload, actionResponses);
                         actionResponses[action.actionName] = response;
                         nextActionId = action.actionDetails?.nextAction;
                         break;
@@ -538,51 +712,129 @@ async function executeActions(actions, payload, ruleSetName ) {
                         actionResponses[action.actionName] = response;
                         nextActionId = action.actionDetails?.nextAction;
                         break;
+                    case 'executeApi':
+                        response = await executeApi(action, payload, actionResponses);
+                        actionResponses[action.actionName] = response;
+                        nextActionId = action.actionDetails?.nextAction;
+                        break;
+                    case 'completed':
+                        response = await handleCompleted(action, payload, actionResponses);
+                        actionResponses[action.actionName] = response;
                         
-            case 'executeApi':
-                response = await executeApi(action, payload, actionResponses);
-                actionResponses[action.actionName] = response;
-                nextActionId = action.actionDetails?.nextAction;
-                break;
-                case 'completed':
-                    response = await handleCompleted(action, payload, actionResponses);
-                    actionResponses[action.actionName] = response;
-                    await finalizeLog(logId);
-                    return;
+                        // Generate final output based on the workflow's Output configuration
+                        const finalOutput = generateFinalOutput(workflowOutputConfig, actionResponses);
+                        
+                        await finalizeLog(logId);
+                        resolve(finalOutput);
+                        return;
                     default:
                         console.warn(`Unknown action type: ${action.actionType}. Skipping to next action.`);
                         break;
+                }
+
+                const endTime = new Date();
+                await updateLogWithAction(logId, action, payload, response, true, startTime, endTime);
+
+                if (nextActionId) {
+                    currentIndex = findIndexById(actions, nextActionId);
+                } else {
+                    currentIndex++;
+                }
+
+                setTimeout(executeNextAction, 2000);
+            } catch (error) {
+                console.error(`Error executing action: ${action.actionName}`, error);
+                const endTime = new Date();
+                await updateLogWithAction(logId, action, payload, { error: error.message }, false, startTime, endTime);
+                
+                // Reject the promise with error
+                reject({
+                    error: true,
+                    message: `Failed to execute action ${action.actionName}`,
+                    details: error.message,
+                    actionId: action.id
+                });
             }
-
-            const endTime = new Date();
-
-            // Update log with executed action details
-            await updateLogWithAction(logId, action, payload, response, true, startTime, endTime);
-
-            // Determine next action
-            if (nextActionId) {
-                currentIndex = findIndexById(actions, nextActionId);
-            } else {
-                currentIndex++;
-            }
-
-            console.log(`Waiting for 2 seconds before executing next action...`);
-            setTimeout(executeNextAction, 2000);
-        } catch (error) {
-            console.error(`Error executing action: ${action.actionName}`, error);
-
-            const endTime = new Date();
-
-            // Log failed action execution
-            await updateLogWithAction(logId, action, payload, { error: error.message }, false, startTime, endTime);
-
-            currentIndex++; // Move to the next action
-            executeNextAction();
         }
+
+        executeNextAction();
+    });
+}
+
+// Helper function to generate final output based on workflow configuration
+function generateFinalOutput(outputConfig, actionResponses) {
+    if (!outputConfig) {
+        return {
+            success: true,
+            actionResponses: actionResponses
+        };
     }
 
-    executeNextAction();
+    const result = {};
+    
+    // Process simple properties
+    for (const [key, value] of Object.entries(outputConfig)) {
+        if (typeof value === 'string') {
+            result[key] = replacePlaceholders(value, { actionsResponse: actionResponses });
+        } else if (typeof value === 'object' && value !== null) {
+            // Process nested objects
+            result[key] = replacePlaceholders(JSON.stringify(value), { actionsResponse: actionResponses });
+            try {
+                result[key] = JSON.parse(result[key]);
+            } catch (e) {
+                // If not valid JSON, leave as is
+            }
+        } else {
+            result[key] = value;
+        }
+    }
+    
+    return result;
 }
+
+// Enhanced replacePlaceholders function
+function replacePlaceholders(obj, replacements) {
+    if (typeof obj === 'string') {
+        return obj.replace(/\{\{(.*?)\}\}/g, (match, path) => {
+            // Handle special functions
+            if (path.startsWith('Date.now()')) {
+                return new Date().toISOString();
+            }
+            if (path.startsWith('timeStamp')) {
+                const format = path.match(/timeStamp\s+(.*)/)?.[1] || 'YYYY-MM-DD';
+                return new Date().toISOString(); // Implement proper formatting
+            }
+            if (path.startsWith('toInt')) {
+                const valuePath = path.match(/toInt\s+(.*)/)?.[1];
+                const value = valuePath?.split('.').reduce((o, k) => o?.[k], replacements) || 0;
+                return parseInt(value) || 0;
+            }
+            
+            // Handle normal path replacements
+            return path.split('.').reduce((o, k) => {
+                if (o === undefined || o === null) return match;
+                return o[k] ?? match;
+            }, replacements);
+        });
+    }
+    
+    if (Array.isArray(obj)) {
+        return obj.map(item => replacePlaceholders(item, replacements));
+    }
+    
+    if (typeof obj === 'object' && obj !== null) {
+        return Object.fromEntries(
+            Object.entries(obj).map(([key, value]) => [
+                key, 
+                replacePlaceholders(value, replacements)
+            ])
+        );
+    }
+    
+    return obj;
+}
+
+
 
 let db=null;
 let collection=null;

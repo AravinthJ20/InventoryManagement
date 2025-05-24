@@ -1,0 +1,247 @@
+<style>
+    /* Column Settings Popup */
+.settings-popup {
+    position: fixed;
+    right: -400px;
+    top: 0;
+    width: 350px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    transition: right 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-popup.active {
+    right: 0;
+}
+
+.settings-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.settings-content {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.settings-footer {
+    padding: 15px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+}
+
+.sortable-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sortable-list li {
+    padding: 10px;
+    margin-bottom: 5px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sortable-list li:hover {
+    background: #eee;
+}
+
+.sortable-list li input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.sortable-list li .drag-handle {
+    cursor: move;
+    color: #666;
+}
+</style>
+<div class="settings-popup" id="columnSettingsPopup">
+    <div class="settings-header">
+        <h3>Table Columns</h3>
+        <button class="close-btn" onclick="closeColumnSettings()">&times;</button>
+    </div>
+    <div class="settings-content">
+        <ul id="columnList" class="sortable-list">
+            <!-- Columns will be added dynamically here -->
+        </ul>
+    </div>
+    <div class="settings-footer">
+        <button class="action-btn" onclick="applyColumnSettings()">Apply</button>
+        <button class="action-btn" onclick="resetColumnSettings()">Reset</button>
+    </div>
+</div>
+
+<script>
+        // Add this to your script section
+function openColumnSettings(tableId) {
+    const popup = document.getElementById('columnSettingsPopup');
+    popup.classList.add('active');
+    
+    // Store which table we're configuring
+    popup.dataset.tableId = tableId;
+    
+    // Initialize the column list
+    initColumnSettings(tableId);
+}
+
+function closeColumnSettings() {
+    document.getElementById('columnSettingsPopup').classList.remove('active');
+}
+
+function initColumnSettings(tableId) {
+    const table = document.getElementById(tableId);
+    const headers = table.querySelectorAll('thead th');
+    const columnList = document.getElementById('columnList');
+    columnList.innerHTML = '';
+    
+    // Create an array of columns with their current positions
+    const columns = Array.from(headers).map((header, index) => ({
+        element: header,
+        name: header.getAttribute('dbcolum'),
+        index: index,
+        visible: header.style.display !== 'none'
+    })).filter(col => col.name); // Filter out columns without dbcolum
+    
+    columns.forEach((col, index) => {
+        const columnName = col.element.textContent.trim() || col.name;
+        
+        const li = document.createElement('li');
+        li.dataset.columnName = col.name;
+        li.dataset.originalIndex = col.index;
+        li.innerHTML = `
+            <div>
+                <input type="checkbox" id="col-${index}" ${col.visible ? 'checked' : ''}>
+                <label for="col-${index}">${columnName}</label>
+            </div>
+            <i class="fa fa-bars drag-handle"></i>
+        `;
+        columnList.appendChild(li);
+    });
+    
+    // Make the list sortable
+    $(columnList).sortable({
+        handle: '.drag-handle',
+        animation: 150
+    });
+}
+function applyColumnSettings() {
+    const popup = document.getElementById('columnSettingsPopup');
+    const tableId = popup.dataset.tableId;
+    const table = document.getElementById(tableId);
+    const columnList = document.getElementById('columnList');
+    const items = columnList.querySelectorAll('li');
+    
+    // Get all headers and rows
+    const headers = Array.from(table.querySelectorAll('thead th'));
+    const rows = Array.from(table.querySelectorAll('tbody tr'));
+    
+    // Create a mapping of column names to their current positions
+    const columnPositions = {};
+    headers.forEach((header, index) => {
+        columnPositions[header.getAttribute('dbcolum')] = index;
+    });
+    
+    // Determine the new order based on the popup
+    const newOrder = [];
+    items.forEach((item, newIndex) => {
+        const isChecked = item.querySelector('input').checked;
+        const columnName = item.dataset.columnName;
+        
+        if (isChecked) {
+            newOrder.push({
+                name: columnName,
+                originalIndex: columnPositions[columnName]
+            });
+        }
+    });
+    
+    // Reorder the columns in the table
+    if (newOrder.length > 0) {
+        // Reorder headers
+        const thead = table.querySelector('thead');
+        const headerRow = thead.querySelector('tr');
+        const newHeaderRow = document.createElement('tr');
+        
+        // Reorder tbody cells
+        rows.forEach(row => {
+            const newRow = document.createElement('tr');
+            newRow.className = row.className;
+            newRow.setAttribute('data-row-id', row.getAttribute('data-row-id'));
+            
+            newOrder.forEach(col => {
+                const originalIndex = col.originalIndex;
+                
+                // For headers
+                const header = headers[originalIndex];
+                const newHeader = header.cloneNode(true);
+                newHeaderRow.appendChild(newHeader);
+                
+                // For cells
+                const cells = row.querySelectorAll('td');
+                if (cells.length > originalIndex) {
+                    const cell = cells[originalIndex].cloneNode(true);
+                    newRow.appendChild(cell);
+                }
+            });
+            
+            // Replace the row with the reordered one
+            row.parentNode.replaceChild(newRow, row);
+        });
+        
+        // Replace the header row with the reordered one
+        headerRow.parentNode.replaceChild(newHeaderRow, headerRow);
+    }
+    
+    closeColumnSettings();
+}
+function resetColumnSettings() {
+    const popup = document.getElementById('columnSettingsPopup');
+    const tableId = popup.dataset.tableId;
+    const table = document.getElementById(tableId);
+    
+    // Show all columns
+    const headers = table.querySelectorAll('thead th');
+    headers.forEach(header => {
+        header.style.display = '';
+        const colIndex = header.cellIndex;
+        table.querySelectorAll(`tbody td:nth-child(${colIndex + 1})`).forEach(cell => {
+            cell.style.display = '';
+        });
+    });
+    
+    // Re-check all boxes in the settings
+    initColumnSettings(tableId);
+}
+
+// Add a settings button to your table header
+function addSettingsButton() {
+    const tableHeaders = document.querySelectorAll('.list-header');
+    tableHeaders.forEach(header => {
+        if (!header.querySelector('.settings-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'action-btn settings-btn';
+            btn.innerHTML = '<i class="fa fa-cog"></i>';
+            btn.onclick = function() {
+                const table = this.closest('.list-container').querySelector('table');
+                openColumnSettings(table.id);
+            };
+            header.querySelector('.actions-container').prepend(btn);
+        }
+    });
+}
+
+</script>

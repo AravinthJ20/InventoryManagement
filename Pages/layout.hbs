@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Your head content -->
+      <title>List</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="/js/layout.js"></script>
+    <script src="../js/embeddedPopup.js"></script>
+        <script src="../js/executeData.js"></script>
+    <script src="../js/attachmentService.js"></script>
+
+
+</head>
+<body>
+    {{> sidebar}}
+    {{> topbar user=user}}
+    
+    <main class="main-content shifted" id="main-content">
+        <!-- Dynamic content will be loaded here -->
+    </main>
+
+    <!-- Your scripts and footers -->
+</body>
+</html>
+<script>
+    // Client-side router
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle all clicks on the document
+    document.addEventListener('click', function(e) {
+        // Check if the clicked element or its parent has data-route
+        const routeLink = e.target.closest('[data-route]');
+        if (routeLink) {
+            e.preventDefault();
+            const href = routeLink.getAttribute('href');
+            navigateTo(href);
+        }
+    });
+
+    // Initial load
+    navigateTo(window.location.pathname);
+});
+
+async function navigateTo(path) {
+    const mainContent = document.querySelector('.main-content');
+    
+    // Show loading state
+    mainContent.classList.add('loading');
+    mainContent.innerHTML = '<div class="spinner">Loading...</div>';
+
+    try {
+        // Fetch only the content part
+        const response = await fetch(`${path}?partial=true`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const html = await response.text();
+        mainContent.innerHTML = html;
+        
+        // Update browser history without reload
+        window.history.pushState({}, '', path);
+        
+        // Initialize any page-specific JS
+        initPageScripts();
+    } catch (error) {
+        mainContent.innerHTML = '<div class="error">Failed to load page</div>';
+        console.error('Error:', error);
+    } finally {
+        mainContent.classList.remove('loading');
+    }
+}
+
+// Handle back/forward navigation
+window.addEventListener('popstate', function() {
+    navigateTo(window.location.pathname);
+});
+</script>

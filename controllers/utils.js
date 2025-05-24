@@ -5,7 +5,7 @@ const {connectDB}=require('../config/db.js')
 
 async function generatePrimaryId(primaryName, primaryPrefix) {
     try {
-        let db=await connectDB("InventoryManagement");
+        let db=await connectDB("InventoryMangement");
         let collection=db.collection('sequence')
         let prefix=primaryPrefix
         let sequenceCount=await collection.findOne({"sequnceId":primaryName})

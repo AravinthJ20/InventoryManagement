@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+    <link rel="stylesheet" href="../css/layout.css">
+      <link rel="stylesheet" href="../css/popups.css">
+    <script src="../js/utils.js"></script>
+    <script src="../js/layout.js"></script>
+                  <script src="../js/fetchPageData.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+      
+<!-- Code injected by Five-server -->
+  </head>
+
+<body>
+    {{> sidebar}}
+
+ <head>
+   {{> topbar user=user}}
+</head>
+
+
+    <main class="main-content shifted">
+      
+        <div class="sub-container">
+            <div class="mini-container list-container" containerType="table">
+
+                <div class="list-header">
+                    <span class="containerInfo">
+                    <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+
+                    <h3 class="container-hederText">List of Items</h3>
+                        
+                    </span>
+                    <div class="actions-container" id="actionsContainer">
+
+                        <input type="text" id="searchInput" onkeyup="searchTable2(this,'getMaterials')"
+                            placeholder="&#x1f50d; Search for anything..">
+<button class="action-btn" onclick="location.href=href='/updateStock'">Update stock</button>
+                        <!-- Filter icon, you can use your preferred icon here -->
+                        <button id="action-btn header-btn" class="action-btn download-btn" onclick="downloadExcel()">&#x2B73;</button>
+
+                        <button class="action-btn header-btn-2" onclick="window.location.href='/cardView'">Card View</button>
+                        <button class="action-btn">Action 9</button>
+                        <button class="action-btn">Action 10</button>
+                        <button class="action-btn fa" onclick="openFilter()">&#xf0b0;</button>
+                        <button class="fa" onclick="initiateFilter('customers')">&#xf0b0;</button>
+
+                        <button class="three-dot-btn" onclick="togglePopup()">⋮</button>
+                        <div class="more-actions" id="moreActions"></div>
+
+                    </div>
+
+                    </div>
+              
+
+                <span class="collpase-container" id="collpase-container">
+                  
+                    <div class="table-container" datasource="getMaterials">
+                        <table id="customers">
+                            <thead>
+                            <tr>
+
+                             
+                                <th  dbcolum="materialId">Materia Id</th>
+                                <th dbcolum="materialName">Material Name</th>
+                                <th dbcolum="materialName">Material Description</th>
+
+                                <th dbcolum="supplier">Supplier</th>
+                            
+                             
+
+                            </tr>
+                            </thead>
+                                <tbody id="materials">
+                   
+
+</tbody>
+<tfoot><tr class="test">
+            <td colspan="3">Total</td>
+        
+            <td id="totalUnitPrice"></td>
+
+              <td colspan="5"></td>
+              
+        </tr></tfoot>
+  
+
+                        </table>
+                    </div>
+                    <div class="pagination-controls">
+                        <div class="rows-per-page">
+                            <label for="rowsPerPage">Rows per page:</label>
+                            <select id="rowsPerPage" onchange="changeRowsPerPage(this.value,this)">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                            </select>
+                        </div>
+                        <div class="pagination" id="pagination"></div>
+                    </div>
+                  
+                </span>
+
+            </div>
+         
+        </div>
+       
+   
+       
+     
+
+           
+    </div>
+    <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+</main>
+
+<footer>
+  
+</footer>
+
+
+<poups>
+
+{{> popups/filterpopup }}
+{{> popups/authorizationPopup }}
+</poups>
+
+
+
+
+
+
+</body>
+
+{{!-- fetch page data global js used --}}
+{{!-- <script>
+    let sortfield = 'vendorId';
+    let sortOrder = -1;
+    let currentPage = 1;
+    let rowsPerPage = 10; // Default rows per page
+    let activeTableDatasource = null; // Track the active table's datasource
+
+    // Function to extract data sources and dbcolumns from the section container
+    function extractSectionData() {
+        const formGroups = document.querySelectorAll('.form-group');
+        const sectionData = [];
+
+        formGroups.forEach(group => {
+            const datasource = group.getAttribute('datasource');
+            const dbcolumn = group.getAttribute('dbcolumn');
+            if (datasource && dbcolumn) {
+                sectionData.push({ datasource, dbcolumn, inputElement: group.querySelector('input') });
+            }
+        });
+
+        return sectionData;
+    }
+
+    // Function to extract data sources and dbcolumns from the table container
+    function extractTableData() {
+        const tableContainers = document.querySelectorAll('.table-container');
+        const tableData = [];
+
+        tableContainers.forEach(tableContainer => {
+            const tableDataSource = tableContainer.getAttribute('datasource');
+            const tableHeaders = tableContainer.querySelectorAll('th');
+            const tableDbColumns = [];
+
+            tableHeaders.forEach(header => {
+                const dbcolum = header.getAttribute('dbcolum');
+                if (dbcolum) {
+                    tableDbColumns.push({ dbcolum, datasource: tableDataSource });
+                }
+            });
+
+            tableData.push({ datasource: tableDataSource, dbcolumns: tableDbColumns });
+        });
+
+        return tableData;
+    }
+
+    // Combine all data sources
+    function combineDataSources(sectionData, tableData) {
+        const sectionDataSources = sectionData.map(item => item.datasource);
+        const tableDataSources = tableData.map(item => item.datasource);
+        return [...new Set([...sectionDataSources, ...tableDataSources])];
+    }
+
+    const sectionData = extractSectionData();
+    const tableData = extractTableData();
+    let businessViews = combineDataSources(sectionData, tableData);
+function searchTable2(value,datasource){
+let searchInput=value.value
+console.log(value.value,datasource)
+loadData(1,10,datasource,null,searchInput)
+    
+}
+    // Function to load data for all tables or a specific table
+    function loadData(page, limit, datasource = null,rowfilter,searchInput) {
+        const skip = (page - 1) * limit;
+
+        // Show the loading spinner
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        loadingSpinner.style.display = 'flex';
+
+        // Prepare the request data with skip and limit for the specified datasource(s)
+        const pagination = {};
+
+        if (datasource) {
+            // Fetch data for a specific table
+            businessViews=[]
+            businessViews.push(datasource)
+            pagination[datasource] = { skip, limit,rowfilter, searchInput};
+        } else {
+            // Fetch data for all tables (initial load)
+            tableData.forEach(table => {
+                pagination[table.datasource] = { skip: 0, limit: rowsPerPage,rowfilter:rowfilter }; // Initial load for all tables
+            });
+        }
+
+        // Prepare the request data
+        const data = {
+            "businessViews": businessViews,
+            "params": {
+                "pagination": pagination
+            }
+        };
+
+        // Send the request to the server
+        fetch('/fetchPageData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(responseData => {
+            console.log('Response Data:', responseData);
+
+            // Populate the section fields dynamically (only on initial load)
+            if (!datasource && page === 1) {
+                sectionData.forEach(sectionItem => {
+                    const matchingDataSource = responseData.find(item => item.datasource === sectionItem.datasource);
+                    if (matchingDataSource) {
+                        const matchingRow = matchingDataSource.data.find(row => row[sectionItem.dbcolumn] !== undefined);
+                        if (matchingRow) {
+                            sectionItem.inputElement.value = matchingRow[sectionItem.dbcolumn];
+                        }
+                    }
+                });
+            }
+
+            // Populate the table dynamically
+            tableData.forEach(table => {
+                const tableDataSourceResponse = responseData.find(item => item.datasource === table.datasource);
+                if (tableDataSourceResponse) {
+                    const tableBody = document.querySelector(`.table-container[datasource="${table.datasource}"] tbody`);
+                   if(tableDataSourceResponse.data!=null){
+                    tableBody.innerHTML = tableDataSourceResponse.data.map(row => `
+                        <tr>
+                            ${table.dbcolumns.map(col => `<td>${row[col.dbcolum] || ''}</td>`).join('')}
+                        </tr>
+                    `).join('');
+
+                    // Update pagination controls for this table
+                    updatePaginationControls(table.datasource, page, tableDataSourceResponse.count, limit);
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error:', error))
+        .finally(() => {
+            // Hide the loading spinner after the data is loaded or if an error occurs
+            loadingSpinner.style.display = 'none';
+        });
+    }
+
+    // Function to update pagination controls
+    function updatePaginationControls(datasource, currentPage, totalCount, limit) {
+        const totalPages = Math.ceil(totalCount / limit);
+
+        // Find the pagination container for the specific datasource
+        const paginationContainer = document
+        .querySelector(`.table-container[datasource="${datasource}"]`)
+        .closest('.collpase-container') // Move up to the parent container
+        .querySelector('.pagination'); // Select the pagination container
+        if (!paginationContainer) {
+            console.error(`Pagination container not found for datasource: ${datasource}`);
+            return;
+        }
+
+        let paginationHtml = '';
+
+        if (currentPage > 1) {
+            paginationHtml += `<button onclick="changePage('${datasource}', ${currentPage - 1})">Previous</button>`;
+        }
+
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHtml += `<button onclick="changePage('${datasource}', ${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+        }
+
+        if (currentPage < totalPages) {
+            paginationHtml += `<button onclick="changePage('${datasource}', ${currentPage + 1})">Next</button>`;
+        }
+
+        paginationContainer.innerHTML = paginationHtml;
+    }
+
+    // Function to handle page changes
+    window.changePage = function (datasource, page) {
+    console.log('change page called',datasource,page)
+        activeTableDatasource = datasource; // Set the active table
+        loadData(page, rowsPerPage, datasource); // Fetch data for the specific table
+    };
+
+    // Function to handle rows per page changes
+    window.changeRowsPerPage = function (limit,selectElement) {
+        rowsPerPage = parseInt(limit, 10);
+        currentPage = 1; // Reset to the first page
+        let tableContainer = selectElement.closest(".pagination-controls").previousElementSibling;
+        
+        // Get the datasource attribute
+        let dataSource = tableContainer.getAttribute("datasource");
+
+        if (dataSource) {
+            // Fetch data for the active table only
+             console.log('change row if block',)
+            loadData(currentPage, rowsPerPage, dataSource);
+        } else {
+            // Fetch data for all tables (initial load)
+            console.log('change row else block')
+
+            loadData(currentPage, rowsPerPage);
+        }
+    };
+
+    // Initial load for all tables
+    loadData(currentPage, rowsPerPage);
+</script> --}}
+
+</html>
+<script>
+     let sortfield = 'vendorId';
+    let sortOrder = -1;
+    let currentPage = 1;
+    let rowsPerPage = 10; // Default rows per page
+    let activeTableDatasource = null; // Track the active table's datasource
+
+   
+    const sectionData = extractSectionData();
+    const tableData = extractTableData();
+    let businessViews = combineDataSources(sectionData, tableData);
+
+    // Initial load for all tables
+    loadData(currentPage, rowsPerPage);
+      let PageControls=[
+  {
+    "section": [
+      {},
+      {}
+    ]
+  },
+  {
+    "table": [
+      {
+        "tableID": "customers",
+        "filter": true,
+      "filterDatasource":"materialFilter",
+        "filterColumns": [
+          {
+            "columnName": "Materia Id",
+            "techname": "materialId",
+            "filterType": "checkbox",
+            "datasource": "",
+            "dbcolum": "materialId"
+          },
+          {
+            "columnName": "Material Name",
+            "techname": "materialName",
+            "filterType": "search",
+            "datasource": "",
+            "dbcolum": ""
+          }
+        ],
+        "excelDownLoad":false
+      }
+    ,
+    {
+        "tableID": "suppliers",
+        "filter": true,
+      "filterDatasource":"supplierFilter",
+        "filterColumns": [
+          {
+            "columnName": "Supplier Id",
+            "techname": "vendorId",
+            "filterType": "checkbox",
+            "datasource": "",
+            "dbcolum": "vendorId"
+          }
+         
+        ],
+        "excelDownLoad":false
+      }
+    
+    ]
+  }
+,{
+    'pagePermissions':["supplier","buyer","admin"]
+}
+]
+
+  
+// Call the function to check permissions when the page loads
+pagePermissions(PageControls);
+function initiateFilter(tabled){
+
+    openFilter(tabled,PageControls)
+}
+</script>
+<script>
+  
+
+
+ 
+
+loadFilter()
+
+        const filterColumns = [
+    { columnName: 'Materia Id', techname:"materialId",filterType: 'checkbox', "datasource":"","dbcolumn":"" },
+
+   { columnName: 'Material Name', techname:"materialName",filterType: 'search',"datasource":"", "dbcolumn":""}
+
+];
+let selectedFilters={}
+
+</script>
+<script>
+
+    
+        enableSubmenus()
+     
+     </script>
+<script>
+ document.addEventListener("DOMContentLoaded", function () {
+    try {
+        const table = document.getElementById("customers");
+      
+
+        const headers = Array.from(table.querySelectorAll("th")).map(th => th.textContent.trim());
+        const tbody = table.querySelector("tbody");
+     
+console.log(tbody, 'tbody')
+        tbody.querySelectorAll("tr").forEach(row => {
+            console.log(row, 'data label');
+            row.querySelectorAll("td").forEach((td, index) => {
+                if (headers[index]) {  // Ensure header exists for this index
+                    td.setAttribute("data-label", headers[index]);
+                }
+            });
+        });
+    } catch(e) {
+        console.error('Error in table header initialization:', e);
+    }
+});
+    const tableBody = document.getElementById("materials");
+
+
+
+</script>
+
+ 
+
+<script>
+
+
+   
+   
+</script>
+  

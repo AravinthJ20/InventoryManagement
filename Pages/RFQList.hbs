@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFQ List</title>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/table.css">
+    <script src="/js/layout.js"></script>
+    <script src="../js/fetchPageData.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    {{> sidebar}}
+    <head>
+        {{> topbar user=user}}
+    </head>
+
+    <main class="main-content shifted">
+        <div class="sub-container">
+            <div class="mini-container list-container" containerType="table">
+                <div class="list-header">
+                    <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+                        <h3 class="container-hederText">Request for Quotations</h3>
+                    </span>
+                    <div class="actions-container" id="actionsContainer">
+                        <input type="text" id="searchInput" onkeyup="searchTable(this, 'rfqList')" placeholder="Search...">
+                        <button class="action-btn" onclick="window.location.href='/createRFQ'">Create RFQ</button>
+                        <button class="action-btn download-btn" onclick="downloadExcel('rfqList')">Export</button>
+                        <button class="fa" onclick="initFilter('rfqList')">&#xf0b0;</button>
+                    </div>
+                </div>
+                <span class="collpase-container" id="collpase-container">
+                    <div class="table-container" datasource="rfqList">
+                        <table id="rfqList">
+                            <thead>
+                                <tr>
+                                    <th dbcolum="rfqNumber" data-type="link" href="/rfqDetails?id=${rfqId}">RFQ Number</th>
+                                    <th dbcolum="title">Title</th>
+                                    <th dbcolum="requestedBy">Requested By</th>
+                                    <th dbcolum="department">Department</th>
+                                    <th dbcolum="requiredDate" data-type="date">Required Date</th>
+                                    <th dbcolum="status" data-type="status">Status</th>
+                                    <th dbcolum="createdOn" data-type="date">Created On</th>
+                                    <th data-icon="fa fa-edit" data-click="editRFQ('${rfqId}')" data-type="icon">Edit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rfqListBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-controls">
+                        <div class="rows-per-page">
+                            <label for="rowsPerPage">Rows per page:</label>
+                            <select id="rowsPerPage" onchange="changeRowsPerPage(this.value, this)">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                        <div class="pagination" id="pagination"></div>
+                    </div>
+                </span>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentPage = 1;
+        let rowsPerPage = 10;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData(currentPage, rowsPerPage, 'rfqList');
+        });
+
+        function editRFQ(rfqId) {
+            window.location.href = `/editRFQ?id=${rfqId}`;
+        }
+
+        function downloadExcel(tableId) {
+            const table = document.getElementById(tableId);
+            const ws = XLSX.utils.table_to_sheet(table);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "RFQ List");
+            XLSX.writeFile(wb, "RFQ_List.xlsx");
+        }
+    </script>
+</body>
+</html>
