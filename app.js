@@ -37,7 +37,7 @@ app.use(session({
 //   methods: 'POST', // Allow only GET and POST requests
 //   allowedHeaders: 'Content-Type,Authorization', // Allow specific headers
 // };
-const allowedOrigins = ['http://localhost:3000', 'https://example.com'];
+const allowedOrigins = ['http://localhost:3000', 'https://inventorymanagement-udi4.onrender.com'];
 
 const corsOptions = {
   origin: (origin, callback) => {
