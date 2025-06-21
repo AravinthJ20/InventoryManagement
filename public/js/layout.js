@@ -102,7 +102,7 @@ function markRequiredFields() {
 
 }
 
-function initMenus(){
+function initMenus_bkp(){
     const sidebar = document.getElementById("sidebar").querySelector("ul");
     // const role = getCookie('userRole'); // Retrieve role from cookies, if necessary
 
@@ -256,4 +256,171 @@ function toggleSubMenu(subMenu, arrowSpan) {
         arrowSpan.classList.toggle("open");
     }
 }
+}
+function initMenus2() {
+    const sidebar = document.getElementById("sidebar").querySelector("ul");
+
+    function decodeJwt(token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    }
+
+    let token = localStorage.getItem('admintoken');
+    let decodeToken = decodeJwt(token);
+
+    const dbName = 'MenuDB';
+    const storeName = 'menus';
+    const cacheDuration = 60 * 60 * 1000;
+
+    openDatabase().then(db => {
+        getCachedMenu(db).then(cached => {
+            if (cached && (Date.now() - cached.timestamp < cacheDuration)) {
+               console.log('Using cached menus:', cached.data);
+                loadMenus(cached.data);
+            } else {
+                fetch('/permission', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+                        'Role': 'admin',
+                        'User': decodeToken.user
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const menus = data.menus;
+                    storeMenus(db, menus); // Save to IndexedDB
+                    loadMenus(menus); // Display in UI
+                })
+                .catch(error => console.error("Error fetching menu data:", error));
+            }
+        });
+    });
+
+    function openDatabase() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName, 1);
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(storeName)) {
+                    db.createObjectStore(storeName, { keyPath: 'id' });
+                }
+            };
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    function storeMenus(db, data) {
+        const tx = db.transaction(storeName, 'readwrite');
+        const store = tx.objectStore(storeName);
+        store.put({ id: 'cachedMenus', data, timestamp: Date.now() });
+    }
+
+    function getCachedMenu(db) {
+        return new Promise((resolve) => {
+            const tx = db.transaction(storeName, 'readonly');
+            const store = tx.objectStore(storeName);
+            const request = store.get('cachedMenus');
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(null);
+        });
+    }
+
+    function loadMenus(menus) {
+        sidebar.innerHTML = ''; // Clear any existing menu items
+
+           
+
+
+        menus.forEach(menu => {
+            const li = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = menu.url || "javascript:void(0)";
+            const iconElem = document.createElement("i");
+
+            if (menu.icon) {
+                iconElem.classList.add(...menu.icon.split(" "));
+            } else {
+                iconElem.classList.add("fa", "fa-truck");
+            }
+
+            const nameSpan = document.createElement("span");
+            nameSpan.classList.add("menuname");
+            nameSpan.textContent = menu.name;
+
+            link.appendChild(iconElem);
+            link.appendChild(nameSpan);
+
+            if (menu.subMenus && menu.subMenus.length > 0) {
+                link.href = "javascript:void(0)";
+                const arrowSpan = document.createElement("span");
+                arrowSpan.classList.add("arrow");
+                arrowSpan.textContent = ">";
+                link.appendChild(arrowSpan);
+                li.appendChild(link);
+
+                const subMenu = document.createElement("ul");
+                subMenu.classList.add("submenu");
+                subMenu.style.display = "none";
+
+                menu.subMenus.forEach(sub => {
+                    const subLi = document.createElement("li");
+                    const subLink = document.createElement("a");
+                    const subIcon = document.createElement("i");
+
+                    if (sub.icon) {
+                        subIcon.classList.add(...sub.icon.split(" "));
+                    } else {
+                        subIcon.classList.add("fa", "fa-truck");
+                    }
+
+                    const subNameSpan = document.createElement("span");
+                    subNameSpan.classList.add("menuname");
+                    subNameSpan.textContent = sub.name;
+
+                    subLink.href = sub.url;
+                    subLink.appendChild(subIcon);
+                    subLink.appendChild(subNameSpan);
+
+                    subLi.appendChild(subLink);
+                    subMenu.appendChild(subLi);
+                });
+
+                li.appendChild(subMenu);
+
+                arrowSpan.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    toggleSubMenu(subMenu, arrowSpan);
+                });
+
+                link.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    toggleSubMenu(subMenu, arrowSpan);
+                });
+
+            } else {
+                li.appendChild(link);
+            }
+
+            sidebar.appendChild(li);
+        });
+    }
+
+    function toggleSubMenu(subMenu, arrowSpan) {
+        subMenu.style.display = subMenu.style.display === "none" ? "block" : "none";
+        if (arrowSpan) {
+            arrowSpan.classList.toggle("open");
+        }
+    }
 }

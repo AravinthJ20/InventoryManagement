@@ -25,7 +25,7 @@
 // Initialize the chart
 
 
-function initChart() {
+function initChartold() {
     if (myChart) {
         myChart.destroy(); // Destroy existing chart instance if it exists
     }
@@ -72,6 +72,93 @@ function initChart() {
 
  
 }
+function initChart() {
+    if (myChart) {
+        myChart.destroy(); // Destroy existing chart instance if it exists
+    }
+
+    const chartType = document.getElementById('chartTypeSelect')?.value || 'bar';
+    const labels = Object.keys(chartData);
+    const values = Object.values(chartData);
+
+    const backgroundColors = labels.map((_, i) => `hsla(${(i * 50) % 360}, 70%, 60%, 0.6)`);
+    const borderColors = labels.map((_, i) => `hsla(${(i * 50) % 360}, 70%, 40%, 1)`);
+
+    const baseDataset = {
+        label: 'Status Count',
+        data: values,
+        backgroundColor: backgroundColors,
+        borderColor: borderColors,
+        borderWidth: 1,
+        tension: 0.4, // Smooth line for line/radar
+        fill: chartType === 'radar' || chartType === 'line' ? true : false, // fill area for line/radar
+        pointBackgroundColor: chartType === 'line' ? borderColors : undefined,
+        pointRadius: chartType === 'line' ? 5 : 0
+    };
+
+    const chartOptions = {
+        responsive: true,
+        plugins: {
+           legend: {
+        display: true,
+        position: 'right',
+        labels: {
+            color: '#333',
+            margin: 10,
+
+            font: {
+                size: 12,
+                family: 'Arial'
+            }
+        }
+    },
+            tooltip: {
+                backgroundColor: '#333',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: '#aaa',
+                borderWidth: 1
+            }
+        },
+     // Disable grid lines for bar/line charts
+    scales: (chartType === 'bar' || chartType === 'line') ? {
+        x: {
+            grid: {
+                display: false // ⛔ Hide X-axis grid lines
+            },
+            ticks: {
+                color: '#333'
+            }
+        },
+        y: {
+            beginAtZero: true,
+            grid: {
+                display: false // ⛔ Hide Y-axis grid lines
+            },
+            ticks: {
+                color: '#333'
+            }
+        }
+    } : {},
+        onClick: (event, elements) => {
+            if (elements.length > 0) {
+                const clickedIndex = elements[0].index;
+                const clickedStatus = labels[clickedIndex];
+                filterByStatus(clickedStatus);
+            }
+        }
+    };
+
+    myChart = new Chart(ctx, {
+        type: chartType,
+        data: {
+            labels,
+            datasets: [baseDataset]
+        },
+        options: chartOptions
+    });
+}
+
 
 // Function to update chart type
 function updateChart() {

@@ -1,0 +1,569 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+      {{> favicon}}
+  <link rel="stylesheet" href="/css/layoutTest.css">
+    <link rel="stylesheet" href="/css/table.css">
+       <link rel="stylesheet" href="../css/popups.css">
+
+    <script src="/js/layout.js"></script>
+    <script src="../js/fetchPageData.js"></script>
+ 
+        <script src="../js/fetchPageData.js"></script>
+   
+    
+    <style>
+        /* Card Layout Styles */
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    z-index: 100000000000;
+}
+
+.data-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: white;
+    position: relative;
+}
+
+.card-header {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.card-field {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(241, 236, 236);
+}
+
+.field-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.field-value {
+    text-align: right;
+}
+
+.card-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    background: #e0e0e0;
+}
+
+.card-status.rejected {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.card-status.Invoice\ Submitted {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+    </style>
+    <style>/* Layout Popup Styles */
+.layout-popup {
+    display: none;
+    position: absolute;
+    right: 10px;
+    top: 40px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.layout-option {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.layout-option:hover {
+    background-color: #f5f5f5;
+}
+
+/* Layout specific styles */
+.compact-rows tr {
+    height: 30px !important;
+}
+
+.card-layout {
+    display: none; /* Will be shown via JavaScript */
+}
+/* Ensure cards container is visible */
+.card-layout .cards-container {
+    display: grid !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Hide table in card layout */
+.card-layout table {
+    display: none !important;
+}
+</style>
+    <style>
+         .table-container {
+    position: relative;
+    overflow-x: auto;
+}
+
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(255,255,255,0.8);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.scroll-left {
+    left: 50px;
+}
+
+.scroll-right {
+    right: 10px;
+}
+
+/* Add this to your style section */
+.card-layout .table-container table {
+    display: none !important;
+}
+
+.card-layout .table-container .cards-container {
+    display: grid !important;
+}
+
+/* Ensure table is visible by default */
+.table-container table {
+    display: table;
+    width: 100%;
+}
+
+
+/* When card-layout is active */
+.card-layout .table-container table {
+    display: none;
+}
+
+.card-layout .table-container .cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Ensure table container has proper dimensions */
+.table-container {
+    position: relative;
+    min-height: 200px;
+    overflow: auto;
+}
+    </style>
+  
+
+<!-- Code injected by Five-server -->
+  </head>
+
+<body>
+    {{> sidebar}}
+
+ <head>
+   {{> topbar user=user}}
+</head>
+
+
+    <main class="main-content shifted">
+       
+      
+     
+     
+  
+        
+            <div class="sub-container">
+                <div class="mini-container list-container" containerType="table">
+    
+                    <div class="list-header">
+                        <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+    
+                        <h3 class="container-hederText">List of Items</h3>
+                            
+                        </span>
+                        <div class="actions-container" id="actionsContainer">
+      <input type="text" id="searchInput" onkeyup="searchTable2(this,'getSuppliers')"
+                            placeholder="&#x1f50d; Search for anything..">
+    <button class="action-btn header-btn btn-primary" onclick="updateStock()">Update stock</button>
+                            <!-- Filter icon, you can use your preferred icon here -->
+                            <button id="action-btn header-btn" class="action-btn download-btn header-btn btn-3" onclick="downloadExcel()">&#x2B73;</button>
+        <button class="action-btn layout-btn header-btn btn-secondary" onclick="showLayoutOptions()">Layout</button>
+    {{> popups/tableLayout }}
+<button class="action-btn fullscreen-btn" onclick="toggleFullscreen()">
+    <i class="fas fa-expand"></i> <!-- Font Awesome expand icon -->
+</button>
+                            <button class="action-btn">Action 10</button>
+                            <button class="fa  header-btn btn-secondary" onclick="initFilter('customers')">&#xf0b0;</button>
+    
+                            <button class="three-dot-btn" onclick="togglePopup()">⋮</button>
+                            <div class="more-actions" id="moreActions"></div>
+    
+                        </div>
+    
+                        </div>
+                  
+    
+                    <span class="collpase-container" id="collpase-container">
+                      <div class="table-scroll-controls">
+    <button class="scroll-btn scroll-left" onclick="scrollTableLeft()">❮</button>
+    <button class="scroll-btn scroll-right" onclick="scrollTableRight()">❯</button>
+</div>
+                        <div class="table-container" datasource="getSuppliers">
+                            <table id="customers" >
+                  <colgroup>
+  <col style="width: 80px">   <!-- Vendor -->
+  <col style="width: 100px;">  <!-- Supplier Name -->
+  <col>  <!-- Contact Number -->
+  <col>  <!-- Email -->
+    <col style="width: 130px;">   <!-- Status -->
+  <col>  <!-- Registration Date -->
+
+  <col>   <!-- Edit -->
+  <col>   <!-- Delete -->
+  <col>  <!-- Category Details -->
+  <col>  <!-- Collaboration -->
+  <col>   <!-- Testing -->
+  <col>   <!-- Inbox -->
+    <col>  
+        <col>
+</colgroup>
+                                <thead>
+                                <tr>
+                                     <th   dbcolum="vendorId" data-type="link" href="/views/supplierDetails.hmtl?mediID=${vendorId}">Vendor</th>
+                                {{!-- <th data-column="Suppliers" dbcolum="vendorId" onclick="sortTable(this)">Supplier ID <i class="fa fa-sort"></i></th> --}}
+                               
+                                <th dbcolum="supplierName" >Supplier Name</th>
+                             
+
+                                <th dbcolum="phone" id="contact">Contact Number</th>
+                                <th dbcolum="email" >Email</th>
+                            
+                                <th data-type="status" dbcolum="status" >Status</th>
+                                                                <th dbcolum="regDate">Regiseration Date</th>
+
+                                  <th data-type="attachment" dbcolum="supportDocs">SupportDocs</th>
+                                 <th  data-type="date" dbcolum="createdOn">Created On</th>
+                                                                                                                                <th dbcolum="createdOn">Regiseration Date</th>
+                                                                <th  data-type="number" dbcolum="sequence">Sequence</th>
+                                <th  data-icon="fa fa-edit" data-click="EditTest()"  data-type="icon"  dbcolum="Edit" data-name="Edit"  >Edit</th>
+                                <th data-icon="fa fa-trash" data-click="EditTest()"  data-type="icon" dbcolum="Delete"   data-name="Delete">Delete</th>
+                            
+                                
+                              
+                                <th data-type="embeddedPage" dbcolum="categories" data-params="vendorId:vendorId"  data-source="getSuppliersCategories">Category Details</th>
+                                  
+                                <th data-type="table-collab" dbcolum="collab">Collaboration</th>
+                                                               
+                                     <th dbcolum="testcheck" data-type="checkbox" data-checkboxCondition="checkmyCond()"><input type="checkbox"></th>
+
+                                                                     <th dbcolum="test" data-type="link" href="/workflowlog?id=${vendorId}">Inbox</th>
+
+                                     <th dbcolum="Block" data-type="button" data-onload="checkbuttoncond(payload)" data-onclick="checkbuttoncond2()">Block</th>
+
+
+                            </tr>
+                                </thead>
+                                    <tbody id="materials">
+                       
+    
+    </tbody>
+ <tfoot>
+    <tr class="test">
+        <td  ></td> <!-- Exact position for sequence total (column 10) -->
+        <td></td> <!-- Edit column (11) -->
+        <td></td> <!-- Delete column (12) -->
+        <td></td> <!-- Category Details column (13) -->
+        <td></td> <!-- Collaboration column (14) -->
+        <td></td> <!-- Inbox column (15) -->
+        <td ></td> <!-- Exact position for sequence total (column 10) -->
+        <td></td> <!-- Edit column (11) -->
+        <td></td> <!-- Delete column (12) -->
+        <td></td> <!-- Category Details column (13) -->
+           <td></td>
+              <td></td>
+                 <td></td>
+                <td colspan="5"></td> <!-- Spans first 9 columns -->
+
+    </tr>
+</tfoot>
+      
+    
+                            </table>
+                        </div>
+                        <div class="pagination-controls">
+                            <div class="rows-per-page">
+                                <label for="rowsPerPage">Rows per page:</label>
+                                <select id="rowsPerPage" onchange="changeRowsPerPage(this.value,this)">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </div>
+                            <div class="pagination" id="pagination"></div>
+                        </div>
+                      
+                    </span>
+    
+                </div>
+             
+            </div>
+            <div class="action">
+
+                <button class="form-action-btn" id="submitBtn" onclick="submitFormData()">Submit</button>
+                <button class="form-action-btn" id="clearCart">Save as Draft</button>
+            </div>
+    </div>
+    <div id="uploadPopup" class="popup" >
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeUploadPopup()">&times;</span>
+            <h3>Select Files to Upload</h3>
+            
+            <!-- File input for multiple file upload -->
+            <input type="file" id="fileUpload" name="attachments" multiple onchange="handleFileSelection(event)">
+            
+            <div id="filePreview"></div>
+            <button type="button" onclick="submitAttachments()">Submit</button>
+            <button type="button" onclick="closeUploadPopup()">Cancel</button>
+        </div>
+    </div>
+    <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+</main>
+
+<!-- Popup for Selecting Categories -->
+
+<footer>
+  
+</footer>
+
+
+
+  
+
+
+
+</body>
+
+
+<script>
+    let sortfield = 'vendorId';
+    let sortOrder = -1;
+    let currentPage = 1;
+    let rowsPerPage = 10; // Default rows per page
+    let activeTableDatasource = null; // Track the active table's datasource
+
+   
+    const sectionData = extractSectionData();
+    const tableData = extractTableData();
+    let businessViews = combineDataSources(sectionData, tableData);
+
+    // Initial load for all tables
+    loadData(currentPage, rowsPerPage);
+   
+// Call this function after table data is loaded
+</script>
+
+</html>
+
+
+
+<script>
+    function showLayoutOptions() {
+    const popup = document.getElementById('layoutPopup');
+    popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+    
+    // Close popup when clicking elsewhere
+    document.addEventListener('click', function closePopup(e) {
+        if (!e.target.closest('.layout-btn') && !e.target.closest('.layout-popup')) {
+            popup.style.display = 'none';
+            document.removeEventListener('click', closePopup);
+        }
+    });
+}
+
+function changeLayout(layoutType) {
+    console.log(`Changing layout to: ${layoutType}`);
+    const tableContainer = document.querySelector('.table-container');
+    const table = document.getElementById('customers');
+    console.log( 'classess', tableContainer.classList)
+    // Reset all layout classes
+    tableContainer.classList.remove('default-rows', 'compact-rows', 'card-layout');
+    table.classList.remove('default-rows', 'compact-rows');
+    
+    // Remove existing cards container if it exists
+    const existingCards = tableContainer.querySelector('.cards-container');
+    if (existingCards) {
+        existingCards.remove();
+    }
+
+    // Apply selected layout
+    switch(layoutType) {
+        case 'default':
+            tableContainer.classList.add('default-rows');
+            table.classList.add('default-rows');
+            table.style.display = 'table';
+            break;
+            
+        case 'compact':
+            tableContainer.classList.add('compact-rows');
+            table.classList.add('compact-rows');
+            table.style.display = 'table';
+            break;
+            
+        case 'card':
+            
+         
+              tableContainer.classList.add('card-layout');
+            if (table.querySelector('tbody tr')) { // Only convert if data exists
+                convertTableToCards();
+            }
+            break;
+    }
+    
+    // Store preference in localStorage
+    localStorage.setItem('tableLayoutPreference', layoutType);
+}
+// Load saved layout preference on page load
+{{!-- window.addEventListener('DOMContentLoaded', function() {
+    const savedLayout = localStorage.getItem('tableLayoutPreference');
+    if (savedLayout) {
+        changeLayout(savedLayout);
+    }
+}); --}}
+function convertTableToCards() {
+    console.log("Converting table to cards layout...");
+    const table = document.getElementById('customers');
+    const tableContainer = document.querySelector('.table-container');
+    
+    // Clear existing content
+    tableContainer.innerHTML = ''; 
+     // Create fresh cards container
+    const cardsContainer = document.createElement('div');
+    cardsContainer.className = 'cards-container';
+    tableContainer.appendChild(cardsContainer);
+
+    
+ try{
+   // Add null checks for critical elements
+    if (!table) {
+        console.error('Table element not found');
+        return;
+    }
+    
+    const rows = table.querySelectorAll('tbody tr');
+    if (rows.length === 0) {
+        console.warn('No data rows to convert');
+        return;
+    }
+    
+    // Remove existing cards if any
+    const existingCards = tableContainer.querySelector('.cards-container');
+    if (existingCards) {
+        existingCards.remove();
+    }
+    
+    // Create cards container
+    const cardsContainer = document.createElement('div');
+    cardsContainer.className = 'cards-container';
+    tableContainer.appendChild(cardsContainer);
+    
+  
+    // Get column headers for labels
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+    
+    // Create a card for each row
+    rows.forEach(row => {
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        
+        const cells = row.querySelectorAll('td');
+        let cardHTML = '';
+        
+        // Add card header (first column as title)
+        const title = cells[0]?.textContent || 'Item';
+        cardHTML += `<div class="card-header">${title}</div>`;
+        
+        // Add card content
+        cardHTML += `<div class="card-content">`;
+        
+        // Add each cell as a card field
+        cells.forEach((cell, index) => {
+            // Skip the first column (used as title) and empty cells
+            if (index > 0 && cell.textContent.trim() !== '') {
+                const label = headers[index] || `Field ${index}`;
+                cardHTML += `
+                    <div class="card-field">
+                        <span class="field-label">${label}:</span>
+                        <span class="field-value">${cell.textContent}</span>
+                    </div>
+                `;
+            }
+        });
+        
+        cardHTML += `</div>`;
+        
+        // Add status if available
+        const statusCell = row.querySelector('.status-badge');
+        if (statusCell) {
+            cardHTML += `<div class="card-status ${statusCell.classList.contains('Rejected') ? 'rejected' : ''}">
+                ${statusCell.textContent}
+            </div>`;
+        }
+        
+        card.innerHTML = cardHTML;
+        cardsContainer.appendChild(card);
+    });
+
+ }catch(e){
+     console.log("Error converting table to cards:", e);
+     return;}
+
+    
+
+}
+
+</script>

@@ -485,8 +485,8 @@ if (tableDataSourceResponse.data != null) {
                 else if(dataType === 'table-collab') {
 inputElement=`<td data-label=${thName}>
 <div class="collaboration-icons">
-<i class="fa-regular fa-comment"></i>   
-<i class="fa-regular fa-file"></i>
+<i class="fa-regular fa-comment" onclick="getLog2('VEND42','messages')"></i>   
+<i class="fa-regular fa-file" onclick="getLog2('VEND42','notes')"></i>
 <i onclick="getLog('VEND41')">&#x26A1;</i>   
 <i onclick="getLog2('VEND42','workflow')">&#x26A1;</i>        
 <i class="fa fa-info-circle" onclick="showRowDetails(${rowIndex})"></i></div>
@@ -592,7 +592,7 @@ columnsNeedingEmbeddedCounts.forEach(({ colName, rowData, uniqueId, businessView
             let paginationHtml = '';
     
             if (currentPage > 1) {
-                paginationHtml += `<button onclick="changePage('${datasource}', ${currentPage - 1})"><</button>`;
+                paginationHtml += `<button onclick="changePage('${datasource}', ${currentPage - 1})">❮</button>`;
             }
     
             for (let i = 1; i <= totalPages; i++) {
@@ -600,7 +600,7 @@ columnsNeedingEmbeddedCounts.forEach(({ colName, rowData, uniqueId, businessView
             }
     
             if (currentPage < totalPages) {
-                paginationHtml += `<button onclick="changePage('${datasource}', ${currentPage + 1})">></button>`;
+                paginationHtml += `<button onclick="changePage('${datasource}', ${currentPage + 1})">❯</button>`;
             }
     
             paginationContainer.innerHTML = paginationHtml;

@@ -268,11 +268,11 @@
 
 </style>
 <script>
-    function openWorkflowSidebar(id, tab = 'workflow') {
+    function openWorkflowSidebar(id, tab) {
     const sidebar = document.getElementById('workflowSidebar');
     sidebar.classList.add('active');
+
     switchTab(tab);
-    
     if (tab === 'workflow') {
         fetchWorkflowLog(id);
     } else if (tab === 'notes') {

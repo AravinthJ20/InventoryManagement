@@ -284,7 +284,7 @@
                         <input type="checkbox" id="showPass" onclick="showPassword()">
                         <span>Show Password</span>
                     </div>
-                                        <a href="/views/Signup">Supplier Registeration</a>
+                                        <a href="/views/Signup">Self Supplier Registeration</a>
 
                     <a href="/admin/forgotPassword">Change/Forgot Password?</a>
                     <button type="submit" class="button">Login</button>
@@ -330,7 +330,34 @@
                     console.log('token stored in local storage')
 
                     window.location.href = '/views/LandingPage.html';  // Redirect after successful login
-                } else {
+                }
+                    else if (response.status === 400) {
+                    // Store the token in localStorage
+                    console.log('token not stored in local storage')
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login Failed',
+                        text: data.error,
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            popup: 'custom-swal-width'
+                        }
+                    });
+                } 
+                     else if (response.status === 401) {
+                    // Store the token in localStorage
+                    console.log('token not stored in local storage')
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login Failed',
+                        text: data.error,
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            popup: 'custom-swal-width'
+                        }
+                    });
+                } 
+                 else {
                         Swal.fire({
                         icon: 'success',
                         title: 'Form submitted successfully!',

@@ -1,5 +1,5 @@
 
-const {connectDB}=require('./config/db')
+const {connectDB}=require('../config/db')
 const nodemailer = require('nodemailer');
 
 // let businessView='UpdateVendor'
@@ -359,8 +359,8 @@ const action = {
     }
 };
 
-const result = mapFields(payload, action, actionsResponse);
-console.log(result);
+// const result = mapFields(payload, action, actionsResponse);
+// console.log(result);
 
 function nodeMailer (data) {
     console.log(data)

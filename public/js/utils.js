@@ -5,36 +5,71 @@ sessionStorage.removeItem('cachedMenus')
 sessionStorage.removeItem('cacheTimestamp')
 
     // Optionally, you can also clear any other user-related data or session storage here
+//way index db clear
 
+    // Clear IndexedDB
+    const dbName = 'MenuDB';
+    const storeName = 'menus';
+
+    const request = indexedDB.open(dbName);
+
+    request.onsuccess = function (event) {
+        const db = event.target.result;
+        const tx = db.transaction(storeName, 'readwrite');
+        const store = tx.objectStore(storeName);
+        store.clear(); // Clear all items in the object store
+
+        tx.oncomplete = function () {
+            db.close();
+            // Redirect to the login or logout page
+            window.location.href = '/logout';
+        };
+
+        tx.onerror = function (e) {
+            console.error('Failed to clear IndexedDB:', e.target.error);
+            // Still redirect
+            window.location.href = '/logout';
+        };
+    };
+
+    request.onerror = function (event) {
+        console.error('Failed to open IndexedDB:', event.target.error);
+        window.location.href = '/logout';
+    };
     // Redirect to the login page or home page
     window.location.href = '/logout'; // Redirect to the home page or login page
 }
 
+//store.clear(); way2
+//indexedDB.deleteDatabase('MenuDB'); way3
+
+
+
 // let sessionCheckInterval;
 
-// async function checkSession() {
-//     try {
-//         const response = await fetch('/userRoutes/checkSession'); // Create this route on your server
-//         if (response.status === 401) {
-//             alert("Your session has expired. Please log in again.");
-//             console.log('sesssion expired')
-//             clearInterval(sessionCheckInterval); // Stop the interval
+async function checkSession() {
+    try {
+        const response = await fetch('/userRoutes/checkSession'); // Create this route on your server
+        if (response.status === 401) {
+            alert("Your session has expired. Please log in again.");
+            console.log('sesssion expired')
+            clearInterval(sessionCheckInterval); // Stop the interval
 
 
 
-//             window.location.href = '/'; 
-//             showPopup("Your session has expired. Please log in again.")
+            window.location.href = '/'; 
+            showPopup("Your session has expired. Please log in again.")
 
 
-//         }
-//     } catch (error) {
-//         console.error("Error checking session:", error);
-//     }
-// }
+        }
+    } catch (error) {
+        console.error("Error checking session:", error);
+    }
+}
 
-// // Polling every 30 seconds (30000 milliseconds)
-// sessionCheckInterval = setInterval(checkSession, 100000)
-// console.log("Session check interval started with ID:", sessionCheckInterval); // Debugging log
+// Polling every 30 seconds (30000 milliseconds)
+sessionCheckInterval = setInterval(checkSession, 100000)
+console.log("Session check interval started with ID:", sessionCheckInterval); // Debugging log
 
 
 async function downloadExcel() {
@@ -488,3 +523,66 @@ function tableDataCheck() {
 //..table empty check end..//
 
 
+//... full screen icon..
+// Listen for fullscreen change events
+document.addEventListener('fullscreenchange', () => {
+    const container = document.querySelector('.list-container');
+    if (document.fullscreenElement) {
+        container.classList.add('fullscreen-mode');
+    } else {
+        container.classList.remove('fullscreen-mode');
+    }
+});
+
+
+
+// Listen for escape key to exit fullscreen
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.fullscreenElement) {
+        document.exitFullscreen();
+    }
+});
+function toggleFullscreen() {
+    const container = document.querySelector('.list-container');
+    
+    if (!document.fullscreenElement) {
+        // Enter fullscreen
+        container.requestFullscreen().then(() => {
+            // Additional fullscreen styling
+            document.documentElement.style.overflow = 'hidden';
+            document.querySelector('.fullscreen-btn i').className = 'fas fa-compress';
+            
+            // Hide scrollbars (optional)
+            document.body.style.overflow = 'hidden';
+            
+            // Force hide Chrome's toolbar (may require user gesture)
+            if (window.navigation && window.navigation.uaHintData) {
+                window.navigation.uaHintData.set('show-browser-ui', false);
+            }
+        }).catch(err => {
+            console.error('Fullscreen error:', err);
+            // Fallback to CSS fullscreen if API fails
+            container.classList.add('fullscreen-mode');
+        });
+    } else {
+        // Exit fullscreen
+        document.exitFullscreen().then(() => {
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+            document.querySelector('.fullscreen-btn i').className = 'fas fa-expand';
+        });
+    }
+}
+// Handle browser fullscreen API as fallback
+function toggleFullscreenFallback() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.error(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+//... full screen icon end..

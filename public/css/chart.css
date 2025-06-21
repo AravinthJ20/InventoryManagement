@@ -18,11 +18,35 @@
             }
             
             /* Make the chart visible by default */
-            #myChart {
+            /* #myChart {
             display: block;
             /* Start as visible */
-            }
+             */
+                     #myChart {
+  transition: all 0.3s ease;
+  padding: 5px;
+  background: #fcfcfc;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
             
+/* Chart Type Select Dropdown */
+#chartTypeSelect {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+    
+#chartTypeSelect,#dataSelect {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
             .collapse-btn {
             background: none;
             position: absolute;

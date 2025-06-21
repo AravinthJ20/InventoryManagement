@@ -2,7 +2,7 @@ const { connectDB } = require('../config/db')
 const path = require('path')
 const express = require('express')
 const app = express()
-const { executeActions } = require('../ActionsExecuter')
+const { executeActions } = require('../controllers/ActionsExecuter')
 const axios = require('axios')
 const router = express.Router()
 const {ObjectId}=require('mongodb')
@@ -347,7 +347,45 @@ router.post('/preApi',(req,res)=>{
   console.log('pre api called')
   res.status(200)
 })
+router.get('/log/:productId',async(req,res)=>{
+ 
+  let db=await connectDB("InventoryMangement");
 
+  const productId=req.params.productId;
+
+  try{
+const data=await db.collection('workitems').find({ productId:productId }).toArray()
+console.log(data,'work flow log is ')
+const workflowId=data[0].workflowId
+let pendingUser=await db.collection('workitems').findOne({ productId:productId,status:"pending"})
+let workitem=await db.collection('workitems').findOne({ productId:productId,status:"pending"})
+
+console.log('user',pendingUser)
+if(pendingUser){
+  pendingUser=pendingUser.approver
+}
+else{
+  pendingUser=null
+}
+app.get('/upload-popup.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'upload-popup.html'));
+});
+console.log('role is '+req.session.role)
+const role=req.session.role
+
+
+res.json({log:data,productId:productId,workflowId:workflowId,pendingUser:pendingUser,role:role,  decisions: workitem?.Decisions || []
+});
+
+  //  res.render('workflowlog',{log:data,productId:productId,workflowId:workflowId,pendingUser:pendingUser,role:role});
+}
+catch(err){
+  console.log(err)
+  res.json("Unable to Fetch Details",err)
+
+}
+// res.json({log:data,productId:productId,workflowId:workflowId,pendingUser:pendingUser,role:role})
+})
 router.post('/postApi',(req,res)=>{
   console.log('post api called')
   res.status(200)

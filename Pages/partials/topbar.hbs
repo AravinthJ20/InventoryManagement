@@ -11,6 +11,10 @@
     </div>
 </div> --}}
   <style>
+    .fa-sign-out{
+        color: #c91515;
+    }
+      
     /* Notification Icon Container */
 .notification-icon-container {
     position: relative;
@@ -35,10 +39,10 @@
     /* Sidebar Popup Styles */
 .sidebar-popup {
     position: fixed;
-    top: 0;
+    top: 3em;
     right: -300px; /* Hidden by default */
     width: 300px;
-    height: 100vh;
+    height: 50vh;
     color: #000;
     background-color: white;
     border-left: 1px solid #ccc;
@@ -116,7 +120,7 @@
     display: none;
     position: fixed;
     top: 60px;
-    right: 20px;
+    left: 20px;
     width: 300px;
     background-color: white;
     border: 1px solid #ccc;
@@ -169,22 +173,23 @@
     <i class="fa fa-search search-icon"></i>
 </div>
 
-    <h2>Smart Inventory System</h2>
+    <h2>Smart Core Suite</h2>
     <!-- Global Search -->
 
 
     <div class="topbar-menu">
-        <a href="/http://localhost:5000/"><i class="fa fa-comments-o" id="chat-icon"></i>Chat Room</a>
-        <a href="#">About Us</a>
-        <a href="#">Contacts</a>
-        <div class="notification-icon-container">
+        <a href="/http://localhost:5000/"><i class="fa fa-comments-o" id="chat-icon"></i></a>
+         <div class="notification-icon-container">
             <a href="#" id="notification-icon">
                 <i class="fa fa-bell"></i>
                 <span class="badge" id="notification-badge">3</span> <!-- Badge with count -->
             </a>
         </div>
-        <a onclick="logout()"><i class="fa fa-sign-out"></i>Logout</a>
-        <a href="/user/userProfile?user={{user}}"> <img class="profile" src="../images/home.jpg" alt="Picture"></a>
+        <a href="#">About Us</a>
+        <a href="#">Contact us</i></a>
+       
+        <a class="logout" onclick="logout()"><i class="fa fa-sign-out"></i></a>
+ <a><img class="profile" src="../images/home.jpg" alt="Picture"></a>
     </div>
 
     <!-- Notification Sidebar -->
@@ -230,8 +235,8 @@
         <button class="close-btn" onclick="closeProfileSidebar()">×</button>
     </div>
     <ul>
-        <li><strong>User ID:</strong> SCHSUPPORT1</li>
-        <li><strong>Email:</strong> aravinth.j@supplychainhub.com</li>
+        <li><strong>User:</strong> User Name</li>
+        <li><strong>Email:</strong> test@mail.com</li>
         <li><strong>Category:</strong> Test44</li>
         <li><strong>Roles:</strong> Audit Compliance, ESA Specific, Admin, Analytics, VM Team, Buyer, TECH APPROVER</li>
     </ul>
@@ -343,7 +348,7 @@ updateBadge(5); // Set the badge count to 5
     "Inventory Item Z"
 ];
 
-function handleGlobalSearch(query) {
+function handleGlobalSearchOld(query) {
     const popup = document.getElementById("search-popup");
     const resultList = document.getElementById("search-results");
     const noResults = document.getElementById("no-results");
@@ -371,9 +376,100 @@ function handleGlobalSearch(query) {
 
     popup.classList.add("active");
 }
+async function handleGlobalSearch(query) {
+    const popup = document.getElementById("search-popup");
+    const resultList = document.getElementById("search-results");
+    const noResults = document.getElementById("no-results");
+
+    query = query.trim().toLowerCase();
+    if (query === "") {
+        popup.classList.remove("active");
+        return;
+    }
+
+
+    const dbName = 'MenuDB';
+    const storeName = 'menus';
+
+     function getCachedMenu(db) {
+        return new Promise((resolve) => {
+            const tx = db.transaction(storeName, 'readonly');
+            const store = tx.objectStore(storeName);
+            const request = store.get('cachedMenus');
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(null);
+        });
+    }
+     function getCachedMenu(db) {
+        return new Promise((resolve) => {
+            const tx = db.transaction(storeName, 'readonly');
+            const store = tx.objectStore(storeName);
+            const request = store.get('cachedMenus');
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(null);
+        });
+    }
+     function openDatabase() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName, 1);
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(storeName)) {
+                    db.createObjectStore(storeName, { keyPath: 'id' });
+                }
+            };
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    
+    const db = await openDatabase(); // use your existing openDatabase()
+    const menuData = await getCachedMenu(db);
+    const menus = menuData?.data || [];
+
+    // Match menus and submenus by name
+    const matchedResults = [];
+
+    menus.forEach(menu => {
+        if (menu.name.toLowerCase().includes(query)) {
+            matchedResults.push({ name: menu.name, url: menu.url || "#" });
+        }
+
+        if (menu.subMenus && menu.subMenus.length > 0) {
+            menu.subMenus.forEach(sub => {
+                if (sub.name.toLowerCase().includes(query)) {
+matchedResults.push({ name: sub.name, url: sub.url });
+                }
+            });
+        }
+    });
+
+    resultList.innerHTML = "";
+    if (matchedResults.length > 0) {
+        matchedResults.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = item.name;
+            li.style.cursor = "pointer";
+            li.addEventListener("click", () => {
+                popup.classList.remove("active");
+                if (item.url && item.url !== "#") {
+                    window.location.href = item.url; // Navigate to route
+                }
+            });
+            resultList.appendChild(li);
+        });
+        noResults.style.display = "none";
+    } else {
+        noResults.style.display = "block";
+    }
+
+    popup.classList.add("active");
+}
 
 function closeSearchPopup() {
     document.getElementById("search-popup").classList.remove("active");
 }
+
 
     </script>
