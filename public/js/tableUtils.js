@@ -120,3 +120,40 @@ window.addEventListener('resize', function () {
 });
 
 // more action buttons end //
+
+
+/* ...table columns scroll.. */
+
+  function updateScrollButtons() {
+    const tableContainer = document.querySelector('.table-container');
+    const scrollLeft = tableContainer.scrollLeft;
+    const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
+    
+    document.querySelector('.scroll-left').style.display = scrollLeft > 0 ? 'block' : 'none';
+    document.querySelector('.scroll-right').style.display = scrollLeft < maxScroll ? 'block' : 'none';
+}
+
+// Call this when table loads and on scroll
+tableContainer.addEventListener('scroll', updateScrollButtons);
+window.addEventListener('resize', updateScrollButtons);
+
+// Initial check
+updateScrollButtons();
+function scrollTableLeft() {
+    const tableContainer = document.querySelector('.table-container');
+    tableContainer.scrollBy({
+        left: -200, // Adjust scroll amount as needed
+        behavior: 'smooth'
+    });
+    tableContainer.attributes
+}
+
+function scrollTableRight() {
+    const tableContainer = document.querySelector('.table-container');
+    tableContainer.scrollBy({
+        left: 200, // Adjust scroll amount as needed
+        behavior: 'smooth'
+    });
+}
+
+/* ...table columns scroll end.. */

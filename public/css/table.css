@@ -89,3 +89,453 @@ background-color: rgb(42, 171, 173);
          border-radius: 5px;
          cursor: pointer;
 }
+
+
+
+ /* pagnation controls */
+
+
+
+
+
+ .pagination-controls {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-top: 20px;
+}
+
+.pagination {
+ display: flex;
+ gap: 5px;
+}
+
+.pagination button {
+ padding: 3px 5px;
+ border: 1px solid #ccc;
+ background-color: #f9f9f9;
+ cursor: pointer;
+ border-radius: 4px;
+}
+
+.pagination button.active {
+ background-color: #007bff;
+ color: white;
+ border-color: #007bff;
+}
+
+.rows-per-page {
+ display: flex;
+ align-items: center;
+ gap: 10px;
+}
+
+.rows-per-page select {
+ padding: 3px;
+ border-radius: 4px;
+ border: 1px solid #ccc;
+}
+
+ /*..pagination controls end...*/
+
+
+  /* anger tag */
+ .styled-link {
+    display: inline-block;
+    padding: 3px 5px;  /* Adjust padding */
+    border-radius: 20px;  /* Rounded corners */
+    background-color: rgba(173, 216, 230, 0.3); /* Light blue with transparency */
+    color: #007bff; /* Blue text */
+    text-decoration: none; /* Remove underline */
+    font-weight: bold;
+z-index:initial;
+    border: 1px solid #cce5ff; /* Light blue border */
+    text-align: center;
+    transition: all 0.3s ease-in-out; /* Smooth transition */
+}
+
+
+.styled-link:hover {
+    background-color: rgba(173, 216, 230, 0.6); /* Slightly darker blue */
+    color: #0056b3; /* Darker blue text */
+}
+
+ /* anger tag */
+
+
+ /* Collaboration Icons */
+.collaboration-icons {
+    display: flex;
+    gap: 15px;  /* Space between icons */
+    align-items: center;
+    justify-content: center;
+  }
+
+  .collaboration-icons i {
+    font-size: 18px;
+    color: #b0b0b0; /* Light gray default */
+    transition: color 0.3s ease-in-out, transform 0.2s;
+  }
+
+  /* Active icon styles */
+  .collaboration-icons i.active {
+    color: #007bff; /* Blue for active icons */
+  }
+
+
+  /* Hover effect */
+  .collaboration-icons i:hover {
+    color: #0056b3;
+    cursor: pointer;
+    transform: scale(1.1); /* Slight zoom effect */
+  }
+
+  /* Collaboration Icons end */
+
+
+    /*..more action btn */
+  .actions-container{
+    position: relative; /* Needed for absolute positioning of dropdown */
+    display: inline-block;
+     margin-bottom: .5em;
+  }
+
+     .more-actions {
+         display: none;
+         position: absolute;
+         right: 0; /* Align to right of container */
+    top: 100%; /* Position below the button */
+         
+    background: #fff;
+         border: 1px solid #ccc;
+         border-radius: 4px;
+         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+         z-index: 1000;
+         width: max-content;
+         margin-left: 100px;
+         min-width: 100px;
+         max-height: 200px; /* Limit the height of the popup */
+         overflow-y: auto; /* Allow scrolling if content overflows */
+         padding: 10px;
+         border-radius: 8px;
+     }
+
+     .more-actions button {
+         display: block;
+         width: 90%;
+         padding: 0.5rem;
+color: white;
+         margin-top: 10px;
+         background: rgb(117, 109, 109);
+         border: none;
+         font-size: 1em;
+         border-bottom: 1px solid #f81616;
+         text-align: center;
+         border-radius: 4px;
+     }
+
+ 
+
+     .more-actions button:last-child {
+         border-bottom: none; /* Remove border from the last button */
+     }
+
+     .three-dot-btn {
+         background: none;
+         border: none;
+         font-size: 1.5rem;
+         cursor: pointer;
+     }
+::-webkit-scrollbar{
+ height: 0px;
+ width:3px;
+}
+
+
+::-webkit-scrollbar-thumb{
+ background: rgb(133, 132, 132);
+}
+     /* Mobile view styles */
+     @media (max-width: 768px) {
+         /* Hide all action buttons in mobile view */
+         .actions-container .action-btn {
+             display: none;
+         }
+
+         /* Show the three-dot button */
+         .three-dot-btn {
+             display: inline-block;
+         }
+     }
+  /*..more action btn end...*/
+
+
+  /* .. table styles */
+  /* Example table styling */
+
+.section-header{
+    margin: 3px;
+    border-bottom: 1px solid rgb(223, 223, 219);
+ 
+}
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgb(223, 223, 219);
+    margin-bottom: 0.5rem;
+}
+
+
+.header-btn-2{
+    cursor: pointer;
+}
+
+.header-btn {
+
+
+   padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    
+}
+
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-3{
+    background-color: #28a745;
+    color: white;
+}
+.icon-btn {
+  
+    cursor: pointer;
+    
+    
+}
+.table-container {
+    overflow-y: auto;
+    /* max-height: 300px; */
+    /* Adjust as needed */
+    max-height: 350px;
+    /* font-size: 0.9rem; */
+}
+
+
+/*auto width for table */
+/* table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+     Allow auto width adjustment based on content 
+} */
+
+/*customize widht for table */
+
+table {
+    table-layout: fixed; /* Enforces colgroup widths */
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td  {
+
+    width: 200px; /* or whatever default you want */
+    overflow: hidden;
+    /* text-overflow: ellipsis; /*show ... dots when text overflows */
+    /* white-space: nowrap;  */
+   
+    padding: 0.5rem;
+    text-align: center;
+  
+}
+
+th,
+td {
+    padding: 0.5rem;
+    text-align: center;
+} 
+.sticky-col {
+    position: sticky;
+    left: 0;
+    background-color: white;
+    z-index: 3; /* Make sure it stays above others */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Optional */
+  }
+
+
+ 
+
+.th-tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.table-row-btn{
+    background-color: rgb(100, 227, 100);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+}
+
+th{
+              color: white;
+
+        background-color: #3d5161;
+
+}
+thead{
+    position: sticky;
+    z-index:2;
+    top:0
+
+}
+
+tfoot {
+    position: sticky;
+    bottom: 0;
+    z-index:2;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+    background-color: #f0f0f0;
+}
+
+td {
+    background-color: #fff;
+    color: #555;
+    
+border-bottom: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+         tbody tr:hover {
+      /* transform: translateY(-1px); */
+      box-shadow: 0px 4px 4px rgba(196, 195, 195, 0.2);
+ background-color: #3771b0;
+ cursor: pointer;
+    }
+
+/* table styles end */
+
+
+ /* Styling for embeeded popup the icon and badge */
+ .icon-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    z-index: 1;
+    font-size: 24px;
+}
+.badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+/* Popup styling */
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    border-radius: 30px;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #000;
+    padding: 20px;
+    z-index: 1000;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Overlay to darken the background when the popup is open */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Close button styling */
+.close-btn {
+    cursor: pointer;
+    color: red;
+    float: right;
+    padding:10px;
+    text-align: center;
+}
+
+ /* Styling for embeeded popup the icon and badge */
+
+
+  
+ /* table column scroller */
+ .scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(255,255,255,0.8);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.scroll-left {
+    left: 50px;
+}
+
+.scroll-right {
+    right: 10px;
+}
+.layout-popup {
+    display: none;
+    position: absolute;
+    right: 10px;
+    top: 40px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.layout-option {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.layout-option:hover {
+    background-color: #f5f5f5;
+}
+/* tbale column scroller end */
+

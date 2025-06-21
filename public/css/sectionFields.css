@@ -1,0 +1,57 @@
+
+/*horizontal form */
+
+.form {
+
+
+    display: grid;
+    margin-top: .5em;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 columns */
+    gap: 15px;
+    /* Gap between columns */
+}
+
+.form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form input[type="text"],
+.form input[type="password"],
+.form input[type="email"],
+.form input[type="date"],
+.form input[type="number"],
+.form select,
+.form input[type="tel"] {
+    width: 70%;
+    /* Full width of the column */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.form button,
+.form .button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    /* grid-column: span 3;  */
+    /* Span all 3 columns */
+}
+
+.form button:hover {
+    background-color: #2980b9;
+}
+
+/*horizontal form  end*/

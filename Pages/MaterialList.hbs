@@ -6,14 +6,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List</title>
-    <link rel="stylesheet" href="../css/layout.css">
-      <link rel="stylesheet" href="../css/popups.css">
-    <script src="../js/utils.js"></script>
-    <script src="../js/layout.js"></script>
-                  <script src="../js/fetchPageData.js"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+        {{> commonStyles}}
+        {{>tablePackages}}
+
+  
+   
+    
+
 
       
 <!-- Code injected by Five-server -->
@@ -31,7 +31,7 @@
       
         <div class="sub-container">
             <div class="mini-container list-container" containerType="table">
-
+{{!-- 
                 <div class="list-header">
                     <span class="containerInfo">
                     <button class="collapse-btn" onclick="toggleTable(this)">-</button>
@@ -58,43 +58,99 @@
 
                     </div>
 
-                    </div>
-              
+                    </div> --}}
+                 <div class="list-header">
+                        <span class="containerInfo">
+                        <button class="collapse-btn" onclick="toggleTable(this)">-</button>
+    
+                        <h3 class="container-hederText">List of Items</h3>
+                            
+                        </span>
+                        <div class="actions-container" id="actionsContainer">
+      <input type="text" id="searchInput" onkeyup="searchTable2(this,'getSuppliers')"
+                            placeholder="&#x1f50d; Search for anything..">
+    <button class="action-btn header-btn btn-primary" onclick="updateStock()">Update stock</button>
+                            <!-- Filter icon, you can use your preferred icon here -->
+                            <button id="action-btn header-btn" class="action-btn download-btn header-btn btn-3" onclick="downloadExcel()">&#x2B73;</button>
+        <button class="action-btn layout-btn header-btn btn-secondary" onclick="showLayoutOptions()">Layout</button>
+    {{> popups/tableLayout }}
+<button class="action-btn fullscreen-btn" onclick="toggleFullscreen()">
+    <i class="fas fa-expand"></i> <!-- Font Awesome expand icon -->
+</button>
+                            <button class="action-btn header-btn-2" onclick="window.location.href='/cardView'">Card View</button>
+                            <button class="action-btn">Action 9</button>
+                            <button class="action-btn">Action 10</button>
+                            <button class="fa  header-btn btn-secondary" onclick="initFilter('materials')">&#xf0b0;</button>
+    
+                            <button class="three-dot-btn" onclick="togglePopup()">⋮</button>
+                            <div class="more-actions" id="moreActions"></div>
+    
+                        </div>
+    
+                        </div>
 
-                <span class="collpase-container" id="collpase-container">
-                  
-                    <div class="table-container" datasource="getMaterials">
-                        <table id="customers">
-                            <thead>
-                            <tr>
+            
+                    <span class="collpase-container" id="collpase-container">
+                      <div class="table-scroll-controls">
+    <button class="scroll-btn scroll-left" onclick="scrollTableLeft()">❮</button>
+    <button class="scroll-btn scroll-right" onclick="scrollTableRight()">❯</button>
+</div>
+                   <div class="table-container" datasource="getMaterials">
+                            <table id="materials" >
+                  <colgroup>
+ 
+  <col>  
+  <col>   
+  <col>  
+  <col> 
+  <col>  
+  <col>  
+   
+</colgroup>
+                                <thead>
+                                <tr>
 
-                             
-                                <th  dbcolum="materialId">Materia Id</th>
+                                                 <th  dbcolum="materialId">Materia Id</th>
                                 <th dbcolum="materialName">Material Name</th>
                                 <th dbcolum="materialName">Material Description</th>
 
                                 <th dbcolum="supplier">Supplier</th>
                             
-                             
+                                     <th   dbcolum="vendorId" data-type="link" href="/views/supplierDetails.hmtl?mediID=${vendorId}">Vendor</th>
+                                {{!-- <th data-column="Suppliers" dbcolum="vendorId" onclick="sortTable(this)">Supplier ID <i class="fa fa-sort"></i></th> --}}
+                               
+                          
 
                             </tr>
-                            </thead>
-                                <tbody id="materials">
-                   
+                                </thead>
+                                    <tbody id="materials">
+                       
+    
+    </tbody>
+ <tfoot>
+    <tr class="test">
+        <td  ></td> <!-- Exact position for sequence total (column 10) -->
+        <td></td> <!-- Edit column (11) -->
+        <td></td> <!-- Delete column (12) -->
+        <td></td> <!-- Category Details column (13) -->
+        <td></td> <!-- Collaboration column (14) -->
+        <td></td> <!-- Inbox column (15) -->
+        <td ></td> <!-- Exact position for sequence total (column 10) -->
+        <td></td> <!-- Edit column (11) -->
+        <td></td> <!-- Delete column (12) -->
+        <td></td> <!-- Category Details column (13) -->
+           <td></td>
+              <td></td>
+                 <td></td>
+                <td colspan="5"></td> <!-- Spans first 9 columns -->
 
-</tbody>
-<tfoot><tr class="test">
-            <td colspan="3">Total</td>
-        
-            <td id="totalUnitPrice"></td>
-
-              <td colspan="5"></td>
-              
-        </tr></tfoot>
-  
-
-                        </table>
-                    </div>
+    </tr>
+</tfoot>
+      
+    
+                            </table>
+                        </div>
+                  
                     <div class="pagination-controls">
                         <div class="rows-per-page">
                             <label for="rowsPerPage">Rows per page:</label>
@@ -130,8 +186,8 @@
 
 
 <poups>
+   {{>popupRegister}}
 
-{{> popups/filterpopup }}
 {{> popups/authorizationPopup }}
 </poups>
 
@@ -374,7 +430,7 @@ loadData(1,10,datasource,null,searchInput)
   {
     "table": [
       {
-        "tableID": "customers",
+        "tableID": "materials",
         "filter": true,
       "filterDatasource":"materialFilter",
         "filterColumns": [
@@ -423,16 +479,13 @@ loadData(1,10,datasource,null,searchInput)
   
 // Call the function to check permissions when the page loads
 pagePermissions(PageControls);
-function initiateFilter(tabled){
 
-    openFilter(tabled,PageControls)
+
+function initFilter(tableID){
+    console.log('init filter', tableID)
+    openFilter(tableID,PageControls)
 }
-</script>
-<script>
-  
 
-
- 
 
 loadFilter()
 
@@ -443,14 +496,19 @@ loadFilter()
 
 ];
 let selectedFilters={}
-
-</script>
-<script>
-
-    
         enableSubmenus()
-     
-     </script>
+
+     const moreActions = document.getElementById("moreActions");
+        const actionsContainer = document.getElementById("actionsContainer");
+
+      
+
+        // Initial check for the screen size on page load
+        moveButtonsToPopup(); // Move buttons based on the initial screen size
+    
+</script>
+
+
 <script>
  document.addEventListener("DOMContentLoaded", function () {
     try {
@@ -481,10 +539,5 @@ console.log(tbody, 'tbody')
 
  
 
-<script>
 
-
-   
-   
-</script>
   

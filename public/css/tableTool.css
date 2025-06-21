@@ -1,0 +1,55 @@
+    /* Fullscreen styles */
+:fullscreen, ::backdrop {
+    background-color: white;
+}
+
+:fullscreen .table-container {
+    height: 100vh;
+    width: 100vw;
+}
+
+:fullscreen .cards-container {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    padding: 20px;
+}
+
+/* Hide elements in fullscreen */
+:fullscreen .sidebar,
+:fullscreen .topbar {
+    display: none;
+}
+.fullscreen-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+
+.fullscreen-mode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: white;
+    padding: 20px;
+    overflow: auto;
+}
+
+.fullscreen-mode .table-container {
+    height: calc(100vh - 100px);
+    overflow: auto;
+}
+
+.fullscreen-mode .cards-container {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 30px;
+}
+
+.fullscreen-mode .data-card {
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+    /* ..Fullscreen  styles  end..*/
+ 

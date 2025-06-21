@@ -1,0 +1,67 @@
+/* top bar style start */
+.topbar {
+    background-color:#34b3db;
+    color: white;
+    padding: 0.5rem;
+    width: 100%;
+    height: 25px;
+    display: flex;
+    position: fixed;
+    top: 0;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1100;
+    /* Ensure topbar is above sidebar */
+}
+
+.topbar .open-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+    display: block;
+    margin-left: 2rem;
+    /* Adjust position as needed */
+    z-index: 1200;
+    /* Bring open button to front */
+}
+
+.topbar .open-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+
+}
+
+.topbar .open-btn:focus {
+    outline: none;
+}
+
+.topbar h2 {
+    /* margin: 0;
+    margin-left: auto;
+    margin-right: auto; */
+    text-align: center !important;
+    font-size:1.5em !important;
+    /* Center align the title */
+}
+
+.topbar .topbar-menu {
+    display: flex;
+    align-items: center;
+}
+
+.topbar .topbar-menu a {
+    color: white;
+    text-decoration: none;
+    margin-left: .5em;
+    padding: 0.5em;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
+
+.topbar .topbar-menu a:hover {
+    background-color: #2980b9;
+}
+
+/* top bar style end */

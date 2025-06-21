@@ -6,33 +6,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List</title>
+        {{> commonStyles}}
+
       {{> favicon}}
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <link rel="stylesheet" href="/css/layout.css">
-    <link rel="stylesheet" href="/css/table.css">
-       <link rel="stylesheet" href="../css/popups.css">
-              <link rel="stylesheet" href="/css/chart.css">
+    
+{{>tablePackages}}
 
-    <link rel="stylesheet" href="/css/popupTable.css">
-    <script src="/js/layout.js"></script>
-    <script src="../js/loadChart.js"></script>
-    <script src="../js/fetchPageData.js"></script>
-    <script src="../js/embeddedPopup.js"></script>
-        <script src="../js/popupServices.js"></script>
+     
 
-        <script src="../js/fetchPageData.js"></script>
-    <script src="../js/utils.js"></script>
-        <script src="../js/workflow.js"></script>
-     <script src="../js/tableUtils.js"></script>
-      <script src="../js/attachmentService.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <style>
         /* Card Layout Styles */
 .cards-container {
@@ -221,62 +202,7 @@
     </style>
     
  
-   <style>
-    /* Fullscreen styles */
-    /* Fullscreen API styles */
-:fullscreen, ::backdrop {
-    background-color: white;
-}
-
-:fullscreen .table-container {
-    height: 100vh;
-    width: 100vw;
-}
-
-:fullscreen .cards-container {
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    padding: 20px;
-}
-
-/* Hide elements in fullscreen */
-:fullscreen .sidebar,
-:fullscreen .topbar {
-    display: none;
-}
-.fullscreen-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2em;
-}
-
-.fullscreen-mode {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 9999;
-    background: white;
-    padding: 20px;
-    overflow: auto;
-}
-
-.fullscreen-mode .table-container {
-    height: calc(100vh - 100px);
-    overflow: auto;
-}
-
-.fullscreen-mode .cards-container {
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 30px;
-}
-
-.fullscreen-mode .data-card {
-    padding: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-   </style>
+ 
  
 
     <style>
@@ -294,10 +220,11 @@
 
 <body>
     {{> sidebar}}
-
- <head>
    {{> topbar user=user}}
-</head>
+
+ {{!-- <header>
+   {{> topbar user=user}}
+</head> --}}
 
 
     <main class="main-content shifted">
@@ -539,22 +466,8 @@ function checkbuttoncond(data) {
                 <button class="form-action-btn" id="clearCart">Save as Draft</button>
             </div>
     </div>
-    <div id="uploadPopup" class="popup" >
-        <div class="popup-content">
-            <span class="close-btn" onclick="closeUploadPopup()">&times;</span>
-            <h3>Select Files to Upload</h3>
-            
-            <!-- File input for multiple file upload -->
-            <input type="file" id="fileUpload" name="attachments" multiple onchange="handleFileSelection(event)">
-            
-            <div id="filePreview"></div>
-            <button type="button" onclick="submitAttachments()">Submit</button>
-            <button type="button" onclick="closeUploadPopup()">Cancel</button>
-        </div>
-    </div>
-    <div class="loading-spinner" id="loadingSpinner" style="display: none;">
-        <div class="spinner"></div>
-    </div>
+
+    {{> popups/spinner}}
 </main>
 
 <!-- Popup for Selecting Categories -->
@@ -564,19 +477,12 @@ function checkbuttoncond(data) {
 </footer>
 <popups>
 
-    {{> popups/nestedTablePopup }}
- 
-   {{>popups /wfsidebar2}}
-       {{>popups /tableRowDetails}}
-  {{>popups /columnSettings}}
-    {{>popups /alertPopup}}
-        {{>popups /errorPopup}}
-        {{>popups /confimationpopup}}
-        {{>popups /modelPopup}}
-
+    
+   {{>popupRegister}}
 
 </popups>
 
+  
 
 <script>
   // Modify the openWorkflowSidebar function to handle the overlay
@@ -609,17 +515,6 @@ function getLog2(id,logtype) {
 
   
 
-   
-<div class="filter-popup" id="filter-popup">
-
-    <button class="close-filter" onclick="closeFilter()">X</button>
-<div class="filter-content-left" id="filter-content-left"><p>left part</p></div>
-<div class="filter-content-right" id="filter-content-right"><p>right part</p></div>
-</div>
-<div id="authCheck">
-<p>you not have authorization for this page</p>
-<img src="/images/401.webp" id="404Page" alt="Girl in a jacket">
-</div>
 
 </body>
 
@@ -1000,11 +895,6 @@ if (!isAuthorized) {
 
 // Call the function to check permissions when the page loads
 pagePermissions();
-</script>
-<script>
-
-
-
 
 
 loadFilter()
@@ -1016,14 +906,19 @@ loadFilter()
 
 ];
 let selectedFilters={}
+      enableSubmenus()
+           const moreActions = document.getElementById("moreActions");
+        const actionsContainer = document.getElementById("actionsContainer");
+
+      
+
+        // Initial check for the screen size on page load
+        moveButtonsToPopup(); // Move buttons based on the initial screen size
+    
 
 </script>
-<script>
 
- 
-      enableSubmenus()
-   
-   </script>
+
 <script>
    document.addEventListener("DOMContentLoaded", function () {
       const table = document.getElementById("customers");
@@ -1095,15 +990,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 
-<script>
-        const moreActions = document.getElementById("moreActions");
-        const actionsContainer = document.getElementById("actionsContainer");
 
-      
-
-        // Initial check for the screen size on page load
-        moveButtonsToPopup(); // Move buttons based on the initial screen size
-    </script>
 
 
     <script>
@@ -1449,39 +1336,7 @@ document.querySelector('.download-btn').onclick = handleExcelDownload;
 
 </script>
 
-<script>
-  function updateScrollButtons() {
-    const tableContainer = document.querySelector('.table-container');
-    const scrollLeft = tableContainer.scrollLeft;
-    const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
-    
-    document.querySelector('.scroll-left').style.display = scrollLeft > 0 ? 'block' : 'none';
-    document.querySelector('.scroll-right').style.display = scrollLeft < maxScroll ? 'block' : 'none';
-}
 
-// Call this when table loads and on scroll
-tableContainer.addEventListener('scroll', updateScrollButtons);
-window.addEventListener('resize', updateScrollButtons);
-
-// Initial check
-updateScrollButtons();
-function scrollTableLeft() {
-    const tableContainer = document.querySelector('.table-container');
-    tableContainer.scrollBy({
-        left: -200, // Adjust scroll amount as needed
-        behavior: 'smooth'
-    });
-    tableContainer.attributes
-}
-
-function scrollTableRight() {
-    const tableContainer = document.querySelector('.table-container');
-    tableContainer.scrollBy({
-        left: 200, // Adjust scroll amount as needed
-        behavior: 'smooth'
-    });
-}
-</script>
 
 <script>
 
